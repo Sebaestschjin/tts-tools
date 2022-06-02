@@ -1,0 +1,27 @@
+{
+  "name": "@tts-tools/savefile",
+  "version": "1.0.0",
+  "author": "Sebastian Stern",
+  "license": "MIT",
+  "keywords": [
+    "tabletop-simulator",
+    "tabletopsimulator"
+  ],
+  "homepage": "https://github.com/Sebaestschjin/tts-tools/packages/savefile",
+  "repository": "Sebaestschjin/tts-tools",
+  "bugs": "https://github.com/Sebaestschjin/tts-tools/issues",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rimraf dist && tsc -b"
+  },
+  "devDependencies": {
+    "@tts-tools/xmlbundle": "workspace:*",
+    "@types/node": "^16.9.4",
+    "luabundle": "^1.6.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.4.3"
+  },
+  "files": [
+    "/dist"
+  ]
+}

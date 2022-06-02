@@ -1,0 +1,11 @@
+{
+  "name": "@tts-tools/workspace",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {},
+  "keywords": [
+    "tabletopsimulator"
+  ],
+  "license": "MIT",
+  "devDependencies": {}
+}
