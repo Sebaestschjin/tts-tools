@@ -1,0 +1,9 @@
+<Panel>
+  <!-- include indent -->
+  <Panel>
+    <Panel />
+    <Text />
+  </Panel>
+
+  <!-- include indent -->
+</Panel>

@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*"],
   "compilerOptions": {
     "declaration": true,
     "module": "commonjs",
@@ -9,7 +9,7 @@
     "target": "esnext",
     "moduleResolution": "node",
     "outDir": "./dist",
-    "types": ["node"],
+    "types": ["node", "mocha", "chai"],
     "typeRoots": ["./node_modules/@types"],
     "strict": true
   }
