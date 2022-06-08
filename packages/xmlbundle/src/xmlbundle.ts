@@ -1,9 +1,16 @@
 import { readFileSync } from "fs";
 
 const INCLUDE_REGEX = /^(\s*)<Include src="([^"]+)"\s*\/>/im;
+const BORDER_REGEX = /(<!-- include (.*?) -->)\n(.*?)\1/gs;
 
 export const bundle = (xmlUi: string, includePath: string): string => {
   return resolve(xmlUi, includePath);
+};
+
+export const unbundle = (xmlUi: string): string => {
+  const replacement = '<Include src="$2" />';
+
+  return xmlUi.replaceAll(BORDER_REGEX, replacement);
 };
 
 const resolve = (xmlUi: string, path: string) => {
@@ -50,12 +57,4 @@ const readInclude = (file: string, currentPath: string) => {
   const resolved = resolve(includeContent, currentPath + subPath);
 
   return `${border}\n${resolved}\n${border}`;
-};
-
-const trimRight = (input: string) => {
-  return input.replace(/\s+$/, "");
-};
-
-export const unbundle = (xmlUi: string): string => {
-  return xmlUi;
 };

@@ -1,0 +1,7 @@
+<!-- include nested/index -->
+<!-- include nested -->
+<Panel id="nested" />
+
+<!-- include nested -->
+
+<!-- include nested/index -->

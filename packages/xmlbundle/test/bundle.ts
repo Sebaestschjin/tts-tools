@@ -1,12 +1,13 @@
 import { expect } from "chai";
 import { readFileSync } from "fs";
-import { bundle } from "../src/xmlbundle";
+import { bundle, unbundle } from "../src/xmlbundle";
+import exp = require("constants");
 
 const includeDir = `${__dirname}/include`;
 const resolvedDir = `${__dirname}/resolved`;
 
-describe("XMLBundle", function () {
-  describe("bundle", function () {
+describe("XMLBundle", () => {
+  describe("bundle", () => {
     it("should return the same value without an Include", () => {
       const input = "<Panel />\n";
 
@@ -63,8 +64,8 @@ describe("XMLBundle", function () {
 
     it("should resolve transitive Includes in the same directory", () => {
       const input = '<Include src="withInclude" />';
-      const sub = borderedFile("main", "main");
-      const expected = bordered("withInclude", `${sub}\n`);
+      const nested = borderedFile("main", "main");
+      const expected = bordered("withInclude", `${nested}\n`);
 
       const result = bundle(input, includeDir);
 
@@ -72,9 +73,8 @@ describe("XMLBundle", function () {
     });
 
     it("should resolve transitive Includes in nested directories", () => {
-      const input = readInclude("withSub");
-      const sub = borderedFile("sub", "sub/sub");
-      const expected = bordered("sub/index", `${sub}\n`) + "\n";
+      const input = readInclude("withNested");
+      const expected = readResolved("withNested");
 
       const result = bundle(input, includeDir);
 
@@ -86,6 +86,68 @@ describe("XMLBundle", function () {
       const expected = readResolved("withIndent");
 
       const result = bundle(input, includeDir);
+
+      expect(result).to.be.equal(expected);
+    });
+    it("should throw an error when Include can not be found", () => {
+      const input = '<Include src="not_existent" />';
+
+      expect(() => bundle(input, includeDir)).to.throw("ENOENT: no such file or directory");
+    });
+  });
+  describe("unbundle", () => {
+    it("should return the same value without an Include", () => {
+      const input = "<Panel />";
+
+      const result = unbundle(input);
+
+      expect(result).to.be.equal(input);
+    });
+    it("should unbundle a single Include", () => {
+      const input = readResolved("withInclude");
+      const expected = readInclude("withInclude");
+
+      const result = unbundle(input);
+
+      expect(result).to.be.equal(expected);
+    });
+    it("should keep the name of the Include", () => {
+      const input = "<!-- include MaIN.XmL -->\n<!-- include MaIN.XmL -->";
+      const expected = '<Include src="MaIN.XmL" />';
+
+      const result = unbundle(input);
+
+      expect(result).to.be.equal(expected);
+    });
+    it("should unbundle multiple Includes", () => {
+      const input = readResolved("withMultiple");
+      const expected = readInclude("withMultiple");
+
+      const result = unbundle(input);
+
+      expect(result).to.be.equal(expected);
+    });
+    it("should unbundle nested Includes", () => {
+      const input = readResolved("withNested");
+      const expected = readInclude("withNested");
+
+      const result = unbundle(input);
+
+      expect(result).to.be.equal(expected);
+    });
+    it("should keep indentation", () => {
+      const input = readResolved("withIndent");
+      const expected = readInclude("withIndent");
+
+      const result = unbundle(input);
+
+      expect(result).to.be.equal(expected);
+    });
+    it("should ignore unmatched borders", () => {
+      const input = "<!-- include main -->";
+      const expected = "<!-- include main -->";
+
+      const result = unbundle(input);
 
       expect(result).to.be.equal(expected);
     });
