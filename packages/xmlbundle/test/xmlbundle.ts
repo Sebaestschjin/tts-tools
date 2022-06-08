@@ -89,6 +89,16 @@ describe("XMLBundle", () => {
 
       expect(result).to.be.equal(expected);
     });
+
+    it("should keep empty new lines in Includes", () => {
+      const input = '<Include src="multiline" />\n';
+      const expected = readResolved("multiline");
+
+      const result = bundle(input, includeDir);
+
+      expect(result).to.be.equal(expected);
+    });
+
     it("should throw an error when Include can not be found", () => {
       const input = '<Include src="not_existent" />';
 

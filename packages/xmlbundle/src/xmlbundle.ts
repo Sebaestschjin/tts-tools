@@ -20,8 +20,10 @@ const resolve = (xmlUi: string, path: string) => {
   while (match) {
     let resolvedInclude = readInclude(match[2], path);
     const indent = match[1] ?? "";
-    resolvedInclude = resolvedInclude.replaceAll(/^/gm, indent);
-    resolvedInclude = resolvedInclude.replaceAll(/^\s+$/gm, "");
+    resolvedInclude = resolvedInclude
+      .split("\n")
+      .map((line) => (line ? indent + line : line))
+      .join("\n");
 
     const start = match.index!;
     const end = start + match[0].length;
