@@ -1,18 +1,19 @@
 {
   "name": "@tts-tools/xmlbundle",
+  "description": "Module to bundle/unbundle the XML UI files for Tabletop Simulator.",
   "version": "1.0.0",
   "author": "Sebastian Stern",
-  "license": "MIT",
+  "license": "CC0-1.0",
   "keywords": [
     "tabletop-simulator",
     "tabletopsimulator"
   ],
-  "homepage": "https://github.com/Sebaestschjin/tts-tools/packages/savefile",
+  "homepage": "https://github.com/Sebaestschjin/tts-tools/packages/xmlbundle",
   "repository": "Sebaestschjin/tts-tools",
   "bugs": "https://github.com/Sebaestschjin/tts-tools/issues",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rimraf dist && tsc -b",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
     "test": "ts-mocha test/**/*.ts"
   },
   "devDependencies": {
