@@ -104,6 +104,12 @@ describe("XMLBundle", () => {
 
       expect(() => bundle(input, includeDir)).to.throw("ENOENT: no such file or directory");
     });
+
+    it("should throw an error with cyclic references", () => {
+      const input = '<Include src="cycle1" />';
+
+      expect(() => bundle(input, includeDir)).to.throw("Cycle detected");
+    });
   });
   describe("unbundle", () => {
     it("should return the same value without an Include", () => {
