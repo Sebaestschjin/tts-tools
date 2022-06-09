@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-const INCLUDE_REGEX = /^([\t ]*)<Include src="([^"]+)"\s*\/>/im;
+const INCLUDE_REGEX = /^([\t ]*)<Include src=(["'])(.+)\2\s*\/>/im;
 const BORDER_REGEX = /(<!-- include (.*?) -->)\n(.*?)\1/gs;
 
 export const bundle = (xmlUi: string, includePath: string): string => {
@@ -18,7 +18,7 @@ const resolve = (xmlUi: string, path: string, alreadyResolved: string[], topLeve
   let match = resolved.match(INCLUDE_REGEX);
 
   while (match) {
-    let resolvedInclude = readInclude(match[2], path, alreadyResolved);
+    let resolvedInclude = readInclude(match[3], path, alreadyResolved);
     if (topLevel) {
       alreadyResolved = [];
     }
