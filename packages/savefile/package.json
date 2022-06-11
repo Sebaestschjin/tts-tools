@@ -13,14 +13,14 @@
   "bugs": "https://github.com/Sebaestschjin/tts-tools/issues",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rimraf dist && tsc -p tsconfig.build.json -b",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
     "test": "jest"
   },
   "dependencies": {
+    "@tts-tools/xmlbundle": "workspace:*",
     "luabundle": "^1.6.0"
   },
   "devDependencies": {
-    "@tts-tools/xmlbundle": "workspace:*",
     "@types/jest": "^28.1.1",
     "@types/node": "^16.9.4",
     "jest": "^28.1.1",

@@ -22,6 +22,8 @@ export interface Options {
  * @param options The [[Options]] to use.
  */
 export const extractSave = (saveFile: SaveFile, options: Options) => {
+  mkdirSync(options.output, { recursive: true });
+
   extractScripts(saveFile, options.output);
   extractContent(saveFile.ObjectStates, options.output + "/", options);
 
@@ -37,17 +39,15 @@ export const extractSave = (saveFile: SaveFile, options: Options) => {
  * @param path Current nested path where files for this object will be placed at
  */
 const extractObject = (object: TTSObject, path: string, options: Options) => {
-  const objectDirectory = getDirectoryName(object);
-  const currentPath = `${path}${objectDirectory}`;
-  mkdirSync(currentPath, { recursive: true });
+  mkdirSync(path, { recursive: true });
 
-  extractScripts(object, currentPath);
+  extractScripts(object, path);
   if (object.ContainedObjects) {
-    extractContent(object.ContainedObjects, currentPath, options);
+    extractContent(object.ContainedObjects, path, options);
     object.ContainedObjects = [];
   }
-  extractStates(object, currentPath, options);
-  extractData(object, currentPath, options.normalize);
+  extractStates(object, path, options);
+  extractData(object, path, options.normalize);
 };
 
 const extractScripts = (object: TTSObject | SaveFile, path: string) => {
@@ -71,12 +71,24 @@ const extractScripts = (object: TTSObject | SaveFile, path: string) => {
 
 const extractContent = (objects: TTSObject[], path: string, options: Options) => {
   const contents: ContentsFile = [];
+  const files = new Map<string, number>();
+
   objects.forEach((object, index) => {
-    const contentsPath = `Contents/${getDirectoryName(object)}`;
+    let objectDirectory = getDirectoryName(object);
+
+    const existing = files.get(objectDirectory);
+    if (existing) {
+      files.set(objectDirectory, existing + 1);
+      objectDirectory += `.${existing}`;
+    } else {
+      files.set(objectDirectory, 1);
+    }
+
+    const contentsPath = `Contents/${objectDirectory}`;
     contents.push({
       path: contentsPath,
     });
-    extractObject(object, `${path}/Contents/`, options);
+    extractObject(object, `${path}/${contentsPath}`, options);
   });
   writeJson(`${path}/Contents.json`, contents);
 };
@@ -85,12 +97,13 @@ const extractStates = (object: TTSObject, path: string, options: Options) => {
   if (object.States) {
     const states: StatesFile = [];
     const content = Object.entries(object.States).forEach(([id, state]) => {
-      const statePath = `States/${id}-${getDirectoryName(state)}`;
+      const objectDirectory = getDirectoryName(state);
+      const statePath = `States/${id}-${objectDirectory}`;
       states.push({
         id: id,
         path: statePath,
       });
-      extractObject(state, `${path}/States/${id}-`, options);
+      extractObject(state, `${path}/${statePath}`, options);
     });
     object.States = {};
     writeJson(`${path}/States.json`, states);

@@ -133,12 +133,3 @@ The `Contents.json` also contains the order of elements inside the container.
 If you want to change that order, rearrange the entries to your needs.
 
 Adding, removing states also works the same, but uses `States` directory and `States.json` file instead.
-
-# Correctness
-
-The object folders are named by using the assigned nickname (the name visible in the tooltip), followed by a dot and their GUID.
-If the object doesn't have a nickname it's internal name will be used (e.g. `HandTrigger` for Hand Zones).
-This should make each folder unique in their respective nesting level.
-However it is possible, that a container contains multiple objects with the same name and same GUID, since uniqueness for GUID inside containers is not enforced by TTS.
-Only while placing the object from the container onto the table, will a duplicate GUID be replaced by TTS.
-Make sure that you don't have this case for your containers as the tool currently doesn't check for this case.

@@ -1,0 +1,47 @@
+{
+  "SaveName": "Duplicates - Test",
+  "ObjectStates": [
+    {
+      "GUID": "123456",
+      "Name": "HandTrigger"
+    },
+    {
+      "GUID": "123456",
+      "Name": "HandTrigger"
+    },
+    {
+      "GUID": "123456",
+      "Name": "HandTrigger",
+      "Nickname": "Hand"
+    },
+    {
+      "GUID": "123456",
+      "Name": "Deck",
+      "Nickname": "Hand"
+    },
+    {
+      "GUID": "123456",
+      "Name": "Deck",
+      "ContainedObjects": [
+        {
+          "GUID": "abcdef",
+          "Name": "Card"
+        },
+        {
+          "GUID": "abcdef",
+          "Name": "Card",
+          "Nickname": "Card"
+        },
+        {
+          "GUID": "abcdef",
+          "Name": "Card"
+        },
+        {
+          "GUID": "abcdef",
+          "Name": "Card",
+          "Nickname": "Other Card"
+        }
+      ]
+    }
+  ]
+}

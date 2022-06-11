@@ -18,6 +18,16 @@ describe("extract", () => {
       expectExtractedDirectoryToBeLike("normalize");
     });
   });
+
+  describe("when duplicate GUIDs and same name/nicknames are used", () => {
+    it("the duplicated objects are still present", () => {
+      const saveFile = readSaveFile("duplicates");
+
+      extractSave(saveFile, { output: OUTPUT_PATH });
+
+      expectExtractedDirectoryToBeLike("duplicates");
+    });
+  });
 });
 
 const readSaveFile = (name: string): SaveFile => {
@@ -26,17 +36,17 @@ const readSaveFile = (name: string): SaveFile => {
 };
 
 const expectExtractedDirectoryToBeLike = (name: string) => {
-  exppectDirectoryToBeLike(name, "");
+  expectDirectoryToBeLike(name, "");
 };
 
-const exppectDirectoryToBeLike = (testCase: string, path: string) => {
+const expectDirectoryToBeLike = (testCase: string, path: string) => {
   const expectedPath = `${__dirname}/extracted/${testCase}/${path}`;
   const extractedPath = `${OUTPUT_PATH}/${path}`;
   console.log("Checking " + path);
 
   for (const dir of readdirSync(expectedPath, { withFileTypes: true })) {
     if (dir.isDirectory()) {
-      exppectDirectoryToBeLike(testCase, `${path}/${dir.name}`);
+      expectDirectoryToBeLike(testCase, `${path}/${dir.name}`);
     } else {
       const elementPath = dir.name;
       let content, otherContent;
