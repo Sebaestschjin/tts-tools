@@ -18,5 +18,5 @@ export const writeFile = (path: string, content: string) => {
  */
 export const writeJson = (path: string, content: any) => {
   const jsonContent = JSON.stringify(content, null, 2);
-  writeFile(path, jsonContent);
+  writeFile(path, jsonContent + "\n");
 };

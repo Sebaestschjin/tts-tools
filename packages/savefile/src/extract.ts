@@ -27,6 +27,9 @@ export const extractSave = (saveFile: SaveFile, options: Options) => {
 
   saveFile.ObjectStates = [];
   extractData(saveFile, options.output, options.normalize);
+  if (options.normalize) {
+    normalizeData(saveFile);
+  }
 };
 
 /**
@@ -102,21 +105,15 @@ const extractData = (object: TTSObject | SaveFile, path: string, normalize: bool
 };
 
 const normalizeData = (object: any) => {
-  if (object.Transform) {
-    object.Transform.posX = round(object.Transform.posX, 2);
-    object.Transform.posY = round(object.Transform.posY, 2);
-    object.Transform.posZ = round(object.Transform.posZ, 2);
-    object.Transform.rotX = round(object.Transform.rotX, 1);
-    object.Transform.rotY = round(object.Transform.rotY, 1);
-    object.Transform.rotZ = round(object.Transform.rotZ, 1);
-    object.Transform.scaleX = round(object.Transform.scaleX, 2);
-    object.Transform.scaleY = round(object.Transform.scaleY, 2);
-    object.Transform.scaleZ = round(object.Transform.scaleZ, 2);
-  }
-
-  if (object.ChildObjects) {
-    object.ChildObjects.forEach((c: any) => normalizeData(c));
-  }
+  Object.keys(object).map((key) => {
+    const value = object[key];
+    if (typeof value === "number") {
+      object[key] = round(value, 4);
+    }
+    if (typeof value === "object") {
+      normalizeData(value);
+    }
+  });
 };
 
 const getDirectoryName = (object: TTSObject): string => {

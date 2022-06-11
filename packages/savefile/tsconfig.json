@@ -1,16 +1,8 @@
 {
-  "include": ["src/**/*"],
+  "extends": "./tsconfig.base.json",
+  "include": ["src/**/*", "test/**/*"],
   "compilerOptions": {
-    "declaration": true,
-    "module": "commonjs",
-    "removeComments": false,
-    "preserveConstEnums": true,
-    "lib": ["ESNext"],
-    "target": "esnext",
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types"],
-    "strict": true
+    "outDir": "build",
+    "types": ["node", "jest"]
   }
 }
