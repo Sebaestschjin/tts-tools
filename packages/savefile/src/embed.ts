@@ -60,10 +60,10 @@ const readStates = (path: string, options: Options): Record<string, TTSObject> |
     return undefined;
   }
 
-  return states.reduce((obj, item) => {
+  return Object.entries(states).reduce((obj, [id, item]) => {
     return {
       ...obj,
-      [item.id]: readObject(`${path}/${item.path}`, options),
+      [id]: readObject(`${path}/${item.path}`, options),
     };
   }, {});
 };

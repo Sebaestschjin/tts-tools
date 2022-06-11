@@ -94,20 +94,23 @@ const extractContent = (objects: TTSObject[], path: string, options: Options) =>
 };
 
 const extractStates = (object: TTSObject, path: string, options: Options) => {
-  if (object.States) {
-    const states: StatesFile = [];
-    const content = Object.entries(object.States).forEach(([id, state]) => {
-      const objectDirectory = getDirectoryName(state);
-      const statePath = `States/${id}-${objectDirectory}`;
-      states.push({
-        id: id,
-        path: statePath,
-      });
-      extractObject(state, `${path}/${statePath}`, options);
-    });
-    object.States = {};
-    writeJson(`${path}/States.json`, states);
+  if (!object.States) {
+    return;
   }
+
+  const states: StatesFile = {};
+
+  Object.entries(object.States).forEach(([id, state]) => {
+    const objectDirectory = getDirectoryName(state);
+    const statePath = `States/${id}-${objectDirectory}`;
+    states[id] = {
+      path: statePath,
+    };
+    extractObject(state, `${path}/${statePath}`, options);
+  });
+
+  object.States = {};
+  writeJson(`${path}/States.json`, states);
 };
 
 const extractData = (object: TTSObject | SaveFile, path: string, normalize: boolean = false) => {

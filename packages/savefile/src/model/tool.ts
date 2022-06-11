@@ -14,15 +14,12 @@ export interface ContentEntry {
 /**
  * Type for the file describing the states of a [[TTSObject]].
  */
-export type StatesFile = StateEntry[];
+export type StatesFile = Record<string, StateEntry>;
 
 /**
  * Describes on entry in the [[StatesFile]] file.
  */
 export interface StateEntry {
-  /** The id of the state. */
-  id: string;
-
   /** The path to the object's data. */
   path: string;
 }

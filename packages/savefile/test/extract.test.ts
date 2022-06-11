@@ -28,6 +28,16 @@ describe("extract", () => {
       expectExtractedDirectoryToBeLike("duplicates");
     });
   });
+
+  describe("when the save file contains objects with states", () => {
+    it("the states are extracted", () => {
+      const saveFile = readSaveFile("stated");
+
+      extractSave(saveFile, { output: OUTPUT_PATH });
+
+      expectExtractedDirectoryToBeLike("stated");
+    });
+  });
 });
 
 const readSaveFile = (name: string): SaveFile => {
@@ -49,13 +59,18 @@ const expectDirectoryToBeLike = (testCase: string, path: string) => {
       expectDirectoryToBeLike(testCase, `${path}/${dir.name}`);
     } else {
       const elementPath = dir.name;
-      let content, otherContent;
+      let content = "";
+      let otherContent = "";
       expect(() => {
         content = readFileSync(`${expectedPath}/${elementPath}`, { encoding: "utf-8" });
         otherContent = readFileSync(`${extractedPath}/${elementPath}`, { encoding: "utf-8" });
       }).not.toThrow();
 
-      assert.equal(content, otherContent, `${path}/${elementPath}`);
+      if (elementPath.endsWith(".json")) {
+        assert.deepEqual(JSON.parse(otherContent), JSON.parse(content), `${path}/${elementPath}`);
+      } else {
+        assert.equal(otherContent, content, `${path}/${elementPath}`);
+      }
     }
   }
 };

@@ -1,0 +1,33 @@
+{
+  "SaveName": "Stated - Test",
+  "ObjectStates": [
+    {
+      "GUID": "123456",
+      "Name": "HandTrigger",
+      "States": {
+        "2": {
+          "GUID": "abcdef",
+          "Name": "HandTrigger"
+        }
+      }
+    },
+    {
+      "GUID": "654321",
+      "Name": "HandTrigger",
+      "States": {
+        "1": {
+          "GUID": "111111",
+          "Name": "HandTrigger"
+        },
+        "4": {
+          "GUID": "444444",
+          "Name": "HandTrigger"
+        },
+        "3": {
+          "GUID": "333333",
+          "Name": "HandTrigger"
+        }
+      }
+    }
+  ]
+}
