@@ -1,9 +1,8 @@
 import assert = require("assert");
-import { readFileSync, rmSync, writeFileSync } from "fs";
-import { embedSave, SaveFile } from "../src";
-import { isEmpty } from "../src/util";
-
-const OUTPUT_PATH = `${__dirname}/temp`;
+import { readFileSync, rmSync } from "fs";
+import { SaveFile } from "../main";
+import { embedSave } from "../main/embed";
+import { extractedPath, MatcherResult, OUTPUT_PATH, RES_PATH } from "./config";
 
 describe("embed", () => {
   beforeEach(() => {
@@ -14,8 +13,7 @@ describe("embed", () => {
     it("is embedded correctly", () => {
       const saveFile = readSaveFile("normalize");
 
-      const result = embedSave(`${__dirname}/extracted/normalize`, { includePath: "" });
-      writeFileSync(`${__dirname}/out.json`, JSON.stringify(result, null, 2), { encoding: "utf-8" });
+      const result = embedSave(extractedPath("normalize"), { includePath: "" });
 
       expect(result).toMatchSave(saveFile);
     });
@@ -25,7 +23,7 @@ describe("embed", () => {
     it("the duplicates are part of the save file", () => {
       const saveFile = readSaveFile("duplicates");
 
-      const result = embedSave(`${__dirname}/extracted/duplicates`, { includePath: "" });
+      const result = embedSave(extractedPath("duplicates"), { includePath: "" });
 
       expect(result).toMatchSave(saveFile);
     });
@@ -33,13 +31,13 @@ describe("embed", () => {
 });
 
 const readSaveFile = (name: string): SaveFile => {
-  const content = readFileSync(`${__dirname}/saves/${name}.json`, { encoding: "utf-8" });
+  const content = readFileSync(`${RES_PATH}/saves/${name}.json`, { encoding: "utf-8" });
   return JSON.parse(content) as SaveFile;
 };
 
 expect.extend({
   toMatchSave: (recieved: SaveFile, expected: SaveFile) => {
-    const matchObject = (recieved: any, expected: any, parent: string) => {
+    const matchObject = (recieved: any, expected: any, parent: string): MatcherResult => {
       for (const [key, value] of Object.entries(expected)) {
         const recievedValue = recieved[key];
         const fullKeyName = parent ? `${parent}.${key}` : key;
@@ -96,3 +94,19 @@ expect.extend({
     return matchObject(recieved, expected, "");
   },
 });
+
+const isEmpty = (v: any): boolean => {
+  if (Array.isArray(v)) {
+    return v.length === 0;
+  }
+  if (typeof v === "object") {
+    return Object.keys(v).length === 0;
+  }
+
+  1;
+  if (typeof v === "string") {
+    return v.length === 0;
+  }
+
+  return v === undefined || v === null;
+};

@@ -1,17 +1,7 @@
 import assert = require("assert");
 import { readdirSync, readFileSync, rmSync } from "fs";
-import { extractSave, SaveFile } from "../src";
-
-interface MatcherResult {
-  pass: boolean;
-  message: () => string;
-}
-
-const OUTPUT_PATH = `${__dirname}/temp`;
-
-const extractedPath = (name: string) => {
-  return `${__dirname}/extracted/${name}`;
-};
+import { extractSave, SaveFile } from "../main";
+import { extractedPath, MatcherResult, OUTPUT_PATH, savePath } from "./config";
 
 describe("extract", () => {
   beforeEach(() => {
@@ -50,7 +40,7 @@ describe("extract", () => {
 });
 
 const readSaveFile = (name: string): SaveFile => {
-  const content = readFileSync(`${__dirname}/saves/${name}.json`, { encoding: "utf-8" });
+  const content = readFileSync(savePath(name), { encoding: "utf-8" });
   return JSON.parse(content) as SaveFile;
 };
 

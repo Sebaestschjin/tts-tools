@@ -1,4 +1,4 @@
-import { SaveFile } from "../../src";
+import { SaveFile } from "../main";
 
 interface CustomMatchers<R = unknown> {
   toMatchSave(saveFile: SaveFile): R;
