@@ -1,4 +1,4 @@
-name: Node.js CI
+name: savefile - Run Tests
 
 on:
   push:
@@ -16,7 +16,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 16.x
-        cache: 'pnpm'
     - name: Setup pnpm
       uses: pnpm/action-setup@v2.2.2
       with:
