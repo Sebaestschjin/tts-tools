@@ -1,13 +1,14 @@
 {
   "name": "@tts-tools/cli",
+  "description": "Command line interface for different TTS Tools.",
   "version": "1.0.0",
   "author": "Sebastian Stern",
-  "license": "MIT",
+  "license": "CC0-1.0MIT",
   "keywords": [
     "tabletop-simulator",
     "tabletopsimulator"
   ],
-  "homepage": "https://github.com/Sebaestschjin/tts-tools/packages/cli",
+  "homepage": "https://github.com/Sebaestschjin/tts-tools/tree/main/packages/cli",
   "repository": "Sebaestschjin/tts-tools",
   "bugs": "https://github.com/Sebaestschjin/tts-tools/issues",
   "main": "dist/index.js",
@@ -24,12 +25,11 @@
   "dependencies": {
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.0.1"
+    "@oclif/plugin-plugins": "^2.0.1",
+    "@tts-tools/savefile": "workspace:*"
   },
   "devDependencies": {
     "@oclif/test": "^2",
-    "@tts-tools/savefile": "workspace:*",
-    "@tts-tools/xmlbundle": "workspace:*",
     "@types/chai": "^4",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.9.4",

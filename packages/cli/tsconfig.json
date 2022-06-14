@@ -9,6 +9,7 @@
     "target": "esnext",
     "moduleResolution": "node",
     "outDir": "./dist",
+    "rootDir": "./src",
     "types": ["node"],
     "typeRoots": ["./node_modules/@types"],
     "strict": true
