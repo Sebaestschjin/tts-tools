@@ -7,6 +7,7 @@ export interface SaveFile {
   LuaScriptState?: string;
   XmlUI?: string;
   ObjectStates: TTSObject[];
+  [other: string]: any;
 }
 
 /**
@@ -22,4 +23,5 @@ export interface TTSObject {
   XmlUI?: string;
   ContainedObjects?: TTSObject[];
   States?: Record<string, TTSObject>;
+  [other: string]: any;
 }

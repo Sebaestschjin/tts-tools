@@ -2,7 +2,16 @@ import assert = require("assert");
 import { readdirSync, readFileSync, rmSync } from "fs";
 import { extractSave, SaveFile } from "../src";
 
+interface MatcherResult {
+  pass: boolean;
+  message: () => string;
+}
+
 const OUTPUT_PATH = `${__dirname}/temp`;
+
+const extractedPath = (name: string) => {
+  return `${__dirname}/extracted/${name}`;
+};
 
 describe("extract", () => {
   beforeEach(() => {
@@ -15,7 +24,7 @@ describe("extract", () => {
 
       extractSave(saveFile, { output: OUTPUT_PATH, normalize: true });
 
-      expectExtractedDirectoryToBeLike("normalize");
+      expect(OUTPUT_PATH).toMatchDirectory(extractedPath("normalize"));
     });
   });
 
@@ -25,7 +34,7 @@ describe("extract", () => {
 
       extractSave(saveFile, { output: OUTPUT_PATH });
 
-      expectExtractedDirectoryToBeLike("duplicates");
+      expect(OUTPUT_PATH).toMatchDirectory(extractedPath("duplicates"));
     });
   });
 
@@ -35,7 +44,7 @@ describe("extract", () => {
 
       extractSave(saveFile, { output: OUTPUT_PATH });
 
-      expectExtractedDirectoryToBeLike("stated");
+      expect(OUTPUT_PATH).toMatchDirectory(extractedPath("stated"));
     });
   });
 });
@@ -45,32 +54,42 @@ const readSaveFile = (name: string): SaveFile => {
   return JSON.parse(content) as SaveFile;
 };
 
-const expectExtractedDirectoryToBeLike = (name: string) => {
-  expectDirectoryToBeLike(name, "");
-};
+expect.extend({
+  toMatchDirectory: (recievedPath: string, expectedPath: string) => {
+    const matchDirectory = (recievedPath: string, expectedPath: string): MatcherResult => {
+      for (const dir of readdirSync(expectedPath, { withFileTypes: true })) {
+        const recievedDir = `${recievedPath}/${dir.name}`;
+        const expectedDir = `${expectedPath}/${dir.name}`;
 
-const expectDirectoryToBeLike = (testCase: string, path: string) => {
-  const expectedPath = `${__dirname}/extracted/${testCase}/${path}`;
-  const extractedPath = `${OUTPUT_PATH}/${path}`;
-  console.log("Checking " + path);
+        if (dir.isDirectory()) {
+          const subMatch = matchDirectory(`${recievedDir}`, `${expectedDir}`);
+          if (!subMatch.pass) {
+            return subMatch;
+          }
+        } else {
+          const elementPath = dir.name;
+          const content = readFileSync(`${expectedDir}`, { encoding: "utf-8" });
+          let receivedContent;
+          try {
+            receivedContent = readFileSync(`${recievedDir}`, { encoding: "utf-8" });
+          } catch (e) {
+            return { pass: false, message: () => `Expected path ${recievedDir} to exist.` };
+          }
 
-  for (const dir of readdirSync(expectedPath, { withFileTypes: true })) {
-    if (dir.isDirectory()) {
-      expectDirectoryToBeLike(testCase, `${path}/${dir.name}`);
-    } else {
-      const elementPath = dir.name;
-      let content = "";
-      let otherContent = "";
-      expect(() => {
-        content = readFileSync(`${expectedPath}/${elementPath}`, { encoding: "utf-8" });
-        otherContent = readFileSync(`${extractedPath}/${elementPath}`, { encoding: "utf-8" });
-      }).not.toThrow();
-
-      if (elementPath.endsWith(".json")) {
-        assert.deepEqual(JSON.parse(otherContent), JSON.parse(content), `${path}/${elementPath}`);
-      } else {
-        assert.equal(otherContent, content, `${path}/${elementPath}`);
+          try {
+            if (elementPath.endsWith(".json")) {
+              assert.deepEqual(JSON.parse(receivedContent), JSON.parse(content));
+            } else {
+              assert.equal(receivedContent, content);
+            }
+          } catch (e) {
+            return { pass: false, message: () => `Expected content of ${recievedDir} to match ${expectedDir}.` };
+          }
+        }
       }
-    }
-  }
-};
+      return { pass: true, message: () => "" };
+    };
+
+    return matchDirectory(recievedPath, expectedPath);
+  },
+});
