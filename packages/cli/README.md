@@ -54,7 +54,7 @@ If it can not be found there, it will attempt to find the file in the TTS save f
 The TTS directory will also be searched recursively, so the file can be at any nesting level.
 This behavior is intended for mods where multiple people work on it and allows the developers to keep the development version of the save at any hierarchy level in the TTS save directory they desire.
 
-Which files are generated with `extract`, is described [https://www.npmjs.com/package/@tts-tools/savefile](here).
+Which files are generated with `extract`, is described [here](https://www.npmjs.com/package/@tts-tools/savefile).
 
 #### Options
 
@@ -114,7 +114,7 @@ tts-save embed [options] <path>
 Embeds a previously extracted save file and creates a new TTS save file.
 While doing so, all scripts that use `require` or UI that uses `<Include />` will be updated to include the latest versions for those scripts (given the correct include path).
 
-More details about the process can be found [https://www.npmjs.com/package/@tts-tools/savefile](here).
+More details about the process can be found [here](https://www.npmjs.com/package/@tts-tools/savefile).
 
 #### Options
 
