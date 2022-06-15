@@ -11,7 +11,7 @@ export interface Arguments {
 }
 
 export const setupCommand = (yargs: Argv) => {
-  yargs.command("embed <path>", "Embed", commandOptions, runCommand);
+  yargs.command("embed <path>", "Embeds the given directory into a new save file.", commandOptions, runCommand);
 };
 
 const commandOptions = (yargs: Argv) => {

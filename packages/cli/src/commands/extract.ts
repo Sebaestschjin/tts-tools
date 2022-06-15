@@ -11,7 +11,7 @@ export interface Arguments {
 }
 
 export const setupCommand = (yargs: Argv) => {
-  yargs.command("extract <saveFile>", "Extract", commandOptions, runCommand);
+  yargs.command("extract <saveFile>", "Extracts the given save file.", commandOptions, runCommand);
 };
 
 const commandOptions = (yargs: Argv) => {
