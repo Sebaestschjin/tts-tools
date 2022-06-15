@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "module": "commonjs",
+    "esModuleInterop": true,
     "removeComments": false,
     "preserveConstEnums": true,
     "lib": ["ESNext"],
@@ -10,7 +11,7 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["node"],
+    "types": ["node", "yargs"],
     "typeRoots": ["./node_modules/@types"],
     "strict": true
   }

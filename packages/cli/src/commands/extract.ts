@@ -1,75 +1,85 @@
-import { Command, Flags } from "@oclif/core";
 import { extractSave, SaveFile } from "@tts-tools/savefile";
-import { mkdirSync, readFileSync, rmSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, rmSync } from "fs";
+import { Argv } from "yargs";
 import { findSaveFilePath, getTtsDirectory } from "../io";
 
-interface Arguments {
+export interface Arguments {
   saveFile: string;
+  output: string;
+  clean: boolean;
+  normalize: boolean;
 }
 
-export default class Extract extends Command {
-  static description = "Extract the TTS save file from a given path.";
+export const setupCommand = (yargs: Argv) => {
+  yargs.command("extract <saveFile>", "Extract", commandOptions, runCommand);
+};
 
-  static flags = {
-    help: Flags.help({ char: "h" }),
-    output: Flags.string({ char: "o", required: true, description: "Output path." }),
-    clean: Flags.boolean({
-      char: "c",
+const commandOptions = (yargs: Argv) => {
+  return yargs
+    .positional("saveFile", {
+      type: "string",
+      demandOption: true,
+      description: "Path to a TTS save file.",
+    })
+    .option("output", {
+      alias: "o",
+      type: "string",
+      demandOption: true,
+      description: "Output path.",
+    })
+    .option("clean", {
+      alias: "c",
+      type: "boolean",
       default: false,
       description: "If set, the output directory will be deleted before extracting.",
-    }),
-    normalize: Flags.boolean({
-      char: "n",
+    })
+    .option("normalize", {
+      alias: "n",
+      type: "boolean",
       default: false,
       description:
         "If set, all floating point numbers will be rounded to the nearest 0.0001 value within the data files.",
-    }),
-  };
-
-  static args = [{ name: "saveFile", required: true, description: "Path to a TTS save file." }];
-
-  public async run(): Promise<void> {
-    const { args, flags } = await this.parse(Extract);
-    const parsedArguments = args as Arguments;
-
-    if (flags.clean) {
-      rmSync(flags.output, { recursive: true });
-    }
-    mkdirSync(flags.output, { recursive: true });
-
-    if (!parsedArguments.saveFile.toLocaleLowerCase().endsWith(".json")) {
-      parsedArguments.saveFile += ".json";
-    }
-
-    const saveFile = this.getSaveFile(parsedArguments.saveFile);
-
-    extractSave(saveFile, {
-      output: flags.output!,
-      normalize: flags.normalize,
     });
+};
 
-    this.log('Finished extracting to path "%s"', flags.output);
+const runCommand = (args: Arguments) => {
+  if (args.clean && existsSync(args.output)) {
+    rmSync(args.output, { recursive: true });
+  }
+  mkdirSync(args.output, { recursive: true });
+
+  if (!args.saveFile.toLocaleLowerCase().endsWith(".json")) {
+    args.saveFile += ".json";
   }
 
-  getSaveFile(name: string): SaveFile {
-    let saveFilePath = findSaveFilePath(".", name, false);
-    if (!saveFilePath) {
-      saveFilePath = findSaveFilePath(getTtsDirectory(), name, true);
-    }
+  const saveFile = getSaveFile(args.saveFile);
 
-    if (!saveFilePath) {
-      this.error(
-        "Can not find a save file with given path.\n" +
-          "Neither in the current directory, nor in any diretories for TTS saves."
-      );
-    }
+  extractSave(saveFile, {
+    output: args.output,
+    normalize: args.normalize,
+  });
 
-    this.log("Found save file at %s", saveFilePath);
-    return this.readSaveFile(saveFilePath);
+  console.log('Finished extracting to path "%s"', args.output);
+};
+
+const getSaveFile = (name: string): SaveFile => {
+  let saveFilePath = findSaveFilePath(".", name, false);
+  if (!saveFilePath) {
+    saveFilePath = findSaveFilePath(getTtsDirectory(), name, true);
   }
 
-  readSaveFile(path: string): SaveFile {
-    const saveFile = readFileSync(path, { encoding: "utf-8" });
-    return JSON.parse(saveFile) as SaveFile;
+  if (!saveFilePath) {
+    throw new Error(
+      "Can not find a save file with given path.\n" +
+        "Neither in the current directory, nor in any diretories for TTS saves."
+    );
   }
-}
+
+  console.log("Found save file at %s", saveFilePath);
+  return readSaveFile(saveFilePath);
+};
+
+const readSaveFile = (path: string): SaveFile => {
+  const saveFile = readFileSync(path, { encoding: "utf-8" });
+  return JSON.parse(saveFile) as SaveFile;
+};

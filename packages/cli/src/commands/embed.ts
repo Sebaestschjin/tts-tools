@@ -1,53 +1,61 @@
-import { Command, Flags } from "@oclif/core";
 import { embedSave } from "@tts-tools/savefile";
 import { writeFileSync } from "fs";
 import { findSaveFilePath, getTtsDirectory } from "../io";
 
-interface Arguments {
+import { Argv } from "yargs";
+
+export interface Arguments {
   path: string;
+  output: string;
+  include?: string;
 }
 
-export default class Embed extends Command {
-  static description = "Embed an extracted TTS save file.";
+export const setupCommand = (yargs: Argv) => {
+  yargs.command("embed <path>", "Embed", commandOptions, runCommand);
+};
 
-  static flags = {
-    help: Flags.help({ char: "h" }),
-    output: Flags.string({
-      char: "o",
-      required: true,
+const commandOptions = (yargs: Argv) => {
+  return yargs
+    .positional("path", {
+      type: "string",
+      demandOption: true,
+      description: "The path to the extracted save file.",
+    })
+    .option("output", {
+      alias: "o",
+      type: "string",
+      demandOption: true,
       description: "Path and name of the save file that will be generated.",
-    }),
-    include: Flags.string({ char: "i", required: false, description: "Path to included Lua/XML files. " }),
-  };
-
-  static args = [{ name: "path", required: true, description: "The path to the extracted save file." }];
-
-  public async run(): Promise<void> {
-    const { args, flags } = await this.parse(Embed);
-    const parsedArguments = args as Arguments;
-
-    const saveFile = embedSave(parsedArguments.path, {
-      includePath: flags.include ?? "",
+    })
+    .option("include", {
+      alias: "i",
+      type: "string",
+      description: "Path to included Lua/XML files.",
     });
+};
 
-    this.log("Finished embedding save file");
+const runCommand = (args: Arguments) => {
+  const saveFile = embedSave(args.path, {
+    includePath: args.include ?? "",
+  });
 
-    if (!flags.output.toLocaleLowerCase().endsWith(".json")) {
-      flags.output += ".json";
-    }
+  console.log("Finished embedding save file");
 
-    const toPath = findSaveFilePath(getTtsDirectory(), flags.output, true) ?? flags.output;
-    this.log('Writing result to file "%s"', toPath);
-
-    writeFileSync(toPath, this.toJson(saveFile), { encoding: "utf-8" });
+  if (!args.output.toLocaleLowerCase().endsWith(".json")) {
+    args.output += ".json";
   }
 
-  toJson(data: any) {
-    let json = JSON.stringify(data, null, 2);
-    json = json.replace(/[\u007F-\uFFFF]/g, function (chr) {
-      return "\\u" + ("0000" + chr.charCodeAt(0).toString(16)).substr(-4);
-    });
+  const toPath = findSaveFilePath(getTtsDirectory(), args.output, true) ?? args.output;
+  console.log('Writing result to file "%s"', toPath);
 
-    return json;
-  }
-}
+  writeFileSync(toPath, toJson(saveFile), { encoding: "utf-8" });
+};
+
+const toJson = (data: any) => {
+  let json = JSON.stringify(data, null, 2);
+  json = json.replace(/[\u007F-\uFFFF]/g, function (chr) {
+    return "\\u" + ("0000" + chr.charCodeAt(0).toString(16)).substr(-4);
+  });
+
+  return json;
+};
