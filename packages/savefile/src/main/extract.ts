@@ -52,9 +52,13 @@ const extractObject = (object: TTSObject, path: string, options: Options) => {
 
 const extractScripts = (object: TTSObject | SaveFile, path: string) => {
   if (object.LuaScript) {
-    const script = luaUnbundle(object.LuaScript);
-    writeFile(`${path}/Script.ttslua`, script);
-    object.LuaScript = "";
+    try {
+      const script = luaUnbundle(object.LuaScript);
+      writeFile(`${path}/Script.ttslua`, script);
+      object.LuaScript = "";
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   if (object.LuaScriptState) {
