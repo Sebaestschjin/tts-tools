@@ -1,7 +1,7 @@
 {
   "name": "@tts-tools/savefile",
   "description": "Module to extract a savefile from Tabletop Simulator into multiple files.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Sebastian Stern",
   "license": "CC0-1.0",
   "keywords": [
@@ -17,7 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@tts-tools/xmlbundle": "workspace:*",
+    "@tts-tools/xmlbundle": "workspace:^",
     "luabundle": "^1.6.0"
   },
   "devDependencies": {

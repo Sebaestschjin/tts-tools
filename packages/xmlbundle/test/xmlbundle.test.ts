@@ -160,6 +160,15 @@ describe("unbundle", () => {
 
     expect(result).to.be.equal(expected);
   });
+
+  it("should unbundle with carriage return and linefeed", () => {
+    const input = "<!-- include some -->\r\n<!-- include some -->";
+    const expected = '<Include src="some" />';
+
+    const result = unbundle(input);
+
+    expect(result).to.be.equal(expected);
+  });
 });
 
 const readInclude = (name: string) => {
