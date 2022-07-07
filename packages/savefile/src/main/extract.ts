@@ -143,5 +143,5 @@ const getDirectoryName = (object: TTSObject): string => {
 
 const round = (value: any, digits: number = 4) => {
   const offset = Math.pow(10, digits);
-  return Math.ceil(value * offset) / offset;
+  return Math.floor(value * offset) / offset;
 };
