@@ -57,7 +57,7 @@ const extractScripts = (object: TTSObject | SaveFile, path: string) => {
       writeFile(`${path}/Script.ttslua`, script);
       object.LuaScript = "";
     } catch (e) {
-      console.log(e);
+      console.log(`Error during extracting script at path ${path}`, e);
     }
   }
 

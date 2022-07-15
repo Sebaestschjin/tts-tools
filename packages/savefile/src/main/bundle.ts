@@ -26,7 +26,7 @@ export const luaUnbundle = (script: string): string => {
   if (script.startsWith("-- Bundled by luabundle")) {
     // quickfix - luabundle seems to have a problem when the line ending ist not \n,
     // which can easily happens when people copy/paste a bundled sript to TTS
-    script = script.replace(/(-- Bundled by luabundle[^\n]+)\r\n/, "$1\n");
+    script = script.replace(/(-- Bundled by luabundle {[^}]+})\s*\n/, "$1\n");
 
     const unbundled = unbundleString(script, { rootOnly: true });
     return unbundled.modules.__root.content;

@@ -7,7 +7,7 @@ importers:
 
   packages/cli:
     specifiers:
-      '@tts-tools/savefile': workspace:*
+      '@tts-tools/savefile': workspace:^
       '@types/node': ^16.9.4
       '@types/yargs': ^17.0.10
       rimraf: ^3.0.2
@@ -26,7 +26,7 @@ importers:
 
   packages/savefile:
     specifiers:
-      '@tts-tools/xmlbundle': workspace:*
+      '@tts-tools/xmlbundle': workspace:^
       '@types/jest': ^28.1.1
       '@types/node': ^16.9.4
       jest: ^28.1.1
