@@ -16,11 +16,16 @@ export interface SaveFile {
  */
 export interface TTSObject {
   GUID: string;
-  Nickname: string;
   Name: string;
+  Nickname: string;
+  Description: string;
+  GMNotes: string;
+  Memo?: string;
+  Tags?: string[];
   LuaScript?: string;
   LuaScriptState?: string;
   XmlUI?: string;
+  ChildObjects?: TTSObject[];
   ContainedObjects?: TTSObject[];
   States?: Record<string, TTSObject>;
   [other: string]: any;
