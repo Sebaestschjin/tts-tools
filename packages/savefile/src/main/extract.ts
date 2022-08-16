@@ -4,6 +4,10 @@ import { writeFile, writeJson } from "./io";
 import { ContentsFile, StatesFile } from "./model/tool";
 import { SaveFile, TTSObject } from "./model/tts";
 
+import { cloneDeepWith } from "lodash";
+
+const HANDLED_KEYS = ["LuaScript", "LuaScriptState", "XmlUI", "ContainedObjects", "ObjectStates", "States"];
+
 /**
  * Available options for [[extractSave]].
  */
@@ -17,21 +21,48 @@ export interface Options {
 
 /**
  * Extracts the given `saveFile`, by splitting the data into a nested directory structure.
+ * It also returns an unbundled version of the save file.
  *
  * @param saveFile The save file to extract.
  * @param options The [[Options]] to use.
+ * @returns The unbundled/normalized version of the save file
  */
-export const extractSave = (saveFile: SaveFile, options: Options) => {
+export const extractSave = (saveFile: SaveFile, options: Options): SaveFile => {
   mkdirSync(options.output, { recursive: true });
 
-  extractScripts(saveFile, options.output);
-  extractContent(saveFile.ObjectStates, options.output + "/", options);
+  const unbundledSave = cloneDeepWith(saveFile, unbundler);
 
-  saveFile.ObjectStates = [];
-  extractData(saveFile, options.output, options.normalize);
+  extractScripts(unbundledSave, options.output);
+  extractContent(unbundledSave.ObjectStates, options.output + "/", options);
+
+  extractData(unbundledSave, options.output, options.normalize);
   if (options.normalize) {
-    normalizeData(saveFile);
+    normalizeData(unbundledSave);
   }
+
+  return unbundledSave;
+};
+
+const unbundler = (value: any, key: string | number | undefined, obj: any) => {
+  if (key === "LuaScript") {
+    return unbundleLuaScript(obj);
+  } else if (key == "XmlUI" && value) {
+    return xmlUnbundle(value);
+  }
+
+  return undefined;
+};
+
+const unbundleLuaScript = (object: TTSObject) => {
+  if (object.LuaScript) {
+    try {
+      return luaUnbundle(object.LuaScript);
+    } catch (e) {
+      console.log(`Error during extracting script for object ${object.Nickname}-${object.GUID}`, e);
+    }
+  }
+
+  return "";
 };
 
 /**
@@ -44,7 +75,6 @@ const extractObject = (object: TTSObject, path: string, options: Options) => {
   extractScripts(object, path);
   if (object.ContainedObjects) {
     extractContent(object.ContainedObjects, path, options);
-    object.ContainedObjects = [];
   }
   extractStates(object, path, options);
   extractData(object, path, options.normalize);
@@ -52,24 +82,15 @@ const extractObject = (object: TTSObject, path: string, options: Options) => {
 
 const extractScripts = (object: TTSObject | SaveFile, path: string) => {
   if (object.LuaScript) {
-    try {
-      const script = luaUnbundle(object.LuaScript);
-      writeFile(`${path}/Script.ttslua`, script);
-      object.LuaScript = "";
-    } catch (e) {
-      console.log(`Error during extracting script at path ${path}`, e);
-    }
+    writeFile(`${path}/Script.ttslua`, object.LuaScript);
   }
 
   if (object.LuaScriptState) {
     writeFile(`${path}/State.txt`, object.LuaScriptState);
-    object.LuaScriptState = "";
   }
 
   if (object.XmlUI) {
-    const ui = xmlUnbundle(object.XmlUI);
-    writeFile(`${path}/UI.xml`, ui);
-    object.XmlUI = "";
+    writeFile(`${path}/UI.xml`, object.XmlUI);
   }
 };
 
@@ -77,7 +98,7 @@ const extractContent = (objects: TTSObject[], path: string, options: Options) =>
   const contents: ContentsFile = [];
   const files = new Map<string, number>();
 
-  objects.forEach((object, index) => {
+  objects.forEach((object) => {
     let objectDirectory = getDirectoryName(object);
 
     const existing = files.get(objectDirectory);
@@ -113,7 +134,6 @@ const extractStates = (object: TTSObject, path: string, options: Options) => {
     extractObject(state, `${path}/${statePath}`, options);
   });
 
-  object.States = {};
   writeJson(`${path}/States.json`, states);
 };
 
@@ -121,7 +141,13 @@ const extractData = (object: TTSObject | SaveFile, path: string, normalize: bool
   if (normalize) {
     normalizeData(object);
   }
-  writeJson(`${path}/Data.json`, object);
+
+  const dataContent = JSON.stringify(object, dataReplacer, 2);
+  writeFile(`${path}/Data.json`, dataContent);
+};
+
+const dataReplacer = (key: string, value: string) => {
+  return HANDLED_KEYS.includes(key) ? undefined : value;
 };
 
 const normalizeData = (object: any) => {
@@ -143,5 +169,5 @@ const getDirectoryName = (object: TTSObject): string => {
 
 const round = (value: any, digits: number = 4) => {
   const offset = Math.pow(10, digits);
-  return Math.floor(value * offset) / offset;
+  return Math.round(value * offset) / offset;
 };

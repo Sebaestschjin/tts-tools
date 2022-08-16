@@ -12,8 +12,9 @@ describe("extract", () => {
     it("all numbers are rounded to the 4th digit", () => {
       const saveFile = readSaveFile("normalize");
 
-      extractSave(saveFile, { output: OUTPUT_PATH, normalize: true });
+      const extracted = extractSave(saveFile, { output: OUTPUT_PATH, normalize: true });
 
+      expect(extracted).not.toBe(saveFile);
       expect(OUTPUT_PATH).toMatchDirectory(extractedPath("normalize"));
     });
   });
@@ -22,8 +23,9 @@ describe("extract", () => {
     it("the duplicated objects are still present", () => {
       const saveFile = readSaveFile("duplicates");
 
-      extractSave(saveFile, { output: OUTPUT_PATH });
+      const extracted = extractSave(saveFile, { output: OUTPUT_PATH });
 
+      expect(extracted).not.toBe(saveFile);
       expect(OUTPUT_PATH).toMatchDirectory(extractedPath("duplicates"));
     });
   });
@@ -32,8 +34,9 @@ describe("extract", () => {
     it("the states are extracted", () => {
       const saveFile = readSaveFile("stated");
 
-      extractSave(saveFile, { output: OUTPUT_PATH });
+      const extracted = extractSave(saveFile, { output: OUTPUT_PATH });
 
+      expect(extracted).not.toBe(saveFile);
       expect(OUTPUT_PATH).toMatchDirectory(extractedPath("stated"));
     });
   });
