@@ -1,10 +1,9 @@
 import { mkdirSync } from "fs";
-import { luaUnbundle, xmlUnbundle } from "./bundle";
+
 import { writeFile, writeJson } from "./io";
 import { ContentsFile, StatesFile } from "./model/tool";
 import { SaveFile, TTSObject } from "./model/tts";
-
-import { cloneDeepWith } from "lodash";
+import { unbundleSave } from "./unbundle";
 
 const HANDLED_KEYS = ["LuaScript", "LuaScriptState", "XmlUI", "ContainedObjects", "ObjectStates", "States"];
 
@@ -28,41 +27,21 @@ export interface Options {
  * @returns The unbundled/normalized version of the save file
  */
 export const extractSave = (saveFile: SaveFile, options: Options): SaveFile => {
-  mkdirSync(options.output, { recursive: true });
-
-  const unbundledSave = cloneDeepWith(saveFile, unbundler);
-
-  extractScripts(unbundledSave, options.output);
-  extractContent(unbundledSave.ObjectStates, options.output + "/", options);
-
-  extractData(unbundledSave, options.output, options.normalize);
-  if (options.normalize) {
-    normalizeData(unbundledSave);
-  }
-
+  const unbundledSave = unbundleSave(saveFile);
+  writeExtractedSave(unbundledSave, options);
   return unbundledSave;
 };
 
-const unbundler = (value: any, key: string | number | undefined, obj: any) => {
-  if (key === "LuaScript") {
-    return unbundleLuaScript(obj);
-  } else if (key == "XmlUI" && value) {
-    return xmlUnbundle(value);
+export const writeExtractedSave = (saveFile: SaveFile, options: Options) => {
+  mkdirSync(options.output, { recursive: true });
+
+  extractScripts(saveFile, options.output);
+  extractContent(saveFile.ObjectStates, options.output + "/", options);
+
+  extractData(saveFile, options.output, options.normalize);
+  if (options.normalize) {
+    normalizeData(saveFile);
   }
-
-  return undefined;
-};
-
-const unbundleLuaScript = (object: TTSObject) => {
-  if (object.LuaScript) {
-    try {
-      return luaUnbundle(object.LuaScript);
-    } catch (e) {
-      console.log(`Error during extracting script for object ${object.Nickname}-${object.GUID}`, e);
-    }
-  }
-
-  return "";
 };
 
 /**

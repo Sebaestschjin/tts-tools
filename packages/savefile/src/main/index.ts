@@ -1,3 +1,5 @@
-export { embedSave } from "./embed";
-export { extractSave, Options as ExtractOptions } from "./extract";
-export { SaveFile } from "./model/tts";
+export { readExtractedSave, embedSave } from "./embed";
+export { writeExtractedSave, extractSave, Options as ExtractOptions } from "./extract";
+export { bundleSave, bundleObject } from "./bundle";
+export { unbundleSave, unbundleObject } from "./unbundle";
+export { SaveFile, TTSObject } from "./model/tts";

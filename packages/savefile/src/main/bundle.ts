@@ -1,57 +1,47 @@
-import { bundle as bundleXml, unbundle as unbundleXml } from "@tts-tools/xmlbundle";
-import { bundleString, unbundleString } from "luabundle";
+import { bundle as bundleXml } from "@tts-tools/xmlbundle";
+import { cloneDeepWith } from "lodash";
+import { bundleString } from "luabundle";
+
+import { Options } from "./embed";
+import { SaveFile, TTSObject } from "./model/tts";
 
 /**
- * Bundles the given Lua `script` by resolving `require()` call using the given `includePath`.
+ * Creates a copy of the given save file and bundles all Lua/XML scripts with the given options.
+ */
+export const bundleSave = (saveFile: SaveFile, options: Options) => {
+  return cloneDeepWith(saveFile, bundler(options));
+};
+
+/**
+ * Create a copy of the given object and bundles its own and contained Lua/XML scripts with the given options.
+ */
+export const bundleObject = (object: TTSObject, options: Options) => {
+  return cloneDeepWith(object, bundler(options));
+};
+
+const bundler = (options: Options) => {
+  return (value: any, key: string | number | undefined, obj: any) => {
+    if (key === "LuaScript" && value) {
+      return luaBundle(obj.LuaScript, options.includePath);
+    } else if (key == "XmlUI" && value) {
+      return bundleXml(value, options.includePath);
+    }
+
+    return undefined;
+  };
+};
+
+/**
+ * Bundles the given Lua `script` by resolving `require()` calls using the given `includePath`.
  *
  * @param script The script content.
  * @param includePath The path to look for additional includes.
  * @returns The bundled script.
  */
-export const luaBundle = (script: string, includePath: string): string => {
+const luaBundle = (script: string, includePath: string): string => {
   const bundled = bundleString(script, {
     paths: [`${includePath}/?.lua`, `${includePath}/?.ttslua`],
   });
 
   return bundled.startsWith("-- Bundled") ? bundled + "\n" : bundled;
-};
-
-/**
- * Unbundles the bundled Lua `script` by removing all bundles expect the root bundle.
- *
- * @param script The script content.
- * @returns The unbundled script.
- */
-export const luaUnbundle = (script: string): string => {
-  if (script.startsWith("-- Bundled by luabundle")) {
-    // quickfix - luabundle seems to have a problem when the line ending ist not \n,
-    // which can easily happens when people copy/paste a bundled sript to TTS
-    script = script.replace(/(-- Bundled by luabundle {[^}]+})\s*\n/, "$1\n");
-
-    const unbundled = unbundleString(script, { rootOnly: true });
-    return unbundled.modules.__root.content;
-  }
-
-  return script;
-};
-
-/**
- * Bundles the given XML `xmlUi` by resolving `<Include src="" />` directives using the given `includePath`.
- *
- * @param xmlUi The XML UI content.
- * @param includePath The path to look for additional includes.
- * @returns The bundled XML UI.
- */
-export const xmlBundle = (xmlUi: string, includePath: string): string => {
-  return bundleXml(xmlUi, includePath);
-};
-
-/**
- * Unbundles the bundled XML `xmlUI` by removing all included files and replacing them with the `<Include src="" />` directive again.
- *
- * @param xmlUi The script content.
- * @returns The unbundled script.
- */
-export const xmlUnbundle = (xmlUi: string): string => {
-  return unbundleXml(xmlUi);
 };
