@@ -23,7 +23,7 @@ describe("extract", () => {
   });
 
   describe("when the scrippt exists", () => {
-    it("the states are extracted", () => {
+    it("the scripts are unbundled", () => {
       runTestCase("withScript");
     });
   });
