@@ -14,7 +14,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
-    "test": "jest"
+    "test": "jest",
+    "release": "pnpm publish --access public"
   },
   "dependencies": {
     "@tts-tools/xmlbundle": "workspace:^",
