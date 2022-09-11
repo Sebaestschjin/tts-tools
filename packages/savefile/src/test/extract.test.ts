@@ -1,46 +1,47 @@
 import assert = require("assert");
 import { readdirSync, readFileSync, rmSync } from "fs";
 import { extractSave, SaveFile } from "../main";
-import { extractedPath, MatcherResult, OUTPUT_PATH, savePath } from "./config";
+import { extractedPath, MatcherResult, outputPath, savePath } from "./config";
 
 describe("extract", () => {
-  beforeEach(() => {
-    rmSync(OUTPUT_PATH, { recursive: true, force: true });
-  });
-
   describe("when normalize is used", () => {
     it("all numbers are rounded to the 4th digit", () => {
-      const saveFile = readSaveFile("normalize");
-
-      const extracted = extractSave(saveFile, { output: OUTPUT_PATH, normalize: true });
-
-      expect(extracted).not.toBe(saveFile);
-      expect(OUTPUT_PATH).toMatchDirectory(extractedPath("normalize"));
+      runTestCase("normalize", true);
     });
   });
 
   describe("when duplicate GUIDs and same name/nicknames are used", () => {
     it("the duplicated objects are still present", () => {
-      const saveFile = readSaveFile("duplicates");
-
-      const extracted = extractSave(saveFile, { output: OUTPUT_PATH });
-
-      expect(extracted).not.toBe(saveFile);
-      expect(OUTPUT_PATH).toMatchDirectory(extractedPath("duplicates"));
+      runTestCase("duplicates");
     });
   });
 
   describe("when the save file contains objects with states", () => {
     it("the states are extracted", () => {
-      const saveFile = readSaveFile("stated");
+      runTestCase("stated");
+    });
+  });
 
-      const extracted = extractSave(saveFile, { output: OUTPUT_PATH });
-
-      expect(extracted).not.toBe(saveFile);
-      expect(OUTPUT_PATH).toMatchDirectory(extractedPath("stated"));
+  describe("when the scrippt exists", () => {
+    it("the states are extracted", () => {
+      runTestCase("withScript");
     });
   });
 });
+
+const runTestCase = (name: string, normalize: boolean = false) => {
+  clearOutput(name);
+  const saveFile = readSaveFile(name);
+
+  const extracted = extractSave(saveFile, { output: outputPath(name), normalize: normalize });
+
+  expect(extracted).not.toBe(saveFile);
+  expect(outputPath(name)).toMatchDirectory(extractedPath(name));
+};
+
+const clearOutput = (name: string) => {
+  rmSync(outputPath(name), { recursive: true, force: true });
+};
 
 const readSaveFile = (name: string): SaveFile => {
   const content = readFileSync(savePath(name), { encoding: "utf-8" });

@@ -1,0 +1,25 @@
+{
+  "SaveName": "Script - Test",
+  "ObjectStates": [
+    {
+      "GUID": "1",
+      "Name": "Card",
+      "LuaScript": "-- Bundled by luabundle {\"version\":\"1.6.0\"}\nlocal __bundle_require, __bundle_loaded, __bundle_register, __bundle_modules = (function(superRequire)\n  local loadingPlaceholder = {[{}] = true}\n\n  local register\n  local modules = {}\n\n  local require\n  local loaded = {}\n\n  register = function(name, body)\n    if not modules[name] then\n      modules[name] = body\n    end\n  end\n\n  require = function(name)\n    local loadedModule = loaded[name]\n\n    if loadedModule then\n      if loadedModule == loadingPlaceholder then\n        return nil\n      end\n    else\n      if not modules[name] then\n        if not superRequire then\n          local identifier = type(name) == 'string' and '\\\"' .. name .. '\\\"' or tostring(name)\n          error('Tried to require ' .. identifier .. ', but no such module has been registered')\n        else\n          return superRequire(name)\n        end\n      end\n\n      loaded[name] = loadingPlaceholder\n      loadedModule = modules[name](require, loaded, register, modules)\n      loaded[name] = loadedModule\n    end\n\n    return loadedModule\n  end\n\n  return require, loaded, register, modules\nend)(require)\n__bundle_register(\"__root\", function(require, _LOADED, __bundle_register, __bundle_modules)\nrequire(\"dummy\")\n\nprint(\"this is Root\")\n\nend)\n__bundle_register(\"dummy\", function(require, _LOADED, __bundle_register, __bundle_modules)\nprint(\"this is dummy\")\nend)\nreturn __bundle_require(\"__root\")\n"
+    },
+    {
+      "GUID": "2",
+      "Name": "Card",
+      "LuaScript": "  -- Bundled by luabundle {\"version\":\"1.6.0\"}\nlocal __bundle_require, __bundle_loaded, __bundle_register, __bundle_modules = (function(superRequire)\n  local loadingPlaceholder = {[{}] = true}\n\n  local register\n  local modules = {}\n\n  local require\n  local loaded = {}\n\n  register = function(name, body)\n    if not modules[name] then\n      modules[name] = body\n    end\n  end\n\n  require = function(name)\n    local loadedModule = loaded[name]\n\n    if loadedModule then\n      if loadedModule == loadingPlaceholder then\n        return nil\n      end\n    else\n      if not modules[name] then\n        if not superRequire then\n          local identifier = type(name) == 'string' and '\\\"' .. name .. '\\\"' or tostring(name)\n          error('Tried to require ' .. identifier .. ', but no such module has been registered')\n        else\n          return superRequire(name)\n        end\n      end\n\n      loaded[name] = loadingPlaceholder\n      loadedModule = modules[name](require, loaded, register, modules)\n      loaded[name] = loadedModule\n    end\n\n    return loadedModule\n  end\n\n  return require, loaded, register, modules\nend)(require)\n__bundle_register(\"__root\", function(require, _LOADED, __bundle_register, __bundle_modules)\nrequire(\"dummy\")\n\nprint(\"this is Root\")\n\nend)\n__bundle_register(\"dummy\", function(require, _LOADED, __bundle_register, __bundle_modules)\nprint(\"this is dummy\")\nend)\nreturn __bundle_require(\"__root\")\n"
+    },
+    {
+      "GUID": "3",
+      "Name": "Card",
+      "LuaScript": "\t-- Bundled by luabundle {\"version\":\"1.6.0\"}\nlocal __bundle_require, __bundle_loaded, __bundle_register, __bundle_modules = (function(superRequire)\n  local loadingPlaceholder = {[{}] = true}\n\n  local register\n  local modules = {}\n\n  local require\n  local loaded = {}\n\n  register = function(name, body)\n    if not modules[name] then\n      modules[name] = body\n    end\n  end\n\n  require = function(name)\n    local loadedModule = loaded[name]\n\n    if loadedModule then\n      if loadedModule == loadingPlaceholder then\n        return nil\n      end\n    else\n      if not modules[name] then\n        if not superRequire then\n          local identifier = type(name) == 'string' and '\\\"' .. name .. '\\\"' or tostring(name)\n          error('Tried to require ' .. identifier .. ', but no such module has been registered')\n        else\n          return superRequire(name)\n        end\n      end\n\n      loaded[name] = loadingPlaceholder\n      loadedModule = modules[name](require, loaded, register, modules)\n      loaded[name] = loadedModule\n    end\n\n    return loadedModule\n  end\n\n  return require, loaded, register, modules\nend)(require)\n__bundle_register(\"__root\", function(require, _LOADED, __bundle_register, __bundle_modules)\nrequire(\"dummy\")\n\nprint(\"this is Root\")\n\nend)\n__bundle_register(\"dummy\", function(require, _LOADED, __bundle_register, __bundle_modules)\nprint(\"this is dummy\")\nend)\nreturn __bundle_require(\"__root\")\n"
+    },
+    {
+      "GUID": "4",
+      "Name": "Card",
+      "LuaScript": "  print(\"Please keep the whitespace!\")\n"
+    }
+  ]
+}

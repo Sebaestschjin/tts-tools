@@ -2,33 +2,34 @@ import assert = require("assert");
 import { readFileSync, rmSync } from "fs";
 import { SaveFile } from "../main";
 import { embedSave } from "../main/embed";
-import { extractedPath, MatcherResult, OUTPUT_PATH, RES_PATH } from "./config";
+import { extractedPath, MatcherResult, outputPath, RES_PATH } from "./config";
 
 describe("embed", () => {
-  beforeEach(() => {
-    rmSync(OUTPUT_PATH, { recursive: true, force: true });
-  });
-
   describe("when extracted save file is used", () => {
     it("is embedded correctly", () => {
-      const saveFile = readSaveFile("normalize");
-
-      const result = embedSave(extractedPath("normalize"), { includePath: "" });
-
-      expect(result).toMatchSave(saveFile);
+      runTestCase("normalize");
     });
   });
 
   describe("when an extracted save with duplicates is embedded", () => {
     it("the duplicates are part of the save file", () => {
-      const saveFile = readSaveFile("duplicates");
-
-      const result = embedSave(extractedPath("duplicates"), { includePath: "" });
-
-      expect(result).toMatchSave(saveFile);
+      runTestCase("duplicates");
     });
   });
 });
+
+const runTestCase = (name: string) => {
+  clearOutput(name);
+  const saveFile = readSaveFile(name);
+
+  const result = embedSave(extractedPath(name), { includePath: "" });
+
+  expect(result).toMatchSave(saveFile);
+};
+
+const clearOutput = (name: string) => {
+  rmSync(outputPath(name), { recursive: true, force: true });
+};
 
 const readSaveFile = (name: string): SaveFile => {
   const content = readFileSync(`${RES_PATH}/saves/${name}.json`, { encoding: "utf-8" });

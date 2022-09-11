@@ -1,0 +1,3 @@
+require("dummy")
+
+print("this is Root")

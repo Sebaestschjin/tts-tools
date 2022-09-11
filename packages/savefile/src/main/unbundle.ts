@@ -32,9 +32,11 @@ const unbundleLuaScript = (object: TTSObject) => {
   if (object.LuaScript) {
     try {
       let script = object.LuaScript;
-      if (script.startsWith("-- Bundled by luabundle")) {
-        // quickfix - luabundle seems to have a problem when the line ending ist not \n,
+      if (script.includes("-- Bundled by luabundle")) {
+        // quickfixex - luabundle seems to have a problem when the line ending ist not \n,
         // which can easily happens when people copy/paste a bundled sript to TTS
+        // also it doesn't whitespace at the beginning which can also happens during copy/paste
+        script = script.replace(/^\s*/, "");
         script = script.replace(/(-- Bundled by luabundle {[^}]+})\s*\n/, "$1\n");
 
         const unbundled = unbundleString(script, { rootOnly: true });
