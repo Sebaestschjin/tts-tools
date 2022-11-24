@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import { bundleSave } from "./bundle";
-import { ContentsFile, StatesFile } from "./model/tool";
+import { ChildObjectsFile, ContentsFile, StatesFile } from "./model/tool";
 import { SaveFile, TTSObject } from "./model/tts";
 
 /**
@@ -46,6 +46,7 @@ const readObject = (path: string): TTSObject => {
 
   data.ContainedObjects = readContents(path);
   data.States = readStates(path);
+  data.ChildObjects = readChildObjects(path);
 
   return data;
 };
@@ -71,6 +72,15 @@ const readStates = (path: string): Record<string, TTSObject> | undefined => {
       [id]: readObject(`${path}/${item.path}`),
     };
   }, {});
+};
+
+const readChildObjects = (path: string): TTSObject[] | undefined => {
+  const children = readJson<ChildObjectsFile>(path, "Children.json");
+  if (!children) {
+    return undefined;
+  }
+
+  return children.map((e) => readObject(`${path}/${e.path}`));
 };
 
 const readScript = (path: string): string => {

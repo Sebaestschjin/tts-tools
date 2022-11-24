@@ -16,6 +16,12 @@ describe("embed", () => {
       runTestCase("duplicates");
     });
   });
+
+  describe("when an extracted save with specific paths is embedded", () => {
+    it("the paths are resolved correctly", () => {
+      runTestCase("specificPaths");
+    });
+  });
 });
 
 const runTestCase = (name: string) => {

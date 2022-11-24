@@ -1,17 +1,17 @@
 [
   {
-    "path": "Contents/HandTrigger.123456"
+    "path": "./HandTrigger.123456"
   },
   {
-    "path": "Contents/HandTrigger.123456.1"
+    "path": "./HandTrigger.123456.1"
   },
   {
-    "path": "Contents/Hand.123456"
+    "path": "./Hand.123456"
   },
   {
-    "path": "Contents/Hand.123456.1"
+    "path": "./Hand.123456.1"
   },
   {
-    "path": "Contents/Deck.123456"
+    "path": "./Deck.123456"
   }
 ]

@@ -1,12 +1,13 @@
 import assert = require("assert");
 import { readdirSync, readFileSync, rmSync } from "fs";
-import { extractSave, SaveFile } from "../main";
+import { SaveFile } from "../main";
+import { extractSave, Options } from "../main/extract";
 import { extractedPath, MatcherResult, outputPath, savePath } from "./config";
 
 describe("extract", () => {
   describe("when normalize is used", () => {
     it("all numbers are rounded to the 4th digit", () => {
-      runTestCase("normalize", true);
+      runTestCase("normalize", { normalize: true });
     });
   });
 
@@ -27,14 +28,22 @@ describe("extract", () => {
       runTestCase("withScript");
     });
   });
+
+  describe("when specific paths are used", () => {
+    it("the objects are unbundled in those paths", () => {
+      runTestCase("specificPaths", { contentsPath: "Contents", childrenPath: "Children", statesPath: "States" });
+    });
+  });
 });
 
-const runTestCase = (name: string, normalize: boolean = false) => {
+const runTestCase = (name: string, options: Omit<Options, "output"> = {}) => {
   clearOutput(name);
   const saveFile = readSaveFile(name);
-
-  const extracted = extractSave(saveFile, { output: outputPath(name), normalize: normalize });
-
+  const fullOptions: Options = {
+    output: outputPath(name),
+    ...options,
+  };
+  const extracted = extractSave(saveFile, fullOptions);
   expect(extracted).not.toBe(saveFile);
   expect(outputPath(name)).toMatchDirectory(extractedPath(name));
 };

@@ -23,3 +23,9 @@ export interface StateEntry {
   /** The path to the object's data. */
   path: string;
 }
+
+export type ChildObjectsFile = ChildObjectEntry[];
+
+export interface ChildObjectEntry {
+  path: string;
+}

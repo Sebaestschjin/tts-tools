@@ -1,11 +1,19 @@
 import { mkdirSync } from "fs";
 
 import { writeFile, writeJson } from "./io";
-import { ContentsFile, StatesFile } from "./model/tool";
+import { ChildObjectsFile, ContentsFile, StatesFile } from "./model/tool";
 import { SaveFile, TTSObject } from "./model/tts";
 import { unbundleSave } from "./unbundle";
 
-const HANDLED_KEYS = ["LuaScript", "LuaScriptState", "XmlUI", "ContainedObjects", "ObjectStates", "States"];
+const HANDLED_KEYS = [
+  "LuaScript",
+  "LuaScriptState",
+  "XmlUI",
+  "ContainedObjects",
+  "ObjectStates",
+  "States",
+  "ChildObjects",
+];
 
 /**
  * Available options for [[extractSave]].
@@ -16,7 +24,15 @@ export interface Options {
 
   /** If set, floating point values will be rounded to the 4th decimal point. */
   normalize?: boolean;
+
+  contentsPath?: string;
+  statesPath?: string;
+  childrenPath?: string;
 }
+
+const state = {
+  files: new Map<string, Map<string, number>>(),
+};
 
 /**
  * Extracts the given `saveFile`, by splitting the data into a nested directory structure.
@@ -27,6 +43,7 @@ export interface Options {
  * @returns The unbundled/normalized version of the save file
  */
 export const extractSave = (saveFile: SaveFile, options: Options): SaveFile => {
+  clearState();
   const unbundledSave = unbundleSave(saveFile);
   writeExtractedSave(unbundledSave, options);
   return unbundledSave;
@@ -44,6 +61,10 @@ export const writeExtractedSave = (saveFile: SaveFile, options: Options) => {
   }
 };
 
+const clearState = () => {
+  state.files.clear();
+};
+
 /**
  * @param object The object to Extract
  * @param path Current nested path where files for this object will be placed at
@@ -56,6 +77,7 @@ const extractObject = (object: TTSObject, path: string, options: Options) => {
     extractContent(object.ContainedObjects, path, options);
   }
   extractStates(object, path, options);
+  extractChildren(object, path, options);
   extractData(object, path, options.normalize);
 };
 
@@ -75,25 +97,17 @@ const extractScripts = (object: TTSObject | SaveFile, path: string) => {
 
 const extractContent = (objects: TTSObject[], path: string, options: Options) => {
   const contents: ContentsFile = [];
-  const files = new Map<string, number>();
 
   objects.forEach((object) => {
-    let objectDirectory = getDirectoryName(object);
-
-    const existing = files.get(objectDirectory);
-    if (existing) {
-      files.set(objectDirectory, existing + 1);
-      objectDirectory += `.${existing}`;
-    } else {
-      files.set(objectDirectory, 1);
-    }
-
-    const contentsPath = `Contents/${objectDirectory}`;
+    const contentSubPath = options.contentsPath || ".";
+    const objectDirectory = getFreeDirectoryName(object, `${path}/${contentSubPath}`);
+    const contentsPath = `${contentSubPath}/${objectDirectory}`;
     contents.push({
       path: contentsPath,
     });
     extractObject(object, `${path}/${contentsPath}`, options);
   });
+
   writeJson(`${path}/Contents.json`, contents);
 };
 
@@ -105,8 +119,9 @@ const extractStates = (object: TTSObject, path: string, options: Options) => {
   const states: StatesFile = {};
 
   Object.entries(object.States).forEach(([id, state]) => {
+    const statesSubPath = options.statesPath || ".";
     const objectDirectory = getDirectoryName(state);
-    const statePath = `States/${id}-${objectDirectory}`;
+    const statePath = `${statesSubPath}/${id}-${objectDirectory}`;
     states[id] = {
       path: statePath,
     };
@@ -114,6 +129,24 @@ const extractStates = (object: TTSObject, path: string, options: Options) => {
   });
 
   writeJson(`${path}/States.json`, states);
+};
+
+const extractChildren = (object: TTSObject, path: string, options: Options) => {
+  if (!object.ChildObjects) {
+    return;
+  }
+  console.log(path, object.GUID);
+  const childObjects: ChildObjectsFile = [];
+  object.ChildObjects.forEach((child) => {
+    const childrenSubPath = options.childrenPath || ".";
+    const objectDirectory = getDirectoryName(child);
+    const childPath = `${childrenSubPath}/${objectDirectory}`;
+    childObjects.push({
+      path: childPath,
+    });
+    extractObject(child, `${path}/${childPath}`, options);
+  });
+  writeJson(`${path}/Children.json`, childObjects);
 };
 
 const extractData = (object: TTSObject | SaveFile, path: string, normalize: boolean = false) => {
@@ -144,6 +177,25 @@ const normalizeData = (object: any) => {
 const getDirectoryName = (object: TTSObject): string => {
   let objectPath = (object.Nickname || object.Name) + "." + object.GUID;
   return objectPath.replace(/[/\\?%*:|"<>]/g, "-");
+};
+
+const getFreeDirectoryName = (object: TTSObject, path: string): string => {
+  let objectPath = getDirectoryName(object);
+  let subFiles = state.files.get(path);
+  if (!subFiles) {
+    subFiles = new Map();
+    state.files.set(path, subFiles);
+  }
+
+  const existing = subFiles.get(objectPath);
+  if (existing) {
+    subFiles.set(objectPath, existing + 1);
+    objectPath += `.${existing}`;
+  } else {
+    subFiles.set(objectPath, 1);
+  }
+
+  return objectPath;
 };
 
 const round = (value: any, digits: number = 4) => {

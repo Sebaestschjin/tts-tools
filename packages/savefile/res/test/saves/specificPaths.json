@@ -1,0 +1,27 @@
+{
+  "SaveName": "Specific Paths - Test",
+  "ObjectStates": [
+    {
+      "GUID": "1",
+      "Name": "Card",
+      "ContainedObjects": [
+        {
+          "GUID": "2",
+          "Name": "Card"
+        }
+      ],
+      "ChildObjects": [
+        {
+          "GUID": "3",
+          "Name": "Card"
+        }
+      ],
+      "States": {
+        "1": {
+          "GUID": "4",
+          "Name": "Card"
+        }
+      }
+    }
+  ]
+}
