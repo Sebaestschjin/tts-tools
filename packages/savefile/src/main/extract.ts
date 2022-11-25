@@ -1,4 +1,5 @@
 import { mkdirSync } from "fs";
+import stringify, { Element } from "json-stable-stringify";
 
 import { writeFile, writeJson } from "./io";
 import { ChildObjectsFile, ContentsFile, StatesFile } from "./model/tool";
@@ -24,10 +25,10 @@ export interface Options {
 
   /** If set, floating point values will be rounded to the 4th decimal point. */
   normalize?: boolean;
-
   contentsPath?: string;
   statesPath?: string;
   childrenPath?: string;
+  keyOrder?: string[];
 }
 
 const state = {
@@ -55,7 +56,7 @@ export const writeExtractedSave = (saveFile: SaveFile, options: Options) => {
   extractScripts(saveFile, options.output);
   extractContent(saveFile.ObjectStates, options.output + "/", options);
 
-  extractData(saveFile, options.output, options.normalize);
+  extractData(saveFile, options.output, options);
   if (options.normalize) {
     normalizeData(saveFile);
   }
@@ -78,7 +79,7 @@ const extractObject = (object: TTSObject, path: string, options: Options) => {
   }
   extractStates(object, path, options);
   extractChildren(object, path, options);
-  extractData(object, path, options.normalize);
+  extractData(object, path, options);
 };
 
 const extractScripts = (object: TTSObject | SaveFile, path: string) => {
@@ -135,7 +136,7 @@ const extractChildren = (object: TTSObject, path: string, options: Options) => {
   if (!object.ChildObjects) {
     return;
   }
-  console.log(path, object.GUID);
+
   const childObjects: ChildObjectsFile = [];
   object.ChildObjects.forEach((child) => {
     const childrenSubPath = options.childrenPath || ".";
@@ -149,17 +150,37 @@ const extractChildren = (object: TTSObject, path: string, options: Options) => {
   writeJson(`${path}/Children.json`, childObjects);
 };
 
-const extractData = (object: TTSObject | SaveFile, path: string, normalize: boolean = false) => {
-  if (normalize) {
+const extractData = (object: TTSObject | SaveFile, path: string, options: Options) => {
+  if (options.normalize) {
     normalizeData(object);
   }
 
-  const dataContent = JSON.stringify(object, dataReplacer, 2);
+  let dataContent;
+  if (options.keyOrder) {
+    dataContent = stringify(object, {
+      replacer: dataReplacer,
+      space: 2,
+      cmp: (a, b) => keyOrderer(a, b, options.keyOrder!),
+    });
+  } else {
+    dataContent = JSON.stringify(object, dataReplacer, 2);
+  }
+
   writeFile(`${path}/Data.json`, dataContent);
 };
 
 const dataReplacer = (key: string, value: string) => {
   return HANDLED_KEYS.includes(key) ? undefined : value;
+};
+
+const keyOrderer = (a: Element, b: Element, keyOrder: string[]) => {
+  const aOrder = keyOrder.indexOf(a.key);
+  const bOrder = keyOrder.indexOf(b.key);
+  if (aOrder > -1) {
+    return bOrder == -1 ? -1 : aOrder > bOrder ? 1 : -1;
+  }
+
+  return bOrder == -1 ? a.key.localeCompare(b.key) : 1;
 };
 
 const normalizeData = (object: any) => {

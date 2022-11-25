@@ -19,13 +19,16 @@
   },
   "dependencies": {
     "@tts-tools/xmlbundle": "workspace:^",
+    "json-stable-stringify": "^1.0.2",
     "lodash": "^4.17.21",
     "luabundle": "^1.6.0"
   },
   "devDependencies": {
     "@types/jest": "^28.1.1",
+    "@types/json-stable-stringify": "^1.0.34",
     "@types/lodash": "^4.14.182",
     "@types/node": "^16.9.4",
+    "common-path-prefix": "^3.0.0",
     "jest": "^28.1.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^28.0.4",

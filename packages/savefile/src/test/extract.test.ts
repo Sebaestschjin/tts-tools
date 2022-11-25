@@ -1,8 +1,10 @@
 import assert = require("assert");
+import commonPathPrefix from "common-path-prefix";
 import { readdirSync, readFileSync, rmSync } from "fs";
 import { SaveFile } from "../main";
 import { extractSave, Options } from "../main/extract";
 import { extractedPath, MatcherResult, outputPath, savePath } from "./config";
+import path = require("path");
 
 describe("extract", () => {
   describe("when normalize is used", () => {
@@ -34,6 +36,14 @@ describe("extract", () => {
       runTestCase("specificPaths", { contentsPath: "Contents", childrenPath: "Children", statesPath: "States" });
     });
   });
+
+  describe("when a specifc key order is used", () => {
+    it("the objects are saved with the given key order", () => {
+      runTestCase("keyOrder", {
+        keyOrder: ["Name", "GUID", "Nickname", "Description", "GMNotes", "Memo", "Tags", "Transform"],
+      });
+    });
+  });
 });
 
 const runTestCase = (name: string, options: Omit<Options, "output"> = {}) => {
@@ -61,8 +71,8 @@ expect.extend({
   toMatchDirectory: (recievedPath: string, expectedPath: string) => {
     const matchDirectory = (recievedPath: string, expectedPath: string): MatcherResult => {
       for (const dir of readdirSync(expectedPath, { withFileTypes: true })) {
-        const recievedDir = `${recievedPath}/${dir.name}`;
-        const expectedDir = `${expectedPath}/${dir.name}`;
+        const recievedDir = path.resolve(`${recievedPath}/${dir.name}`);
+        const expectedDir = path.resolve(`${expectedPath}/${dir.name}`);
 
         if (dir.isDirectory()) {
           const subMatch = matchDirectory(`${recievedDir}`, `${expectedDir}`);
@@ -86,7 +96,10 @@ expect.extend({
               assert.equal(receivedContent, content);
             }
           } catch (e) {
-            return { pass: false, message: () => `Expected content of ${recievedDir} to match ${expectedDir}.` };
+            const common = commonPathPrefix([recievedDir, expectedDir]);
+            const receivedFile = recievedDir.replace(common, "");
+            const expectedFile = expectedDir.replace(common, "");
+            return { pass: false, message: () => `Expected content of <${receivedFile}> to match <${expectedFile}>.` };
           }
         }
       }
