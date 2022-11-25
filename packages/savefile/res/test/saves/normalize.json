@@ -19,10 +19,10 @@
       "GUID": "123456",
       "Name": "HandTrigger",
       "Transform": {
-        "posX": 36.10001,
-        "posY": 5.10001,
+        "posX": 1.0e-1,
+        "posY": 1.0e-5,
         "posZ": -52.10001,
-        "rotX": 0.10001,
+        "rotX": 0.1e1,
         "rotY": 0.10001,
         "rotZ": 0.10001,
         "scaleX": 15.33001,

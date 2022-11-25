@@ -29,6 +29,7 @@ export interface Options {
 
   /** If set, floating point values will be rounded to the 4th decimal point. */
   normalize?: boolean | number;
+  withState?: boolean;
   contentsPath?: string;
   statesPath?: string;
   childrenPath?: string;
@@ -41,7 +42,7 @@ const state = {
 
 export const readSave = (path: string): SaveFile => {
   let content = readFileSync(path, { encoding: "utf-8" });
-  content = content.replace(/^(\s*"[\w]+": )(-?\d+(?:\.\d+)?)($|,)/gm, `$1"${FLOATING_MARKER}$2"$3`);
+  content = content.replace(/^(\s*"[\w]+": )(-?\d+(?:\.\d+(?:[eE]-\d+)?)?)($|,)/gm, `$1"${FLOATING_MARKER}$2"$3`);
   return JSON.parse(content) as SaveFile;
 };
 
@@ -63,7 +64,7 @@ export const writeExtractedSave = (saveFile: SaveFile, options: Options) => {
   clearState();
   mkdirSync(options.output, { recursive: true });
 
-  extractScripts(saveFile, options.output);
+  extractScripts(saveFile, options.output, options);
   extractContent(saveFile.ObjectStates, options.output + "/", options);
 
   extractData(saveFile, options.output, options);
@@ -80,7 +81,7 @@ const clearState = () => {
 const extractObject = (object: TTSObject, path: string, options: Options) => {
   mkdirSync(path, { recursive: true });
 
-  extractScripts(object, path);
+  extractScripts(object, path, options);
   if (object.ContainedObjects) {
     extractContent(object.ContainedObjects, path, options);
   }
@@ -89,12 +90,12 @@ const extractObject = (object: TTSObject, path: string, options: Options) => {
   extractData(object, path, options);
 };
 
-const extractScripts = (object: TTSObject | SaveFile, path: string) => {
+const extractScripts = (object: TTSObject | SaveFile, path: string, options: Options) => {
   if (object.LuaScript) {
     writeFile(`${path}/Script.ttslua`, object.LuaScript);
   }
 
-  if (object.LuaScriptState) {
+  if (object.LuaScriptState && options.withState) {
     writeFile(`${path}/State.txt`, object.LuaScriptState);
   }
 
