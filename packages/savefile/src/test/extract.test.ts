@@ -1,8 +1,7 @@
 import assert = require("assert");
 import commonPathPrefix from "common-path-prefix";
 import { readdirSync, readFileSync, rmSync } from "fs";
-import { SaveFile } from "../main";
-import { extractSave, Options } from "../main/extract";
+import { extractSave, Options, readSave } from "../main/extract";
 import { extractedPath, MatcherResult, outputPath, savePath } from "./config";
 import path = require("path");
 
@@ -10,6 +9,12 @@ describe("extract", () => {
   describe("when normalize is used", () => {
     it("all numbers are rounded to the 4th digit", () => {
       runTestCase("normalize", { normalize: true });
+    });
+  });
+
+  describe("when normalize is used with a numeric value", () => {
+    it("all numbers are rounded to given value", () => {
+      runTestCase("normalizeTo2", { normalize: 2 });
     });
   });
 
@@ -25,7 +30,7 @@ describe("extract", () => {
     });
   });
 
-  describe("when the scrippt exists", () => {
+  describe("when scripts exists", () => {
     it("the scripts are unbundled", () => {
       runTestCase("withScript");
     });
@@ -48,7 +53,7 @@ describe("extract", () => {
 
 const runTestCase = (name: string, options: Omit<Options, "output"> = {}) => {
   clearOutput(name);
-  const saveFile = readSaveFile(name);
+  const saveFile = readSave(savePath(name));
   const fullOptions: Options = {
     output: outputPath(name),
     ...options,
@@ -60,11 +65,6 @@ const runTestCase = (name: string, options: Omit<Options, "output"> = {}) => {
 
 const clearOutput = (name: string) => {
   rmSync(outputPath(name), { recursive: true, force: true });
-};
-
-const readSaveFile = (name: string): SaveFile => {
-  const content = readFileSync(savePath(name), { encoding: "utf-8" });
-  return JSON.parse(content) as SaveFile;
 };
 
 expect.extend({

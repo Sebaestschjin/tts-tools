@@ -27,10 +27,12 @@ importers:
   packages/savefile:
     specifiers:
       '@tts-tools/xmlbundle': workspace:^
+      '@types/big.js': ^6.1.6
       '@types/jest': ^28.1.1
       '@types/json-stable-stringify': ^1.0.34
       '@types/lodash': ^4.14.182
       '@types/node': ^16.9.4
+      big.js: ^6.2.1
       common-path-prefix: ^3.0.0
       jest: ^28.1.1
       json-stable-stringify: ^1.0.2
@@ -41,10 +43,12 @@ importers:
       typescript: ^4.4.3
     dependencies:
       '@tts-tools/xmlbundle': link:../xmlbundle
+      big.js: 6.2.1
       json-stable-stringify: 1.0.2
       lodash: 4.17.21
       luabundle: 1.6.0
     devDependencies:
+      '@types/big.js': 6.1.6
       '@types/jest': 28.1.1
       '@types/json-stable-stringify': 1.0.34
       '@types/lodash': 4.14.182
@@ -743,6 +747,10 @@ packages:
       '@babel/types': 7.18.4
     dev: true
 
+  /@types/big.js/6.1.6:
+    resolution: {integrity: sha512-0r9J+Zz9rYm2hOTwiMAVkm3XFQ4u5uTK37xrQMhc9bysn/sf/okzovWMYYIBMFTn/yrEZ11pusgLEaoarTlQbA==}
+    dev: true
+
   /@types/chai/4.3.1:
     resolution: {integrity: sha512-/zPMqDkzSZ8t3VtxOa4KPq7uzzW978M9Tvh+j7GHKuo6k6GTLxPJ4J5gE5cjfJ26pnXst0N5Hax8Sr0T2Mi9zQ==}
     dev: true
@@ -970,6 +978,10 @@ packages:
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
+
+  /big.js/6.2.1:
+    resolution: {integrity: sha512-bCtHMwL9LeDIozFn+oNhhFoq+yQ3BNdnsLSASUxLciOb1vgvpHsIO1dsENiGMgbb4SkP5TrzWzRiLddn8ahVOQ==}
+    dev: false
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}

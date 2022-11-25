@@ -1,4 +1,5 @@
-import { mkdirSync } from "fs";
+import Big from "big.js";
+import { mkdirSync, readFileSync } from "fs";
 import stringify, { Element } from "json-stable-stringify";
 
 import { writeFile, writeJson } from "./io";
@@ -16,6 +17,9 @@ const HANDLED_KEYS = [
   "ChildObjects",
 ];
 
+const FLOATING_MARKER = ">>floating-point<<";
+const DEFAULT_ROUNDING = 4;
+
 /**
  * Available options for [[extractSave]].
  */
@@ -24,7 +28,7 @@ export interface Options {
   output: string;
 
   /** If set, floating point values will be rounded to the 4th decimal point. */
-  normalize?: boolean;
+  normalize?: boolean | number;
   contentsPath?: string;
   statesPath?: string;
   childrenPath?: string;
@@ -33,6 +37,12 @@ export interface Options {
 
 const state = {
   files: new Map<string, Map<string, number>>(),
+};
+
+export const readSave = (path: string): SaveFile => {
+  let content = readFileSync(path, { encoding: "utf-8" });
+  content = content.replace(/^(\s*"[\w]+": )(-?\d+(?:\.\d+)?)($|,)/gm, `$1"${FLOATING_MARKER}$2"$3`);
+  return JSON.parse(content) as SaveFile;
 };
 
 /**
@@ -44,22 +54,19 @@ const state = {
  * @returns The unbundled/normalized version of the save file
  */
 export const extractSave = (saveFile: SaveFile, options: Options): SaveFile => {
-  clearState();
   const unbundledSave = unbundleSave(saveFile);
   writeExtractedSave(unbundledSave, options);
   return unbundledSave;
 };
 
 export const writeExtractedSave = (saveFile: SaveFile, options: Options) => {
+  clearState();
   mkdirSync(options.output, { recursive: true });
 
   extractScripts(saveFile, options.output);
   extractContent(saveFile.ObjectStates, options.output + "/", options);
 
   extractData(saveFile, options.output, options);
-  if (options.normalize) {
-    normalizeData(saveFile);
-  }
 };
 
 const clearState = () => {
@@ -151,26 +158,37 @@ const extractChildren = (object: TTSObject, path: string, options: Options) => {
 };
 
 const extractData = (object: TTSObject | SaveFile, path: string, options: Options) => {
-  if (options.normalize) {
-    normalizeData(object);
-  }
+  const replacer = (key: string, value: any) => dataReplacer(key, value, options);
 
   let dataContent;
   if (options.keyOrder) {
     dataContent = stringify(object, {
-      replacer: dataReplacer,
+      replacer: replacer,
       space: 2,
       cmp: (a, b) => keyOrderer(a, b, options.keyOrder!),
     });
   } else {
-    dataContent = JSON.stringify(object, dataReplacer, 2);
+    dataContent = JSON.stringify(object, replacer, 2);
   }
+
+  dataContent = dataContent.replace(new RegExp(`"${FLOATING_MARKER}([^"]+)"`, "g"), "$1");
 
   writeFile(`${path}/Data.json`, dataContent);
 };
 
-const dataReplacer = (key: string, value: string) => {
-  return HANDLED_KEYS.includes(key) ? undefined : value;
+const dataReplacer = (key: string, value: any, options: Options) => {
+  if (HANDLED_KEYS.includes(key)) {
+    return undefined;
+  }
+
+  if (options.normalize && typeof value === "string" && value.startsWith(FLOATING_MARKER)) {
+    const roundTo = typeof options.normalize === "number" ? options.normalize : DEFAULT_ROUNDING;
+    const actualValue = value.slice(FLOATING_MARKER.length);
+    const numericValue = Big(actualValue).round(roundTo);
+    return `${FLOATING_MARKER}${numericValue}`;
+  }
+
+  return value;
 };
 
 const keyOrderer = (a: Element, b: Element, keyOrder: string[]) => {
@@ -181,18 +199,6 @@ const keyOrderer = (a: Element, b: Element, keyOrder: string[]) => {
   }
 
   return bOrder == -1 ? a.key.localeCompare(b.key) : 1;
-};
-
-const normalizeData = (object: any) => {
-  Object.keys(object).map((key) => {
-    const value = object[key];
-    if (typeof value === "number") {
-      object[key] = round(value, 4);
-    }
-    if (typeof value === "object") {
-      normalizeData(value);
-    }
-  });
 };
 
 const getDirectoryName = (object: TTSObject): string => {
