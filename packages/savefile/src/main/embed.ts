@@ -43,7 +43,11 @@ const readObject = (path: string): TTSObject => {
   data.LuaScript = readScript(path);
   data.LuaScriptState = readScriptState(path);
   data.XmlUI = readUi(path);
-  data.GMNotes = readMetadata(path)
+
+  const gmNotes = readMetadata(path)
+  if (gmNotes != "") {
+    data.GMNotes = gmNotes
+  }
 
   data.ContainedObjects = readContents(path);
   data.States = readStates(path);
