@@ -1,0 +1,56 @@
+{
+  "SaveName": "Metadata - Test",
+  "ObjectStates": [
+    {
+      "GUID": "d24036",
+      "Name": "Card",
+      "Transform": {
+        "posX": -7.875,
+        "posY": 2.0674,
+        "posZ": -36.3731,
+        "rotX": 0,
+        "rotY": 180.0114,
+        "rotZ": 0,
+        "scaleX": 0.6714,
+        "scaleY": 1,
+        "scaleZ": 0.6714
+      },
+      "Nickname": "Bless (x2)",
+      "Description": "x2",
+      "GMNotes": "first = \"Hello\"\r\nsecond = 5",
+      "ColorDiffuse": {
+        "r": 0.7132,
+        "g": 0.7132,
+        "b": 0.7132
+      },
+      "Tags": ["Attack Modifier"],
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": false,
+      "Grid": true,
+      "Snap": true,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": true,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": true,
+      "Hands": true,
+      "CardID": 339806,
+      "SidewaysCard": false,
+      "CustomDeck": {
+        "3398": {
+          "FaceURL": "http://cloud-3.steamusercontent.com/ugc/1717534837058475302/A8B22EF40E2D096442DFFB08005A38996AD39B53/",
+          "BackURL": "http://cloud-3.steamusercontent.com/ugc/1717534837058399724/74ABB4011F038F362E77F1D70CEBB1D3A7074BA7/",
+          "NumWidth": 6,
+          "NumHeight": 2,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      }
+    }
+  ]
+}

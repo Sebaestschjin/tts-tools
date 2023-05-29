@@ -43,6 +43,7 @@ const readObject = (path: string): TTSObject => {
   data.LuaScript = readScript(path);
   data.LuaScriptState = readScriptState(path);
   data.XmlUI = readUi(path);
+  data.GMNotes = readMetadata(path)
 
   data.ContainedObjects = readContents(path);
   data.States = readStates(path);
@@ -93,6 +94,10 @@ const readScriptState = (path: string): string => {
 
 const readUi = (path: string): string => {
   return readFile(path, "UI.xml");
+};
+
+const readMetadata = (path: string): string => {
+  return readFile(path, "Metadata.toml");
 };
 
 const readFile = (path: string, fileName: string, required: boolean = false) => {

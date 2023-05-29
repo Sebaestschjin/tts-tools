@@ -22,6 +22,12 @@ describe("embed", () => {
       runTestCase("specificPaths");
     });
   });
+
+  describe("when metadata exists", () => {
+    it("the metadata is embedded", () => {
+      runTestCase("metadata");
+    });
+  });    
 });
 
 const runTestCase = (name: string) => {

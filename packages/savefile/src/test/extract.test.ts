@@ -49,6 +49,12 @@ describe("extract", () => {
       });
     });
   });
+
+  describe("when metadata is provided", () => {
+    it("the metadata is extracted", () => {
+      runTestCase("metadata");
+    });
+  });  
 });
 
 const runTestCase = (name: string, options: Omit<Options, "output"> = {}) => {

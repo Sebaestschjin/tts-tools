@@ -15,6 +15,7 @@ const HANDLED_KEYS = [
   "ObjectStates",
   "States",
   "ChildObjects",
+  "GMNotes",
 ];
 
 const FLOATING_MARKER = ">>floating-point<<";
@@ -97,6 +98,10 @@ const extractScripts = (object: TTSObject | SaveFile, path: string, options: Opt
 
   if (object.LuaScriptState && options.withState) {
     writeFile(`${path}/State.txt`, object.LuaScriptState);
+  }
+
+  if (object.GMNotes) {
+    writeFile(`${path}/Metadata.toml`, object.GMNotes);
   }
 
   if (object.XmlUI) {
