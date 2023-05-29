@@ -15,7 +15,6 @@ const HANDLED_KEYS = [
   "ObjectStates",
   "States",
   "ChildObjects",
-  "GMNotes",
 ];
 
 const FLOATING_MARKER = ">>floating-point<<";
@@ -31,6 +30,7 @@ export interface Options {
   /** If set, floating point values will be rounded to the 4th decimal point. */
   normalize?: boolean | number;
   withState?: boolean;
+  metadataField?: string;
   contentsPath?: string;
   statesPath?: string;
   childrenPath?: string;
@@ -100,8 +100,11 @@ const extractScripts = (object: TTSObject | SaveFile, path: string, options: Opt
     writeFile(`${path}/State.txt`, object.LuaScriptState);
   }
 
-  if (object.GMNotes) {
-    writeFile(`${path}/Metadata.toml`, object.GMNotes);
+  if (options.metadataField) {
+    const metadata = object[options.metadataField]
+    if (metadata) {
+      writeFile(`${path}/Metadata.toml`, metadata);
+    }
   }
 
   if (object.XmlUI) {
@@ -183,7 +186,7 @@ const extractData = (object: TTSObject | SaveFile, path: string, options: Option
 };
 
 const dataReplacer = (key: string, value: any, options: Options) => {
-  if (HANDLED_KEYS.includes(key)) {
+  if (HANDLED_KEYS.includes(key) || key === options.metadataField) {
     return undefined;
   }
 

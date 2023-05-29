@@ -52,7 +52,9 @@ describe("extract", () => {
 
   describe("when metadata is provided", () => {
     it("the metadata is extracted", () => {
-      runTestCase("metadata");
+      runTestCase("metadata", {
+        metadataField: "GMNotes",
+      });
     });
   });  
 });

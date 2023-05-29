@@ -9,15 +9,16 @@ import { SaveFile, TTSObject } from "./model/tts";
 export interface Options {
   /** The path where the scripts and XML files will be included from. */
   includePath: string;
+  metadataField?: string;
 }
 
-export const readExtractedSave = (path: string) => {
-  const saveFile = readData(path) as SaveFile;
+export const readExtractedSave = (path: string, options: Options) => {
+  const saveFile = readData(path, options) as SaveFile;
 
   saveFile.LuaScript = readScript(path);
   saveFile.LuaScriptState = readScriptState(path);
   saveFile.XmlUI = readUi(path);
-  saveFile.ObjectStates = readContents(path) ?? [];
+  saveFile.ObjectStates = readContents(path, options) ?? [];
 
   return saveFile;
 };
@@ -30,42 +31,44 @@ export const readExtractedSave = (path: string) => {
  * @returns The embedded save file.
  */
 export const embedSave = (path: string, options: Options): SaveFile => {
-  const saveFile = readExtractedSave(path);
+  const saveFile = readExtractedSave(path, options);
   return bundleSave(saveFile, options);
 };
 
-const readData = (path: string) => {
+const readData = (path: string, options: Options) => {
   return readJson(path, "Data.json", true);
 };
 
-const readObject = (path: string): TTSObject => {
-  const data = readData(path) as TTSObject;
+const readObject = (path: string, options: Options): TTSObject => {
+  const data = readData(path, options) as TTSObject;
   data.LuaScript = readScript(path);
   data.LuaScriptState = readScriptState(path);
   data.XmlUI = readUi(path);
 
-  const gmNotes = readMetadata(path)
-  if (gmNotes !== "") {
-    data.GMNotes = gmNotes
+  if (options.metadataField) {
+    const metadata = readMetadata(path);
+    if (metadata !== "") {
+      data[options.metadataField] = metadata;
+    }
   }
 
-  data.ContainedObjects = readContents(path);
-  data.States = readStates(path);
-  data.ChildObjects = readChildObjects(path);
+  data.ContainedObjects = readContents(path, options);
+  data.States = readStates(path, options);
+  data.ChildObjects = readChildObjects(path, options);
 
   return data;
 };
 
-const readContents = (path: string): TTSObject[] | undefined => {
+const readContents = (path: string, options: Options): TTSObject[] | undefined => {
   const contents = readJson<ContentsFile>(path, "Contents.json");
   if (!contents) {
     return undefined;
   }
 
-  return contents.map((e) => readObject(`${path}/${e.path}`));
+  return contents.map((e) => readObject(`${path}/${e.path}`, options));
 };
 
-const readStates = (path: string): Record<string, TTSObject> | undefined => {
+const readStates = (path: string, options: Options): Record<string, TTSObject> | undefined => {
   const states = readJson<StatesFile>(path, "States.json");
   if (!states) {
     return undefined;
@@ -74,18 +77,18 @@ const readStates = (path: string): Record<string, TTSObject> | undefined => {
   return Object.entries(states).reduce((obj, [id, item]) => {
     return {
       ...obj,
-      [id]: readObject(`${path}/${item.path}`),
+      [id]: readObject(`${path}/${item.path}`, options),
     };
   }, {});
 };
 
-const readChildObjects = (path: string): TTSObject[] | undefined => {
+const readChildObjects = (path: string, options: Options): TTSObject[] | undefined => {
   const children = readJson<ChildObjectsFile>(path, "Children.json");
   if (!children) {
     return undefined;
   }
 
-  return children.map((e) => readObject(`${path}/${e.path}`));
+  return children.map((e) => readObject(`${path}/${e.path}`, options));
 };
 
 const readScript = (path: string): string => {

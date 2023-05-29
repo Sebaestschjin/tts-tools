@@ -1,7 +1,7 @@
 import assert = require("assert");
 import { readFileSync, rmSync } from "fs";
 import { SaveFile } from "../main";
-import { embedSave } from "../main/embed";
+import { Options, embedSave } from "../main/embed";
 import { extractedPath, MatcherResult, outputPath, RES_PATH } from "./config";
 
 describe("embed", () => {
@@ -25,16 +25,18 @@ describe("embed", () => {
 
   describe("when metadata exists", () => {
     it("the metadata is embedded", () => {
-      runTestCase("metadata");
+      runTestCase("metadata", {
+        metadataField: "GMNotes",
+      });
     });
   });    
 });
 
-const runTestCase = (name: string) => {
+const runTestCase = (name: string, options: Omit<Options, "includePath"> = {}) => {
   clearOutput(name);
   const saveFile = readSaveFile(name);
 
-  const result = embedSave(extractedPath(name), { includePath: "" });
+  const result = embedSave(extractedPath(name), { ...options, includePath: "" });
 
   expect(result).toMatchSave(saveFile);
 };
