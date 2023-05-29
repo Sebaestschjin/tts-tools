@@ -45,7 +45,7 @@ const readObject = (path: string): TTSObject => {
   data.XmlUI = readUi(path);
 
   const gmNotes = readMetadata(path)
-  if (gmNotes != "") {
+  if (gmNotes !== "") {
     data.GMNotes = gmNotes
   }
 
