@@ -67,8 +67,16 @@ export const writeExtractedSave = (saveFile: SaveFile, options: Options) => {
 
   extractScripts(saveFile, options.output, options);
   extractContent(saveFile.ObjectStates, options.output + "/", options);
-
   extractData(saveFile, options.output, options);
+};
+
+export const writeExtractedObject = (object: TTSObject, options: Options) => {
+  clearState();
+
+  const objectPath = `${options.output}/${getDirectoryName(object)}`;
+  mkdirSync(objectPath, { recursive: true });
+
+  extractObject(object, objectPath, options);
 };
 
 const clearState = () => {
@@ -101,7 +109,7 @@ const extractScripts = (object: TTSObject | SaveFile, path: string, options: Opt
   }
 
   if (options.metadataField) {
-    const metadata = object[options.metadataField]
+    const metadata = object[options.metadataField];
     if (metadata) {
       writeFile(`${path}/Metadata.toml`, metadata);
     }
