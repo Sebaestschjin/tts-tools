@@ -1,5 +1,5 @@
 {
-  "name": "@tts-tools/vscode-editor",
+  "name": "tts-tools-vscode-editor",
   "displayName": "Tabletop Simulator Editor",
   "author": "Sebastian Stern",
   "description": "Implementation of the external editor API for Tabletop Simulator",
@@ -74,16 +74,17 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
+    "vscode:package": "vsce package",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
+    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
     "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
-    "@tts-tools/xmlbundle": "workspace:^",
+    "@tts-tools/xmlbundle": "^1.0.0",
     "luabundle": "^1.6.0",
     "typescript-to-lua": "^1.19.2"
   },
@@ -93,6 +94,7 @@
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "@vscode/test-electron": "^2.3.4",
+    "esbuild": "^0.19.3",
     "eslint": "^8.47.0",
     "glob": "^10.3.3",
     "typescript": "^5.2.2"
