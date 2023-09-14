@@ -1,0 +1,145 @@
+{
+  "name": "@tts-tools/vscode-editor",
+  "displayName": "Tabletop Simulator Editor",
+  "author": "Sebastian Stern",
+  "description": "",
+  "version": "1.1.3",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rolandostar/tabletopsimulator-lua-vscode"
+  },
+  "main": "dist/extension.js",
+  "scripts": {
+    "compile": "tsc"
+  },
+  "dependencies": {
+    "@matanlurey/tts-editor": "matanlurey/tts-editor#dist",
+    "@tts-tools/xmlbundle": "workspace:^1.0.3",
+    "luabundle": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.18.42",
+    "@types/vscode": "^1.77.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "@vscode/test-electron": "^2.3.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-typescript": "^12.3.1",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "qna": "false",
+  "activationEvents": [
+    "onLanguage:lua",
+    "workspaceContains:**/.lua",
+    "workspaceContains:**/.ttslua"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "ttseditor.getObjects",
+        "title": "Get Objects",
+        "category": "TTS Editor"
+      },
+      {
+        "command": "ttseditor.saveAndPlay",
+        "title": "Save & Play",
+        "category": "TTS Editor"
+      },
+      {
+        "command": "ttseditor.executeCode",
+        "title": "Execute Code",
+        "category": "TTS Editor"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "ttseditor.getObjects"
+        },
+        {
+          "command": "ttseditor.saveAndPlay"
+        },
+        {
+          "command": "ttseditor.executeCode"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "ttseditor.getObjects",
+          "when": "editorLangId == lua",
+          "group": "TTSEditor@1"
+        },
+        {
+          "command": "ttseditor.saveAndPlay",
+          "when": "editorLangId == lua",
+          "group": "TTSEditor@1"
+        },
+        {
+          "command": "ttseditor.executeCode",
+          "when": "editorLangId == lua",
+          "group": "TTSEditor@1"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "ttseditor.getObjects",
+        "key": "ctrl+alt+l"
+      },
+      {
+        "command": "ttseditor.saveAndPlay",
+        "key": "ctrl+alt+s"
+      },
+      {
+        "command": "ttseditor.executeCode",
+        "key": "ctrl+shift+2"
+      }
+    ],
+    "configuration": {
+      "title": "Tabletop Simulator Editor Configuration",
+      "properties": {
+        "TTSEditor.autoOpen": {
+          "title": "Automatic Open",
+          "description": "Which files should vscode automatically open when receiving them from the game.",
+          "type": "string",
+          "default": "Global",
+          "enum": [
+            "All",
+            "Global",
+            "None"
+          ],
+          "enumDescriptions": [
+            "Open all received files when getting scripts",
+            "Only open global script",
+            "Do not open any file (Will still show files in explorer panel)"
+          ]
+        },
+        "TTSEditor.createXml": {
+          "title": "Create XML UI file when object sent from Tabletop Simulator",
+          "description": "When an individual object is sent from Tabletop Simulator which has no XML UI, generate a blank XML file for it.",
+          "type": "boolean",
+          "default": false
+        },
+        "TTSEditor.bundleSearchPattern": {
+          "title": "Pattern used to look for additional files",
+          "markdownDescription": "Described in Lua's [search path patterns](https://www.lua.org/pil/8.1.html)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "?.ttslua",
+            "?.lua"
+          ]
+        }
+      }
+    }
+  }
+}

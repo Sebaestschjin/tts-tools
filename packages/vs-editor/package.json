@@ -1,0 +1,115 @@
+{
+  "name": "@tts-tools/vscode-editor",
+  "displayName": "Tabletop Simulator Editor",
+  "author": "Sebastian Stern",
+  "description": "Implementation of the external editor API for Tabletop Simulator",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.82.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:lua",
+    "workspaceContains:**/.lua",
+    "workspaceContains:**/.ttslua"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tts-tools-vscode.getObjects",
+        "title": "Get Objects",
+        "category": "TTS Editor"
+      },
+      {
+        "command": "tts-tools-vscode.saveAndPlay",
+        "title": "Save & Play",
+        "category": "TTS Editor"
+      },
+      {
+        "command": "tts-tools-vscode.executeCode",
+        "title": "Execute Code",
+        "category": "TTS Editor"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "tts-tools-vscode.getObjects",
+        "key": "ctrl+alt+l"
+      },
+      {
+        "command": "tts-tools-vscode.saveAndPlay",
+        "key": "ctrl+alt+s"
+      },
+      {
+        "command": "tts-tools-vscode.executeCode",
+        "key": "ctrl+shift+e",
+        "when": "editorFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Tabletop Simulator Editor Configuration",
+      "properties": {
+        "tts-tools-vscode.autoOpen": {
+          "title": "Automatic Open",
+          "description": "Which files should the extension automatically open when receiving them from the game.",
+          "type": "string",
+          "default": "Global",
+          "enum": [
+            "All",
+            "Global",
+            "None"
+          ],
+          "enumDescriptions": [
+            "Open all received files when getting scripts",
+            "Only open Global script",
+            "Do not open any file"
+          ]
+        },
+        "tts-tools-vscode.createXml": {
+          "title": "Create XML UI file when object sent from Tabletop Simulator",
+          "description": "When an individual object is sent from Tabletop Simulator which has no XML UI, generate a blank XML file for it.",
+          "type": "boolean",
+          "default": false
+        },
+        "tts-tools-vscode.bundleSearchPattern": {
+          "title": "Pattern used to look for additional files",
+          "markdownDescription": "Described in Lua's [search path patterns](https://www.lua.org/pil/8.1.html)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "?.ttslua",
+            "?.lua"
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "dependencies": {
+    "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
+    "@tts-tools/xmlbundle": "workspace:^",
+    "luabundle": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.82.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/parser": "^6.4.1",
+    "@vscode/test-electron": "^2.3.4",
+    "eslint": "^8.47.0",
+    "glob": "^10.3.3",
+    "typescript": "^5.1.6"
+  }
+}
