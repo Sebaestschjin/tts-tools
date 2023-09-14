@@ -19,72 +19,56 @@
   "contributes": {
     "commands": [
       {
-        "command": "tts-tools-vscode.getObjects",
+        "command": "ttsTools.getObjects",
         "title": "Get Objects",
         "category": "TTS Editor"
       },
       {
-        "command": "tts-tools-vscode.saveAndPlay",
+        "command": "ttsTools.saveAndPlay",
         "title": "Save & Play",
         "category": "TTS Editor"
       },
       {
-        "command": "tts-tools-vscode.executeCode",
+        "command": "ttsTools.executeCode",
         "title": "Execute Code",
         "category": "TTS Editor"
       }
     ],
     "keybindings": [
       {
-        "command": "tts-tools-vscode.getObjects",
+        "command": "ttsTools.getObjects",
         "key": "ctrl+alt+l"
       },
       {
-        "command": "tts-tools-vscode.saveAndPlay",
+        "command": "ttsTools.saveAndPlay",
         "key": "ctrl+alt+s"
       },
       {
-        "command": "tts-tools-vscode.executeCode",
+        "command": "ttsTools.executeCode",
         "key": "ctrl+shift+e",
         "when": "editorFocus"
       }
     ],
     "configuration": {
-      "title": "Tabletop Simulator Editor Configuration",
+      "title": "TTS Editor",
       "properties": {
-        "tts-tools-vscode.autoOpen": {
-          "title": "Automatic Open",
-          "description": "Which files should the extension automatically open when receiving them from the game.",
+        "ttsEditor.includePath": {
+          "title": "Include Directory",
+          "markdownDescription": "Relative path inside the workspace directory that is used to resolve modules.",
           "type": "string",
-          "default": "Global",
-          "enum": [
-            "All",
-            "Global",
-            "None"
-          ],
-          "enumDescriptions": [
-            "Open all received files when getting scripts",
-            "Only open Global script",
-            "Do not open any file"
-          ]
+          "default": "imports"
         },
-        "tts-tools-vscode.createXml": {
-          "title": "Create XML UI file when object sent from Tabletop Simulator",
-          "description": "When an individual object is sent from Tabletop Simulator which has no XML UI, generate a blank XML file for it.",
+        "ttsEditor.tstl.enable": {
+          "title": "Enable TSTL",
+          "markdownDescription": "When set, Typescript to Lua is run before bundling the scripts using the path below.",
           "type": "boolean",
           "default": false
         },
-        "tts-tools-vscode.bundleSearchPattern": {
-          "title": "Pattern used to look for additional files",
-          "markdownDescription": "Described in Lua's [search path patterns](https://www.lua.org/pil/8.1.html)",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "?.ttslua",
-            "?.lua"
-          ]
+        "ttsEditor.tstl.path": {
+          "title": "TSTL Path",
+          "markdownDescription": "Relative path inside the workspace to a Typescript to Lua package that should be transpiled before bundling the scripts.",
+          "type": "string",
+          "default": "src"
         }
       }
     }
@@ -100,16 +84,17 @@
   "dependencies": {
     "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
     "@tts-tools/xmlbundle": "workspace:^",
-    "luabundle": "^1.6.0"
+    "luabundle": "^1.6.0",
+    "typescript-to-lua": "^1.19.2"
   },
   "devDependencies": {
-    "@types/vscode": "^1.82.0",
     "@types/node": "16.x",
+    "@types/vscode": "^1.82.0",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "@vscode/test-electron": "^2.3.4",
     "eslint": "^8.47.0",
     "glob": "^10.3.3",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   }
 }

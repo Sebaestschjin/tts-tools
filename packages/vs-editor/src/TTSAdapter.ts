@@ -1,6 +1,3 @@
-import { join, posix } from "path";
-import { FileType, OutputChannel, TextEditor, Uri, ViewColumn, Webview, WebviewPanel, window, workspace } from "vscode";
-
 import ExternalEditorApi, {
   CustomMessage,
   ErrorMessage,
@@ -11,24 +8,21 @@ import ExternalEditorApi, {
   PrintDebugMessage,
   PushingNewObject,
 } from "@matanlurey/tts-editor";
+import { posix } from "path";
+import { OutputChannel, Uri, window, workspace } from "vscode";
 
 import configuration from "./configuration";
+import { bundleLua, bundleXml, runTstl, unbundleLua } from "./io/bundle";
+import { FileInfo, readWorkspaceFiles, tempFolder, writeTempFile, writeWorkspaceFile } from "./io/files";
 
-import { bundleLua, bundleXml, unbundleLua, unbundleXml } from "./bundle";
-import { openTempFile, tempFolder, writeTempFile } from "./filehandler";
-
-export default class TTSAdapter {
+export class TTSAdapter {
   private api: ExternalEditorApi;
-
   private output: OutputChannel;
-
-  private tempUri: Uri;
 
   /**
    * @param output Output channel where logs will be written to
    */
   public constructor(output: OutputChannel) {
-    this.tempUri = Uri.file(tempFolder);
     this.output = output;
 
     this.api = new ExternalEditorApi();
@@ -40,66 +34,28 @@ export default class TTSAdapter {
    */
   public getObjects = async () => {
     this.output.appendLine("Getting objects");
-    addTempDirectoryToWorkspace(this.tempUri);
     this.api.getLuaScripts();
   };
 
+  /**
+   * Sends the bundled scripts to TTS
+   */
   public saveAndPlay = async () => {
-    if (!hasTempDirectoryInWorkspace(this.tempUri)) {
-      window.showErrorMessage(
-        "The workspace does not contain the Tabletop Simulator folder.\n" +
-          "Get Lua Scripts from game before trying to Save and Play.",
-        { modal: true }
-      );
-      return;
-    }
-
     try {
       await saveAllFiles();
-      const files = await readFiles(this.tempUri);
-      const scripts = await createScripts(files, this.tempUri);
+
+      const outputPath = this.getOutputPath();
+      const files = await readWorkspaceFiles(outputPath);
+      const scripts = await this.createScripts(files, outputPath);
       this.api.saveAndPlay(scripts);
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      this.error(`${e}`);
     }
   };
 
-  public executeCode = async () => {
-    return this.api.executeLuaCode("print('Hello World')");
+  public executeCode = async (script: string) => {
+    return this.api.executeLuaCode(script);
   };
-
-  private initExternalEditorApi = () => {
-    this.api.on("loadingANewGame", this.onGameLoaded.bind(this));
-    this.api.on("pushingNewObject", this.onObjectPushed.bind(this));
-    this.api.on("objectCreated", this.onObjectCreated.bind(this));
-    this.api.on("printDebugMessage", this.onPrintMessage.bind(this));
-    this.api.on("errorMessage", this.onErrorMessage.bind(this));
-    this.api.on("customMessage", this.onCustomMessage.bind(this));
-    this.api.listen();
-  };
-
-  private onGameLoaded = async (loadMessage: LoadingANewGame) => {
-    this.info("onGameLoaded");
-    this.readFilesFromTTS(loadMessage.scriptStates);
-  };
-
-  private onObjectPushed = async (objectMessage: PushingNewObject) => {
-    this.readFilesFromTTS(objectMessage.scriptStates);
-  };
-
-  private onObjectCreated = async (objectMessage: ObjectCreated) => {
-    console.log("Created", objectMessage.guid);
-  };
-
-  private onPrintMessage = async (printMessage: PrintDebugMessage) => {
-    this.output.appendLine(printMessage.message);
-  };
-
-  private onErrorMessage = async (errorMessage: ErrorMessage) => {
-    this.output.appendLine(errorMessage.error);
-  };
-
-  private onCustomMessage = async (customMessage: CustomMessage) => {};
 
   /**
    * Sends a custom structured object.
@@ -110,20 +66,117 @@ export default class TTSAdapter {
     return this.api.customMessage(object);
   }
 
+  private initExternalEditorApi = () => {
+    this.api.on("loadingANewGame", this.onLoadGame.bind(this));
+    this.api.on("pushingNewObject", this.onPushObject.bind(this));
+    this.api.on("objectCreated", this.onObjectCreated.bind(this));
+    this.api.on("printDebugMessage", this.onPrintDebugMessage.bind(this));
+    this.api.on("errorMessage", this.onErrorMessage.bind(this));
+    this.api.on("customMessage", this.onCustomMessage.bind(this));
+    this.api.listen();
+  };
+
+  private onLoadGame = async (message: LoadingANewGame) => {
+    this.info("recieved onLoadGame");
+    this.readFilesFromTTS(message.scriptStates);
+  };
+
+  private onPushObject = async (message: PushingNewObject) => {
+    this.info(`recieved onPushObject ${message.messageID}`);
+    this.readFilesFromTTS(message.scriptStates);
+  };
+
+  private onObjectCreated = async (message: ObjectCreated) => {
+    this.info(`recieved onObjectCreated ${message.guid}`);
+  };
+
+  private onPrintDebugMessage = async (message: PrintDebugMessage) => {
+    this.info(message.message);
+  };
+
+  private onErrorMessage = async (message: ErrorMessage) => {
+    this.error(message.error);
+  };
+
+  private onCustomMessage = async (message: CustomMessage) => {
+    this.info(`recieved onCustomMessage ${message.customMessage}`);
+  };
+
   private readFilesFromTTS = async (scriptStates: IncomingJsonObject[]) => {
     // TODO delete old files
     // TODO auto open files
     // TODO split raw files
 
-    scriptStates.map(toFile).forEach((file) => {
-      writeTempFile(`${file.fileName}.raw.lua`, file.script.raw);
-      writeTempFile(`${file.fileName}.lua`, file.script.content);
+    const outputPath = this.getOutputPath();
+    const rawPath = Uri.joinPath(outputPath, "/raw");
+    this.info(`Recieved ${scriptStates.length} scripts`);
+    this.info(`Writing scripts to ${outputPath}`);
+
+    scriptStates.map(toFileInfo).forEach((file) => {
+      writeWorkspaceFile(outputPath, `${file.fileName}.lua`, file.script.content);
+      writeWorkspaceFile(rawPath, `${file.fileName}.lua`, file.script.raw);
 
       if (file.ui) {
-        writeTempFile(`${file.fileName}.raw.xml`, file.ui.raw);
-        writeTempFile(`${file.fileName}.xml`, file.ui.content);
+        writeWorkspaceFile(rawPath, `${file.fileName}.xml`, file.ui.raw);
+        writeWorkspaceFile(outputPath, `${file.fileName}.xml`, file.ui.content);
       }
     });
+  };
+
+  private createScripts = async (files: FileInfo[], directory: Uri) => {
+    const scripts = new Map<string, OutgoingJsonObject>();
+    const includePaths = configuration.includePaths();
+
+    this.info(`Using include paths ${includePaths}`);
+
+    if (configuration.useTSTL()) {
+      const path = this.getTSTLPath();
+      this.info(`Running Typescript to Lua on ${path}`);
+      runTstl(path);
+    }
+
+    for (const [fileName] of files) {
+      const guid = fileName.split(".")[1];
+      const fileUri = directory.with({
+        path: posix.join(directory.path, fileName),
+      });
+
+      if (!scripts.has(guid)) {
+        scripts.set(guid, { guid, script: "" });
+      }
+
+      try {
+        if (fileName.endsWith(".lua")) {
+          scripts.get(guid)!.script = await bundleLua(fileUri, includePaths);
+        } else if (fileName.endsWith(".xml")) {
+          scripts.get(guid)!.ui = await bundleXml(fileUri, includePaths[0]);
+        }
+      } catch (error: any) {
+        window.showErrorMessage(error.message);
+        console.error(error.stack);
+      }
+    }
+
+    return Array.from(scripts.values());
+  };
+
+  private getWorkspaceRoot = (): Uri => {
+    if (!workspace.workspaceFolders) {
+      throw new Error("No workspace selected");
+    }
+
+    return workspace.workspaceFolders[0].uri;
+  };
+
+  private getOutputPath = (): Uri => {
+    const root = this.getWorkspaceRoot();
+    return Uri.joinPath(root, "/.tts");
+  };
+
+  private getTSTLPath = (): string => {
+    const root = this.getWorkspaceRoot();
+    const path = configuration.tstlPath();
+    return Uri.joinPath(root, path).fsPath;
   };
 
   private info = (message: string) => {
@@ -149,7 +202,7 @@ interface ObjectFile {
   };
 }
 
-const toFile = (object: IncomingJsonObject): ObjectFile => {
+const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
   const baseName = object.name.replace(/([":<>/\\|?*])/g, "");
   const fileName = `${baseName}.${object.guid}`;
 
@@ -157,26 +210,18 @@ const toFile = (object: IncomingJsonObject): ObjectFile => {
     fileName: fileName,
     script: {
       raw: object.script,
-      content: unbundleLua(object.script),
+      content: getUnbundledLua(object.script),
     },
   };
 };
 
-const addTempDirectoryToWorkspace = (tempDirectory: Uri) => {
-  const vsFolders = workspace.workspaceFolders;
-  if (!vsFolders || vsFolders.findIndex((dir) => dir.uri.fsPath === tempDirectory.fsPath) === -1) {
-    workspace.updateWorkspaceFolders(vsFolders ? vsFolders.length : 0, null, {
-      uri: tempDirectory,
-    });
+const getUnbundledLua = (script: string) => {
+  try {
+    return unbundleLua(script);
+  } catch (e) {
+    console.error(e);
+    return script;
   }
-};
-
-const hasTempDirectoryInWorkspace = (tempDirectory: Uri) => {
-  const vsFolders = workspace.workspaceFolders;
-  if (!vsFolders || vsFolders.findIndex((dir) => dir.uri.fsPath === tempDirectory.fsPath) === -1) {
-    return false;
-  }
-  return true;
 };
 
 const saveAllFiles = async () => {
@@ -185,43 +230,4 @@ const saveAllFiles = async () => {
   } catch (reason: any) {
     throw new Error(`Unable to save opened files.\nDetail: ${reason}`);
   }
-};
-
-type FileInfo = [string, FileType];
-
-const readFiles = async (directory: Uri): Promise<FileInfo[]> => {
-  try {
-    return await workspace.fs.readDirectory(directory);
-  } catch (reason: any) {
-    throw new Error(`Unable to read TTS Scripts directory.\nDetails: ${reason}`);
-  }
-};
-
-const createScripts = async (files: FileInfo[], directory: Uri) => {
-  const scripts = new Map<string, OutgoingJsonObject>();
-  const actualFiles = files.filter(([_, fileType]) => fileType !== FileType.Directory);
-
-  for (const [fileName] of actualFiles) {
-    const guid = fileName.split(".")[1];
-    const fileUri = directory.with({
-      path: posix.join(directory.path, fileName),
-    });
-
-    if (!scripts.has(guid)) {
-      scripts.set(guid, { guid, script: "" });
-    }
-
-    try {
-      if (fileName.endsWith(".lua") || fileName.endsWith(".ttslua")) {
-        scripts.get(guid)!.script = await bundleLua(fileUri);
-      } else if (fileName.endsWith(".xml")) {
-        scripts.get(guid)!.ui = await bundleXml(fileUri);
-      }
-    } catch (error: any) {
-      window.showErrorMessage(error.message);
-      console.error(error.stack);
-    }
-  }
-
-  return Array.from(scripts.values());
 };

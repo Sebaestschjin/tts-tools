@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
-import TTSAdapter from "./TTSAdapter";
-import { createWorkspaceFolder } from "./filehandler";
+import { TTSAdapter } from "./ttsAdapter";
+import { createWorkspaceFolder } from "./io/files";
+
+export const extensionName = "ttsTools";
 
 export function activate(context: vscode.ExtensionContext) {
   createWorkspaceFolder();
@@ -12,13 +14,13 @@ export function activate(context: vscode.ExtensionContext) {
   registerSaveAndPlay(context, adapter);
   registerExecuteCode(context, adapter);
 
-  log.appendLine("tts-tools-vscode activated");
+  log.appendLine("ttsTools activated");
   console.log("tts-tools-vscode activated");
 }
 
 const registerGetObjects = (context: vscode.ExtensionContext, adapter: TTSAdapter) => {
   context.subscriptions.push(
-    vscode.commands.registerCommand("tts-tools-vscode.getObjects", async () => {
+    vscode.commands.registerCommand(`${extensionName}.getObjects`, async () => {
       const chosen = await vscode.window.showInformationMessage(
         "Get Lua Scripts from game?\n\n" +
           "This will erase any changes that you have made in Visual Studio Code since the last Save & Play.",
@@ -35,7 +37,7 @@ const registerGetObjects = (context: vscode.ExtensionContext, adapter: TTSAdapte
 
 const registerSaveAndPlay = (context: vscode.ExtensionContext, adapter: TTSAdapter) => {
   context.subscriptions.push(
-    vscode.commands.registerCommand("tts-tools-vscode.saveAndPlay", () => {
+    vscode.commands.registerCommand(`${extensionName}.saveAndPlay`, () => {
       adapter.saveAndPlay();
     })
   );
@@ -43,12 +45,12 @@ const registerSaveAndPlay = (context: vscode.ExtensionContext, adapter: TTSAdapt
 
 const registerExecuteCode = (context: vscode.ExtensionContext, adapter: TTSAdapter) => {
   context.subscriptions.push(
-    vscode.commands.registerCommand("tts-tools-vscode.executeCode", () => {
-      adapter.executeCode();
+    vscode.commands.registerCommand(`${extensionName}.executeCode`, () => {
+      adapter.executeCode("print('Hello World')");
     })
   );
 };
 
 export function deactivate() {
-  console.log("tts-tools-vscode deactivated");
+  console.log(`${extensionName} deactivated`);
 }

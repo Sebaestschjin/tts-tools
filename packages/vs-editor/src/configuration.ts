@@ -1,39 +1,46 @@
 import { join } from "path";
-import { workspace } from "vscode";
+import { Uri, workspace } from "vscode";
 
-const configName = "TTSEditor";
-
-export const includeOtherFiles = (): boolean => getConfig("includeOtherFiles") ?? false;
-
-export const includePaths = (): string[] => {
-  const patterns = includePatterns();
-  const paths = getConfig<string[]>("includeOtherFilesPaths");
-  const result: string[] = [];
-
-  paths.forEach((path) => {
-    patterns.forEach((pattern) => {
-      result.push(join(path, pattern));
-    });
-  });
-
-  return result;
+const Config = {
+  Name: "ttsEditor",
+  IncludePath: "includePath",
+  UseTSTL: "tstl.enable",
+  TSTLPath: "tstl.path",
 };
-
-const autoOpen = (): string => getConfig("autoOpen");
-
-const createXml = (): boolean => getConfig("createXml");
 
 const includePatterns = () => {
-  const patterns = getConfig<string[]>("bundleSearchPattern") || [];
-  return patterns.filter((p) => p.length > 0);
+  return ["?.ttslua", "?.lua"];
 };
 
+const includePaths = (): string[] => {
+  const patterns = includePatterns();
+  const paths = workspace.workspaceFolders ?? [];
+  const result: Uri[] = [];
+
+  const relative = getConfig<string>(Config.IncludePath);
+
+  paths
+    .map((w) => Uri.joinPath(w.uri, `/${relative}`))
+    .forEach((path) => {
+      patterns.forEach((pattern) => {
+        result.push(Uri.joinPath(path, pattern));
+      });
+    });
+
+  return result.map((u) => u.fsPath);
+};
+
+const tstlEnalbed = (): boolean => getConfig(Config.UseTSTL);
+
+const tstlPath = (): string => getConfig(Config.TSTLPath);
+
 const getConfig = <T>(name: string) => {
-  const config = workspace.getConfiguration(configName);
+  const config = workspace.getConfiguration(Config.Name);
   return config.get(name) as T;
 };
 
 export default {
-  autoOpen,
-  createXml,
+  includePaths,
+  useTSTL: tstlEnalbed,
+  tstlPath,
 };
