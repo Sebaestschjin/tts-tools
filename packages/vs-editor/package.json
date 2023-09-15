@@ -1,8 +1,8 @@
 {
-  "name": "tts-tools-vscode-editor",
+  "name": "tts-editor",
   "displayName": "Tabletop Simulator Editor",
   "author": "Sebastian Stern",
-  "description": "Implementation of the external editor API for Tabletop Simulator",
+  "description": "Implementation of the external editor API for Tabletop Simulator (TTS)",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.82.0"
@@ -25,32 +25,32 @@
   "contributes": {
     "commands": [
       {
-        "command": "ttsTools.getObjects",
+        "command": "ttsEditor.getObjects",
         "title": "Get Objects",
         "category": "TTS Editor"
       },
       {
-        "command": "ttsTools.saveAndPlay",
+        "command": "ttsEditor.saveAndPlay",
         "title": "Save & Play",
         "category": "TTS Editor"
       },
       {
-        "command": "ttsTools.executeCode",
+        "command": "ttsEditor.executeCode",
         "title": "Execute Code",
         "category": "TTS Editor"
       }
     ],
     "keybindings": [
       {
-        "command": "ttsTools.getObjects",
+        "command": "ttsEditor.getObjects",
         "key": "ctrl+alt+l"
       },
       {
-        "command": "ttsTools.saveAndPlay",
+        "command": "ttsEditor.saveAndPlay",
         "key": "ctrl+alt+s"
       },
       {
-        "command": "ttsTools.executeCode",
+        "command": "ttsEditor.executeCode",
         "key": "ctrl+shift+e",
         "when": "editorFocus"
       }
