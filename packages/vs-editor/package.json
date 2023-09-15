@@ -7,6 +7,12 @@
   "engines": {
     "vscode": "^1.82.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sebaestschjin/tts-tools",
+    "directory": "packages/vs-editor"
+  },
+  "license": "MIT",
   "categories": [
     "Other"
   ],

@@ -13,7 +13,7 @@ import { OutputChannel, Uri, window, workspace } from "vscode";
 
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua } from "./io/bundle";
-import { FileInfo, readWorkspaceFiles, tempFolder, writeTempFile, writeWorkspaceFile } from "./io/files";
+import { FileInfo, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
@@ -132,7 +132,8 @@ export class TTSAdapter {
     if (configuration.useTSTL()) {
       const path = this.getTSTLPath();
       this.info(`Running Typescript to Lua on ${path}`);
-      runTstl(path);
+      const res = runTstl(path);
+      this.info(JSON.stringify(res.diagnostics, null, 2));
     }
 
     for (const [fileName] of files) {

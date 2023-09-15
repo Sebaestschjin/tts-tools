@@ -6,3 +6,4 @@ src/**
 **/.eslintrc.json
 **/*.map
 **/*.ts
+!**/*.d.ts

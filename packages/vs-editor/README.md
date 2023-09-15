@@ -10,4 +10,4 @@ This extension implements the External Editor API for Tabletop Simulator
 
 ## Extension Settings
 
-TODO
+- `ttsEditor.includePath`: Relative path in the workspace where `require` and `<Include src="" />` should be resolved from
