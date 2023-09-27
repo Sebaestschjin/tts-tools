@@ -11,6 +11,7 @@ import ExternalEditorApi, {
 import { posix } from "path";
 import { OutputChannel, Uri, window, workspace } from "vscode";
 
+import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua } from "./io/bundle";
 import { FileInfo, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
@@ -34,7 +35,6 @@ export class TTSAdapter {
    */
   public getObjects = async () => {
     this.output.appendLine("Getting objects");
-    this.clearOutputPath();
     this.api.getLuaScripts();
   };
 
@@ -79,7 +79,7 @@ export class TTSAdapter {
 
   private onLoadGame = async (message: LoadingANewGame) => {
     this.info("recieved onLoadGame");
-    this.clearOutputPath();
+    await this.clearOutputPath();
     this.readFilesFromTTS(message.scriptStates);
   };
 
@@ -135,10 +135,7 @@ export class TTSAdapter {
     this.info(`Using include paths ${includePaths}`);
 
     if (configuration.useTSTL()) {
-      const path = this.getTSTLPath();
-      this.info(`Running Typescript to Lua on ${path}`);
-      const res = runTstl(path);
-      this.info(JSON.stringify(res.diagnostics, null, 2));
+      this.runTstl();
     }
 
     for (const [fileName] of files) {
@@ -164,6 +161,41 @@ export class TTSAdapter {
     }
 
     return Array.from(scripts.values());
+  };
+
+  private runTstl = () => {
+    const path = this.getTSTLPath();
+    this.info(`Running Typescript to Lua on ${path}`);
+    const result = runTstl(path);
+
+    const errors = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Error);
+    const warnings = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Warning);
+
+    const showLog = (option?: string) => {
+      if (option) {
+        this.output.show();
+      }
+    };
+
+    if (errors.length > 0) {
+      window
+        .showErrorMessage("There were errors while running TSTL. Check the log for more information", "Show Log")
+        .then(showLog);
+    }
+    if (warnings.length > 0) {
+      window
+        .showWarningMessage("There were warnings while running TSTL. Check the log for more information", "Show Log")
+        .then(showLog);
+    }
+
+    const host: FormatDiagnosticsHost = {
+      getCurrentDirectory: () => this.getOutputPath().toString(),
+      getCanonicalFileName: (fileName: string) => fileName,
+      getNewLine: () => "\n",
+    };
+
+    const output = formatDiagnostics(result.diagnostics, host);
+    this.info(output);
   };
 
   private getWorkspaceRoot = (): Uri => {
