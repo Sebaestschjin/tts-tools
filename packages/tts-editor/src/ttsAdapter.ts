@@ -154,11 +154,13 @@ export class TTSAdapter {
 
   private createScripts = async (files: FileInfo[], directory: Uri) => {
     const scripts = new Map<string, OutgoingJsonObject>();
-    const includePaths = configuration.includePaths();
 
-    this.info(`Using include paths ${includePaths}`);
+    const includePathsLua = configuration.luaIncludePaths();
+    const includePathXml = configuration.xmlIncludePath();
+    this.info(`Using Lua include paths ${includePathsLua}`);
+    this.info(`Using XML include path ${includePathXml}`);
 
-    if (configuration.useTSTL()) {
+    if (configuration.tstlEnalbed()) {
       this.runTstl();
     }
 
@@ -174,9 +176,11 @@ export class TTSAdapter {
 
       try {
         if (fileName.endsWith(".lua")) {
-          scripts.get(guid)!.script = await bundleLua(fileUri, includePaths);
+          const lua = await bundleLua(fileUri, includePathsLua);
+          scripts.get(guid)!.script = lua;
         } else if (fileName.endsWith(".xml")) {
-          scripts.get(guid)!.ui = await bundleXml(fileUri, includePaths[0]);
+          const xml = await bundleXml(fileUri, includePathXml);
+          scripts.get(guid)!.ui = xml;
         }
       } catch (error: any) {
         window.showErrorMessage(error.message);
@@ -287,8 +291,8 @@ const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
 
   const ui = object.ui
     ? {
-        bundled: object.script,
-        content: unbundleXml(object.script),
+        bundled: object.ui,
+        content: unbundleXml(object.ui),
       }
     : undefined;
 

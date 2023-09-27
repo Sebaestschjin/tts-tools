@@ -1,4 +1,3 @@
-import { join } from "path";
 import { Uri, workspace } from "vscode";
 
 const Config = {
@@ -12,22 +11,27 @@ const includePatterns = () => {
   return ["?.ttslua", "?.lua"];
 };
 
-const includePaths = (): string[] => {
-  const patterns = includePatterns();
+const includePaths = (): Uri[] => {
   const paths = workspace.workspaceFolders ?? [];
-  const result: Uri[] = [];
-
   const relative = getConfig<string>(Config.IncludePath);
+  return paths.map((w) => Uri.joinPath(w.uri, `/${relative}`));
+};
 
-  paths
-    .map((w) => Uri.joinPath(w.uri, `/${relative}`))
-    .forEach((path) => {
-      patterns.forEach((pattern) => {
-        result.push(Uri.joinPath(path, pattern));
-      });
+const luaIncludePaths = (): string[] => {
+  const patterns = includePatterns();
+
+  const result: Uri[] = [];
+  includePaths().forEach((path) => {
+    patterns.forEach((pattern) => {
+      result.push(Uri.joinPath(path, pattern));
     });
+  });
 
   return result.map((u) => u.fsPath);
+};
+
+const xmlIncludePath = (): string => {
+  return includePaths().map((u) => u.fsPath)[0];
 };
 
 const tstlEnalbed = (): boolean => getConfig(Config.UseTSTL);
@@ -40,7 +44,8 @@ const getConfig = <T>(name: string) => {
 };
 
 export default {
-  includePaths,
-  useTSTL: tstlEnalbed,
+  luaIncludePaths,
+  xmlIncludePath,
+  tstlEnalbed,
   tstlPath,
 };
