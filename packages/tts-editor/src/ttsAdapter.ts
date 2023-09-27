@@ -13,7 +13,7 @@ import { OutputChannel, Range, Uri, window, workspace } from "vscode";
 
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
-import { bundleLua, bundleXml, runTstl, unbundleLua } from "./io/bundle";
+import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
 import { FileInfo, readFile, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
 
 export class TTSAdapter {
@@ -285,12 +285,20 @@ const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
   const baseName = object.name.replace(/([":<>/\\|?*])/g, "");
   const fileName = `${baseName}.${object.guid}`;
 
+  const ui = object.ui
+    ? {
+        bundled: object.script,
+        content: unbundleXml(object.script),
+      }
+    : undefined;
+
   return {
     fileName: fileName,
     script: {
       bundled: object.script,
       content: getUnbundledLua(object.script),
     },
+    ui: ui,
   };
 };
 
