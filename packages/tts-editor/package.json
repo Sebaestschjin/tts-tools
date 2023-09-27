@@ -2,8 +2,9 @@
   "name": "tts-editor",
   "displayName": "Tabletop Simulator Editor",
   "author": "Sebastian Stern",
+  "publisher": "sebaestschjin",
   "description": "Implementation of the external editor API for Tabletop Simulator (TTS)",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.82.0"
   },
@@ -62,7 +63,7 @@
           "title": "Include Directory",
           "markdownDescription": "Relative path inside the workspace directory that is used to resolve modules.",
           "type": "string",
-          "default": "imports"
+          "default": "src"
         },
         "ttsEditor.tstl.enable": {
           "title": "Enable TSTL",
@@ -72,9 +73,9 @@
         },
         "ttsEditor.tstl.path": {
           "title": "TSTL Path",
-          "markdownDescription": "Relative path inside the workspace to a Typescript to Lua package that should be transpiled before bundling the scripts.",
+          "markdownDescription": "Relative path inside the workspace directory to a Typescript to Lua project that should be transpiled before bundling the scripts.",
           "type": "string",
-          "default": "src"
+          "default": "."
         }
       }
     }

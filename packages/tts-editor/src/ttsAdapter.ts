@@ -34,6 +34,7 @@ export class TTSAdapter {
    */
   public getObjects = async () => {
     this.output.appendLine("Getting objects");
+    this.clearOutputPath();
     this.api.getLuaScripts();
   };
 
@@ -78,6 +79,7 @@ export class TTSAdapter {
 
   private onLoadGame = async (message: LoadingANewGame) => {
     this.info("recieved onLoadGame");
+    this.clearOutputPath();
     this.readFilesFromTTS(message.scriptStates);
   };
 
@@ -102,22 +104,25 @@ export class TTSAdapter {
     this.info(`recieved onCustomMessage ${message.customMessage}`);
   };
 
+  private clearOutputPath = async () => {
+    const outputPath = this.getOutputPath();
+    await workspace.fs.delete(outputPath, { recursive: true });
+  };
+
   private readFilesFromTTS = async (scriptStates: IncomingJsonObject[]) => {
-    // TODO delete old files
     // TODO auto open files
-    // TODO split raw files
 
     const outputPath = this.getOutputPath();
-    const rawPath = Uri.joinPath(outputPath, "/raw");
+    const bundledPath = Uri.joinPath(outputPath, "/bundled");
     this.info(`Recieved ${scriptStates.length} scripts`);
     this.info(`Writing scripts to ${outputPath}`);
 
     scriptStates.map(toFileInfo).forEach((file) => {
       writeWorkspaceFile(outputPath, `${file.fileName}.lua`, file.script.content);
-      writeWorkspaceFile(rawPath, `${file.fileName}.lua`, file.script.raw);
+      writeWorkspaceFile(bundledPath, `${file.fileName}.lua`, file.script.bundled);
 
       if (file.ui) {
-        writeWorkspaceFile(rawPath, `${file.fileName}.xml`, file.ui.raw);
+        writeWorkspaceFile(bundledPath, `${file.fileName}.xml`, file.ui.bundled);
         writeWorkspaceFile(outputPath, `${file.fileName}.xml`, file.ui.content);
       }
     });
@@ -194,11 +199,11 @@ export class TTSAdapter {
 interface ObjectFile {
   fileName: string;
   script: {
-    raw: string;
+    bundled: string;
     content: string;
   };
   ui?: {
-    raw: string;
+    bundled: string;
     content: string;
   };
 }
@@ -210,7 +215,7 @@ const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
   return {
     fileName: fileName,
     script: {
-      raw: object.script,
+      bundled: object.script,
       content: getUnbundledLua(object.script),
     },
   };
