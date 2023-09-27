@@ -5,14 +5,20 @@ import { Uri } from "vscode";
 import * as tstl from "typescript-to-lua";
 
 import { readFile } from "./files";
+import { readMetadata } from "luabundle/metadata";
 
 export const runTstl = (path: string) => {
   return tstl.transpileProject(`${path}/tsconfig.json`);
 };
 
 export const unbundleLua = (content: string) => {
-  const unbundled = luabundle.unbundleString(content, { rootOnly: true });
-  return unbundled.modules[unbundled.metadata.rootModuleName].content;
+  const isBundled = readMetadata(content) !== null;
+  if (isBundled) {
+    const unbundled = luabundle.unbundleString(content, { rootOnly: true });
+    return unbundled.modules[unbundled.metadata.rootModuleName].content;
+  }
+
+  return content;
 };
 
 export const bundleLua = async (file: Uri, includePaths: string[]): Promise<string> => {
