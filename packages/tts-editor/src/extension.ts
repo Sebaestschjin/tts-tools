@@ -46,7 +46,10 @@ const registerSaveAndPlay = (context: vscode.ExtensionContext, adapter: TTSAdapt
 const registerExecuteCode = (context: vscode.ExtensionContext, adapter: TTSAdapter) => {
   context.subscriptions.push(
     vscode.commands.registerCommand(`${extensionName}.executeCode`, () => {
-      adapter.executeCode("print('Hello World')");
+      const content = vscode.window.activeTextEditor?.document.getText();
+      if (content) {
+        adapter.executeCode(content);
+      }
     })
   );
 };
