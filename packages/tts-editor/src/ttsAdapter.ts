@@ -9,12 +9,12 @@ import ExternalEditorApi, {
   PushingNewObject,
 } from "@matanlurey/tts-editor";
 import { posix } from "path";
-import { OutputChannel, Uri, window, workspace } from "vscode";
+import { OutputChannel, Range, Uri, window, workspace } from "vscode";
 
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua } from "./io/bundle";
-import { FileInfo, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
+import { FileInfo, readFile, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
@@ -97,7 +97,31 @@ export class TTSAdapter {
   };
 
   private onErrorMessage = async (message: ErrorMessage) => {
-    this.error(message.error);
+    this.info(`${message.guid} ${message.errorMessagePrefix}`);
+
+    const action = await window.showErrorMessage(`${message.errorMessagePrefix}`, "Go To Error");
+    if (!action) {
+      return;
+    }
+
+    const file = await this.getBundledFileName(message.guid);
+    if (!file) {
+      return;
+    }
+
+    let selection: Range | undefined = undefined;
+    const rangeExpression = /.*:\((\d+),(\d+)-(\d+)\):/;
+    const range = message.errorMessagePrefix.match(rangeExpression);
+
+    if (range) {
+      const [, line, start, end] = range;
+      const lineNumber = Number(line) - 1;
+      selection = new Range(lineNumber, Number(start), lineNumber, Number(end));
+    }
+
+    window.showTextDocument(file, {
+      selection: selection,
+    });
   };
 
   private onCustomMessage = async (message: CustomMessage) => {
@@ -113,7 +137,7 @@ export class TTSAdapter {
     // TODO auto open files
 
     const outputPath = this.getOutputPath();
-    const bundledPath = Uri.joinPath(outputPath, "/bundled");
+    const bundledPath = this.getBundledPath();
     this.info(`Recieved ${scriptStates.length} scripts`);
     this.info(`Writing scripts to ${outputPath}`);
 
@@ -163,6 +187,19 @@ export class TTSAdapter {
     return Array.from(scripts.values());
   };
 
+  private getBundledFileName = async (guid: string) => {
+    const directory = this.getBundledPath();
+    const files = await workspace.fs.readDirectory(directory);
+
+    for (const [name] of files) {
+      if (name.endsWith(`.${guid}.lua`)) {
+        return Uri.joinPath(directory, name);
+      }
+    }
+
+    return undefined;
+  };
+
   private runTstl = () => {
     const path = this.getTSTLPath();
     this.info(`Running Typescript to Lua on ${path}`);
@@ -209,6 +246,10 @@ export class TTSAdapter {
   private getOutputPath = (): Uri => {
     const root = this.getWorkspaceRoot();
     return Uri.joinPath(root, "/.tts");
+  };
+
+  private getBundledPath = (): Uri => {
+    return Uri.joinPath(this.getOutputPath(), "/bundled");
   };
 
   private getTSTLPath = (): string => {
