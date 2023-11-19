@@ -23,6 +23,7 @@ export interface TTSObject {
   GMNotes: string;
   Memo?: string;
   Tags?: string[];
+  Transform: Transform;
   LuaScript?: string;
   LuaScriptState?: string;
   XmlUI?: string;
@@ -30,4 +31,16 @@ export interface TTSObject {
   ContainedObjects?: TTSObject[];
   States?: Record<string, TTSObject>;
   [other: string]: any;
+}
+
+interface Transform {
+  positionX: number;
+  positionY: number;
+  positionZ: number;
+  rotationX: number;
+  rotationY: number;
+  rotationZ: number;
+  scaleX: number;
+  scaleY: number;
+  scaleZ: number;
 }
