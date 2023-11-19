@@ -1,5 +1,6 @@
 import { extractSave, SaveFile } from "@tts-tools/savefile";
 import { existsSync, mkdirSync, readFileSync, rmSync } from "fs";
+import { isAbsolute } from 'path';
 import { Argv } from "yargs";
 import { findSaveFilePath, getTtsDirectory } from "../io";
 
@@ -63,11 +64,16 @@ const runCommand = (args: Arguments) => {
 };
 
 const getSaveFile = (name: string): SaveFile => {
-  let saveFilePath = findSaveFilePath(".", name, false);
+  let saveFilePath;
+  if (isAbsolute(name)) {
+    saveFilePath = name  
+  }
+  if (!saveFilePath) {
+    saveFilePath = findSaveFilePath(".", name, false);
+  }
   if (!saveFilePath) {
     saveFilePath = findSaveFilePath(getTtsDirectory(), name, true);
   }
-
   if (!saveFilePath) {
     throw new Error(
       "Can not find a save file with given path.\n" +
