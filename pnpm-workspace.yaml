@@ -1,3 +1,4 @@
 packages:
   - "packages/*"
+  - "docs"
   - "!packages/tts-editor" # doesn't support pnpm :-(

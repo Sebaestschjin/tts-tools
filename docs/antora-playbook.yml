@@ -1,0 +1,25 @@
+site:
+  title: TTS Tools
+content:
+  sources:
+    - url: https://github.com/Sebaestschjin/tts-tools.git
+      # - url: ..
+      start_paths:
+        - packages/*/docs
+      branches: HEAD
+urls:
+  latest_version_segment: latest
+  latest_prerelease_version_segment: next
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./ui
+antora:
+  extensions:
+    - require: "@antora/lunr-extension"
+      index_latest_only: true
+      snippet_length: 200
+asciidoc:
+  attributes:
+    experimental: true
