@@ -15,8 +15,8 @@
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "test": "vitest",
-    "prerelease": "pnpm build",
-    "release": "pnpm publish --access public"
+    "release": "pnpm publish --access public",
+    "release:pre": "pnpm build && pnpm test"
   },
   "dependencies": {
     "@tts-tools/xmlbundle": "workspace:^",
