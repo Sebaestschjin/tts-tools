@@ -1,5 +1,6 @@
-import assert = require("assert");
 import { readFileSync, rmSync } from "fs";
+import { describe, it, expect } from "vitest";
+
 import { SaveFile } from "../main";
 import { Options, embedSave } from "../main/embed";
 import { extractedPath, MatcherResult, outputPath, RES_PATH } from "./config";
@@ -29,7 +30,7 @@ describe("embed", () => {
         metadataField: "GMNotes",
       });
     });
-  });    
+  });
 });
 
 const runTestCase = (name: string, options: Omit<Options, "includePath"> = {}) => {

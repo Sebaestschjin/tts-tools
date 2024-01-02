@@ -3,6 +3,6 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "outDir": "build",
-    "types": ["node", "jest"]
+    "types": ["node", "@typed-tabletop-simulator/declaration"]
   }
 }

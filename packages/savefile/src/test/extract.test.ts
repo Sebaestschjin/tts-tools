@@ -1,6 +1,8 @@
 import assert = require("assert");
 import commonPathPrefix from "common-path-prefix";
 import { readdirSync, readFileSync, rmSync } from "fs";
+import { describe, it, expect } from "vitest";
+
 import { extractSave, Options, readSave } from "../main/extract";
 import { extractedPath, MatcherResult, outputPath, savePath } from "./config";
 import path = require("path");
@@ -56,7 +58,7 @@ describe("extract", () => {
         metadataField: "GMNotes",
       });
     });
-  });  
+  });
 });
 
 const runTestCase = (name: string, options: Omit<Options, "output"> = {}) => {
