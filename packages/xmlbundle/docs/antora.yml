@@ -1,6 +1,0 @@
-name: xmlbundle
-title: xmlbundle
-version: ~
-start_page: ROOT:index.adoc
-nav:
-  - modules/ROOT/nav.adoc

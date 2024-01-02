@@ -1,0 +1,36 @@
+= Embed
+
+Embedding reads the directory of a previously extracted save file and recreates it again.
+While doing so, it will also bundle the scripts and XML files of all objects again (even the ones inside containers) from a given include path.
+
+Changing data before embedding is also possible.
+
+To change the object's data (e.g. it's tags or nickname), simply edit it's `Data.json`.
+In case of changing the nickname or GUID of the object, renaming the directory to mimic this change is not required.
+This would automatically happen once you extract the embedded save file again.
+
+To change the script, XML UI or script state, simply edit the respective `Script.ttslua`, `UI.xml` or `State.txt` file.
+Deleting those file will remove the script/XML UI /script state for this object.
+
+To add contents into a container you have to do two things:
+
+- Add all relevant files into the contents directory of the container.
+- Add an entry to the `Contents.json` of the container and point to the directory of the added object.
+
+To remove content from a container, remove its entry from the `Contents.json` file.
+After extracting the embedded save file, the object's directory will also be removed.
+
+The `Contents.json` also contains the order of elements inside the container.
+If you want to change that order, rearrange the entries to your needs.
+
+Adding, removing states also works the same, but uses the states directory and `States.json` file instead.
+And the same applies for attachments, but uses the children directory and the `Children.json` file instead.
+
+== Options
+
+[cols="1m,1m,1,4a"]
+|===
+| Name | Type | Required | Description
+
+| includePath | string | Yes | The root path to the Lua and XML UI scripts that will be used to resolve `require()` calls and `<Include src="" />` fields.
+|===

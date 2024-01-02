@@ -1,2 +1,69 @@
-= Hello
-World!
+= TTS Tools - savefile
+
+This module split can a save file from Tabletop Simulator into multiple files, individually for each object on the table.
+This helps in making a save file shareable with source control.
+A split save file can also be embedded again to create a usable save for TTS.
+While doing so, the embedding save file will update the Lua and XML scripts of all objects on the table and in any container.
+
+== Installation
+
+[source,sh]
+----
+npm install -D @tts-tools/savefile
+----
+or
+[source,sh]
+----
+pnpm install -D @tts-tools/savefile
+----
+
+== Basic usage
+
+=== Extract
+
+[source,ts]
+----
+import { extractSave, readSave } from "@tts-tools/savefile";
+
+// first read the save file from somewhere, e.g. using fs
+const saveFile = readSave("<path_to_savefile");
+
+// then extract this save file to some output path
+// more options are also available
+extractSave(saveFile, { output: "<path_to_output>" });
+----
+
+See the xref:extract.adoc[details] for more information.
+
+WARNING:: When using `readSave` from the library, it will read the save file and parse it into a JavaScript object.
+While doing so, all floating point numbers will be converted into strings and get a certain marker added to them.
+So they can't be used as numbers anymore.
+This is done to ensure consistent rounding of numbers during the extract step.
++
+If you want to pre-process the save file after reading it and before passing it to `extractSave`, you need to read the save file content manually and parse it into JSON.
+Rounding floating point numbers then may not be consistent, though.
++
+[source,ts]
+----
+import { extractSave, SaveFile } from "@tts-tools/savefile";
+import { readFileSync } from "fs"
+
+const saveFileContent = readFileSync("<path_to_savefile", { encoding: "utf-8" });
+const saveFile = JSON.parse(saveFileContent) as SaveFile;
+
+extractSave(saveFile, { output: "<path_to_output>" });
+----
+
+=== Embed
+
+[source,ts]
+----
+import { embedSave } from "@tts-tools/savefile";
+
+// given a path to the previous extracted save, it returns the embedded save again
+const saveFile = embedSave("<path_to_extracted_savefile", {
+  includePath: "<path_to_includes>",
+});
+----
+
+See the xref:embed.adoc[details] for more information.

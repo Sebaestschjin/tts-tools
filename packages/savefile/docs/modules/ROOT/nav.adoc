@@ -1,1 +1,3 @@
-* xref:index.adoc[]
+* xref:index.adoc[Introduction]
+* xref:extract.adoc[]
+* xref:embed.adoc[]
