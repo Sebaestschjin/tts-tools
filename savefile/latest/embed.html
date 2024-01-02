@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Embed :: TTS Tools</title>
+    <meta name="generator" content="Antora 3.0.1">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">TTS Tools</a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="savefile" data-version="2">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="index.html">savefile</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="extract.html">Extract</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="embed.html">Embed</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">savefile</span>
+    <span class="version">2</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="index.html">savefile</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">2</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">savefile</a></li>
+    <li><a href="embed.html">Embed</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/savefile/docs/modules/ROOT/pages/embed.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Embed</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Embedding reads the directory of a previously extracted save file and recreates it again.
+While doing so, it will also bundle the scripts and XML files of all objects again (even the ones inside containers) from a given include path.</p>
+</div>
+<div class="paragraph">
+<p>Changing data before embedding is also possible.</p>
+</div>
+<div class="paragraph">
+<p>To change the object&#8217;s data (e.g. it&#8217;s tags or nickname), simply edit it&#8217;s <code>Data.json</code>.
+In case of changing the nickname or GUID of the object, renaming the directory to mimic this change is not required.
+This would automatically happen once you extract the embedded save file again.</p>
+</div>
+<div class="paragraph">
+<p>To change the script, XML UI or script state, simply edit the respective <code>Script.ttslua</code>, <code>UI.xml</code> or <code>State.txt</code> file.
+Deleting those file will remove the script/XML UI /script state for this object.</p>
+</div>
+<div class="paragraph">
+<p>To add contents into a container you have to do two things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Add all relevant files into the contents directory of the container.</p>
+</li>
+<li>
+<p>Add an entry to the <code>Contents.json</code> of the container and point to the directory of the added object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To remove content from a container, remove its entry from the <code>Contents.json</code> file.
+After extracting the embedded save file, the object&#8217;s directory will also be removed.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Contents.json</code> also contains the order of elements inside the container.
+If you want to change that order, rearrange the entries to your needs.</p>
+</div>
+<div class="paragraph">
+<p>Adding, removing states also works the same, but uses the states directory and <code>States.json</code> file instead.
+And the same applies for attachments, but uses the children directory and the <code>Children.json</code> file instead.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_options"><a class="anchor" href="#_options"></a>Options</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 57.1429%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>includePath</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>string</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The root path to the Lua and XML UI scripts that will be used to resolve <code>require()</code> calls and <code>&lt;Include src="" /&gt;</code> fields.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="200" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

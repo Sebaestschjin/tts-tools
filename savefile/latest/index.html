@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Hello :: TTS Tools</title>
+    <title>TTS Tools - savefile :: TTS Tools</title>
     <meta name="generator" content="Antora 3.0.1">
     <link rel="stylesheet" href="../../_/css/site.css">
   </head>
@@ -37,7 +37,13 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item is-current-page" data-depth="1">
-    <a class="nav-link" href="index.html">Hello</a>
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="extract.html">Extract</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="embed.html">Embed</a>
   </li>
 </ul>
   </li>
@@ -58,9 +64,6 @@
         </li>
       </ul>
     </li>
-    <li class="component">
-      <a class="title" href="../../xmlbundle/index.html">xmlbundle</a>
-    </li>
   </ul>
 </div>
     </div>
@@ -72,7 +75,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">savefile</a></li>
-    <li><a href="index.html">Hello</a></li>
+    <li><a href="index.html">Introduction</a></li>
   </ul>
 </nav>
 <div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/savefile/docs/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
@@ -82,8 +85,100 @@
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Hello</h1>
+<h1 class="page">TTS Tools - savefile</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This module split can a save file from Tabletop Simulator into multiple files, individually for each object on the table.
+This helps in making a save file shareable with source control.
+A split save file can also be embedded again to create a usable save for TTS.
+While doing so, the embedding save file will update the Lua and XML scripts of all objects on the table and in any container.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation"><a class="anchor" href="#_installation"></a>Installation</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">npm install -D @tts-tools/savefile</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">pnpm install -D @tts-tools/savefile</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_basic_usage"><a class="anchor" href="#_basic_usage"></a>Basic usage</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_extract"><a class="anchor" href="#_extract"></a>Extract</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ts hljs" data-lang="ts">import { extractSave, readSave } from "@tts-tools/savefile";
 
+// first read the save file from somewhere, e.g. using fs
+const saveFile = readSave("&lt;path_to_savefile");
+
+// then extract this save file to some output path
+// more options are also available
+extractSave(saveFile, { output: "&lt;path_to_output&gt;" });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See the <a href="extract.html" class="xref page">details</a> for more information.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">WARNING</dt>
+<dd>
+<p>When using <code>readSave</code> from the library, it will read the save file and parse it into a JavaScript object.
+While doing so, all floating point numbers will be converted into strings and get a certain marker added to them.
+So they can&#8217;t be used as numbers anymore.
+This is done to ensure consistent rounding of numbers during the extract step.</p>
+<div class="paragraph">
+<p>If you want to pre-process the save file after reading it and before passing it to <code>extractSave</code>, you need to read the save file content manually and parse it into JSON.
+Rounding floating point numbers then may not be consistent, though.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ts hljs" data-lang="ts">import { extractSave, SaveFile } from "@tts-tools/savefile";
+import { readFileSync } from "fs"
+
+const saveFileContent = readFileSync("&lt;path_to_savefile", { encoding: "utf-8" });
+const saveFile = JSON.parse(saveFileContent) as SaveFile;
+
+extractSave(saveFile, { output: "&lt;path_to_output&gt;" });</code></pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_embed"><a class="anchor" href="#_embed"></a>Embed</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ts hljs" data-lang="ts">import { embedSave } from "@tts-tools/savefile";
+
+// given a path to the previous extracted save, it returns the embedded save again
+const saveFile = embedSave("&lt;path_to_extracted_savefile", {
+  includePath: "&lt;path_to_includes&gt;",
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See the <a href="embed.html" class="xref page">details</a> for more information.</p>
+</div>
+</div>
+</div>
+</div>
 </article>
   </div>
 </main>
