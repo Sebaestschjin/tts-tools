@@ -8,13 +8,12 @@ import ExternalEditorApi, {
   PrintDebugMessage,
   PushingNewObject,
 } from "@matanlurey/tts-editor";
-import { posix } from "path";
 import { Range, Uri, window, workspace } from "vscode";
 
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
-import { FileInfo, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
+import { readWorkspaceFile, writeWorkspaceFile } from "./io/files";
 import { Plugin } from "./plugin";
 
 export class TTSAdapter {
@@ -45,8 +44,7 @@ export class TTSAdapter {
       await saveAllFiles();
 
       const outputPath = this.getOutputPath();
-      const files = await readWorkspaceFiles(outputPath);
-      const { scripts, hasErrors } = await this.createScripts(files, outputPath);
+      const { scripts, hasErrors } = await this.createScripts(outputPath);
       if (!hasErrors) {
         this.plugin.startProgress("Sending scripts to TTS");
         this.api.saveAndPlay(scripts);
@@ -151,9 +149,9 @@ export class TTSAdapter {
     const writeScriptFiles = async (file: ObjectFile, script: ScriptFile, extension: string) => {
       const fileName = `${file.fileName}.${extension}`;
       const baseFile = await writeWorkspaceFile(outputPath, fileName, script.content);
-      writeWorkspaceFile(bundledPath, fileName, script.bundled);
+      const writtenFile = writeWorkspaceFile(bundledPath, fileName, script.bundled);
       if (openFiles) {
-        window.showTextDocument(baseFile);
+        writtenFile.then(() => window.showTextDocument(baseFile));
       }
     };
 
@@ -167,7 +165,7 @@ export class TTSAdapter {
     });
   };
 
-  private createScripts = async (files: FileInfo[], directory: Uri) => {
+  private createScripts = async (directory: Uri) => {
     const scripts = new Map<string, OutgoingJsonObject>();
 
     const includePathsLua = configuration.luaIncludePaths();
@@ -176,29 +174,38 @@ export class TTSAdapter {
     this.plugin.debug(`Using XML include path ${includePathXml}`);
 
     if (configuration.tstlEnalbed()) {
-      this.runTstl();
+      if (!this.runTstl()) {
+        return {
+          scripts: [],
+          hasErrors: true,
+        };
+      }
     }
 
     let hasErrors: boolean = false;
 
-    for (const [fileName] of files) {
-      const guid = fileName.split(".")[1];
-      const fileUri = directory.with({
-        path: posix.join(directory.path, fileName),
-      });
-
-      if (!scripts.has(guid)) {
-        scripts.set(guid, { guid, script: "" });
-      }
-
+    for (const [guid, fileName] of this.objectPaths) {
       try {
-        if (fileName.endsWith(".lua")) {
-          const lua = await bundleLua(fileUri, includePathsLua);
-          scripts.get(guid)!.script = lua;
-        } else if (fileName.endsWith(".xml")) {
-          const xml = await bundleXml(fileUri, includePathXml);
-          scripts.get(guid)!.ui = xml;
+        this.plugin.debug(`Reading object files ${fileName}`);
+        const luaFile = await readWorkspaceFile(directory, `${fileName}.lua`);
+        const xmlFile = await readWorkspaceFile(directory, `${fileName}.xml`);
+
+        let lua: string = "";
+        let xml: string = "";
+        if (luaFile) {
+          this.plugin.debug(`Found lua for ${guid}`);
+          lua = await bundleLua(luaFile, includePathsLua);
         }
+        if (xmlFile) {
+          this.plugin.debug(`Found xml for ${guid}`);
+          xml = await bundleXml(xmlFile, includePathXml);
+        }
+
+        scripts.set(guid, {
+          guid: guid,
+          script: lua,
+          ui: xml,
+        });
       } catch (error: any) {
         window.showErrorMessage(error.message);
         console.error(error.stack);
@@ -225,7 +232,8 @@ export class TTSAdapter {
     return undefined;
   };
 
-  private runTstl = () => {
+  private runTstl = (): boolean => {
+    let hasErrors = false;
     const path = this.getTSTLPath();
     this.plugin.startProgress(`Running Typescript to Lua`);
     const result = runTstl(path);
@@ -240,6 +248,7 @@ export class TTSAdapter {
     };
 
     if (errors.length > 0) {
+      hasErrors = true;
       window
         .showErrorMessage("There were errors while running TSTL. Check the log for more information", "Show Log")
         .then(showLog);
@@ -261,6 +270,8 @@ export class TTSAdapter {
       this.plugin.info(output);
     }
     this.plugin.endProgress();
+
+    return !hasErrors;
   };
 
   private getWorkspaceRoot = (): Uri => {

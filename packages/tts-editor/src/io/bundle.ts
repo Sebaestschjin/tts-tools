@@ -21,9 +21,7 @@ export const unbundleLua = (content: string) => {
   return content;
 };
 
-export const bundleLua = async (file: Uri, includePaths: string[]): Promise<string> => {
-  const script = await readFile(file);
-
+export const bundleLua = async (script: string, includePaths: string[]): Promise<string> => {
   return luabundle.bundleString(script, {
     paths: includePaths,
     isolate: true,
@@ -34,8 +32,6 @@ export const unbundleXml = (content: string) => {
   return unbundle(content);
 };
 
-export const bundleXml = async (file: Uri, includePath: string): Promise<string> => {
-  const script = await readFile(file);
-
+export const bundleXml = async (script: string, includePath: string): Promise<string> => {
   return bundle(script, includePath);
 };

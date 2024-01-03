@@ -1,5 +1,5 @@
 import { tmpdir } from "os";
-import { dirname, join, normalize } from "path";
+import { dirname, join, normalize, posix } from "path";
 import { FileType, Uri, window, workspace } from "vscode";
 
 export const tempFolder = join(tmpdir(), "TabletopSimulator", "Tabletop Simulator Editor");
@@ -38,14 +38,15 @@ export const readFile = async (file: Uri) =>
 
 export type FileInfo = [string, FileType];
 
-export const readWorkspaceFiles = async (directory: Uri): Promise<FileInfo[]> => {
-  try {
-    return workspace.fs
-      .readDirectory(directory)
-      .then((files) => files.filter(([_, fileType]) => fileType !== FileType.Directory));
-  } catch (reason: any) {
-    throw new Error(`Unable to read TTS Scripts directory.\nDetails: ${reason}`);
-  }
+export const readWorkspaceFile = async (directory: Uri, fileName: string): Promise<string | undefined> => {
+  const fileUri = directory.with({
+    path: posix.join(directory.path, fileName),
+  });
+
+  return readFile(fileUri).then(
+    (content) => content,
+    () => undefined
+  );
 };
 
 export const writeWorkspaceFile = async (base: Uri, fileName: string, content: string) => {
