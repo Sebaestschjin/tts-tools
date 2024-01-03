@@ -4,14 +4,14 @@
   "author": "Sebastian Stern",
   "publisher": "sebaestschjin",
   "description": "Implementation of the external editor API for Tabletop Simulator (TTS)",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.82.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Sebaestschjin/tts-tools",
-    "directory": "packages/vs-editor"
+    "directory": "packages/tts-editor"
   },
   "license": "MIT",
   "categories": [
@@ -98,7 +98,7 @@
     "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
     "@tts-tools/xmlbundle": "^1.0.0",
     "luabundle": "^1.6.0",
-    "typescript-to-lua": "^1.20.1"
+    "typescript-to-lua": "^1.23.0"
   },
   "devDependencies": {
     "@types/node": "16.x",
@@ -109,6 +109,6 @@
     "esbuild": "^0.19.3",
     "eslint": "^8.47.0",
     "glob": "^10.3.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3"
   }
 }
