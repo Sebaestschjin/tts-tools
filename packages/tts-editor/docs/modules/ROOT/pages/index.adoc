@@ -1,0 +1,11 @@
+= TTS Editor
+
+A VS Code extension that implements the External Editor API for Tabletop Simulator to simplify editing and managing scripts.
+
+
+== Features
+
+- Bundle Lua
+- Bundle XML
+- Execute scripts
+- Pre-Run https://typescripttolua.github.io/[Typescript to Lua]

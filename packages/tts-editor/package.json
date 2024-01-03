@@ -85,6 +85,7 @@
       }
     }
   },
+  "icon": "resource/icon.png",
   "scripts": {
     "vscode:package": "vsce package",
     "vscode:prepublish": "npm run compile",
