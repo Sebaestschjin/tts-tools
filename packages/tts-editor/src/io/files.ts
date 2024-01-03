@@ -48,9 +48,12 @@ export const readWorkspaceFiles = async (directory: Uri): Promise<FileInfo[]> =>
   }
 };
 
-export const writeWorkspaceFile = (base: Uri, fileName: string, content: string) => {
+export const writeWorkspaceFile = async (base: Uri, fileName: string, content: string) => {
   const fileUri = Uri.joinPath(base, `/${fileName}`);
-  workspace.fs.createDirectory(base).then(() => {
-    workspace.fs.writeFile(fileUri, Buffer.from(content, "utf-8"));
-  });
+  return workspace.fs
+    .createDirectory(base)
+    .then(() => {
+      workspace.fs.writeFile(fileUri, Buffer.from(content, "utf-8"));
+    })
+    .then(() => fileUri);
 };

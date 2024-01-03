@@ -1,20 +1,20 @@
 import * as vscode from "vscode";
 import { TTSAdapter } from "./ttsAdapter";
 import { createWorkspaceFolder } from "./io/files";
+import { Plugin } from "./plugin";
 
 export const extensionName = "ttsEditor";
 
 export function activate(context: vscode.ExtensionContext) {
   createWorkspaceFolder();
-  const log = vscode.window.createOutputChannel("TTS Edtior");
+  const plugin = new Plugin();
 
-  const adapter: TTSAdapter = new TTSAdapter(log);
+  const adapter: TTSAdapter = new TTSAdapter(plugin);
 
   registerGetObjects(context, adapter);
   registerSaveAndPlay(context, adapter);
   registerExecuteCode(context, adapter);
 
-  log.appendLine(`${extensionName} activated`);
   console.log("tts-tools-vscode activated");
 }
 

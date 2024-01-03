@@ -9,24 +9,23 @@ import ExternalEditorApi, {
   PushingNewObject,
 } from "@matanlurey/tts-editor";
 import { posix } from "path";
-import { OutputChannel, Range, Uri, window, workspace } from "vscode";
+import { Range, Uri, window, workspace } from "vscode";
 
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
-import { FileInfo, readFile, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
+import { FileInfo, readWorkspaceFiles, writeWorkspaceFile } from "./io/files";
+import { Plugin } from "./plugin";
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
-  private output: OutputChannel;
+  private plugin: Plugin;
+  private objectPaths: Map<string, string> = new Map();
 
-  /**
-   * @param output Output channel where logs will be written to
-   */
-  public constructor(output: OutputChannel) {
-    this.output = output;
-
+  public constructor(plugin: Plugin) {
     this.api = new ExternalEditorApi();
+    this.plugin = plugin;
+
     this.initExternalEditorApi();
   }
 
@@ -34,7 +33,7 @@ export class TTSAdapter {
    * Retrieves scripts from currently open game.
    */
   public getObjects = async () => {
-    this.output.appendLine("Getting objects");
+    this.plugin.startProgress("Getting object scripts");
     this.api.getLuaScripts();
   };
 
@@ -47,13 +46,21 @@ export class TTSAdapter {
 
       const outputPath = this.getOutputPath();
       const files = await readWorkspaceFiles(outputPath);
-      const scripts = await this.createScripts(files, outputPath);
-      this.api.saveAndPlay(scripts);
+      const { scripts, hasErrors } = await this.createScripts(files, outputPath);
+      if (!hasErrors) {
+        this.plugin.startProgress("Sending scripts to TTS");
+        this.api.saveAndPlay(scripts);
+      }
     } catch (e: any) {
-      this.error(`${e}`);
+      this.plugin.error(`${e}`);
     }
   };
 
+  /**
+   * Executes the given Lua script in TTS.
+   *
+   * @param script the Lua script to execute
+   */
   public executeCode = async (script: string) => {
     return this.api.executeLuaCode(script);
   };
@@ -78,26 +85,27 @@ export class TTSAdapter {
   };
 
   private onLoadGame = async (message: LoadingANewGame) => {
-    this.info("recieved onLoadGame");
+    this.plugin.debug("recieved onLoadGame");
+    this.plugin.endProgress();
     await this.clearOutputPath();
     this.readFilesFromTTS(message.scriptStates);
   };
 
   private onPushObject = async (message: PushingNewObject) => {
-    this.info(`recieved onPushObject ${message.messageID}`);
-    this.readFilesFromTTS(message.scriptStates);
+    this.plugin.debug(`recieved onPushObject ${message.messageID}`);
+    this.readFilesFromTTS(message.scriptStates, true);
   };
 
   private onObjectCreated = async (message: ObjectCreated) => {
-    this.info(`recieved onObjectCreated ${message.guid}`);
+    this.plugin.debug(`recieved onObjectCreated ${message.guid}`);
   };
 
   private onPrintDebugMessage = async (message: PrintDebugMessage) => {
-    this.info(message.message);
+    this.plugin.info(message.message);
   };
 
   private onErrorMessage = async (message: ErrorMessage) => {
-    this.info(`${message.guid} ${message.errorMessagePrefix}`);
+    this.plugin.info(`${message.guid} ${message.errorMessagePrefix}`);
 
     const action = await window.showErrorMessage(`${message.errorMessagePrefix}`, "Go To Error");
     if (!action) {
@@ -125,7 +133,7 @@ export class TTSAdapter {
   };
 
   private onCustomMessage = async (message: CustomMessage) => {
-    this.info(`recieved onCustomMessage ${message.customMessage}`);
+    this.plugin.debug(`recieved onCustomMessage ${message.customMessage}`);
   };
 
   private clearOutputPath = async () => {
@@ -133,21 +141,28 @@ export class TTSAdapter {
     await workspace.fs.delete(outputPath, { recursive: true });
   };
 
-  private readFilesFromTTS = async (scriptStates: IncomingJsonObject[]) => {
-    // TODO auto open files
-
+  private readFilesFromTTS = async (scriptStates: IncomingJsonObject[], openFiles?: boolean) => {
     const outputPath = this.getOutputPath();
     const bundledPath = this.getBundledPath();
-    this.info(`Recieved ${scriptStates.length} scripts`);
-    this.info(`Writing scripts to ${outputPath}`);
 
-    scriptStates.map(toFileInfo).forEach((file) => {
-      writeWorkspaceFile(outputPath, `${file.fileName}.lua`, file.script.content);
-      writeWorkspaceFile(bundledPath, `${file.fileName}.lua`, file.script.bundled);
+    this.plugin.debug(`Writing scripts to ${outputPath}`);
+    this.plugin.setStatus(`Recieved ${scriptStates.length} scripts`);
+
+    const writeScriptFiles = async (file: ObjectFile, script: ScriptFile, extension: string) => {
+      const fileName = `${file.fileName}.${extension}`;
+      const baseFile = await writeWorkspaceFile(outputPath, fileName, script.content);
+      writeWorkspaceFile(bundledPath, fileName, script.bundled);
+      if (openFiles) {
+        window.showTextDocument(baseFile);
+      }
+    };
+
+    scriptStates.map(toFileInfo).forEach(async (file) => {
+      this.objectPaths.set(file.guid, file.fileName);
+      writeScriptFiles(file, file.script, "lua");
 
       if (file.ui) {
-        writeWorkspaceFile(bundledPath, `${file.fileName}.xml`, file.ui.bundled);
-        writeWorkspaceFile(outputPath, `${file.fileName}.xml`, file.ui.content);
+        writeScriptFiles(file, file.ui, "xml");
       }
     });
   };
@@ -157,12 +172,14 @@ export class TTSAdapter {
 
     const includePathsLua = configuration.luaIncludePaths();
     const includePathXml = configuration.xmlIncludePath();
-    this.info(`Using Lua include paths ${includePathsLua}`);
-    this.info(`Using XML include path ${includePathXml}`);
+    this.plugin.debug(`Using Lua include paths ${includePathsLua}`);
+    this.plugin.debug(`Using XML include path ${includePathXml}`);
 
     if (configuration.tstlEnalbed()) {
       this.runTstl();
     }
+
+    let hasErrors: boolean = false;
 
     for (const [fileName] of files) {
       const guid = fileName.split(".")[1];
@@ -185,10 +202,14 @@ export class TTSAdapter {
       } catch (error: any) {
         window.showErrorMessage(error.message);
         console.error(error.stack);
+        hasErrors = true;
       }
     }
 
-    return Array.from(scripts.values());
+    return {
+      scripts: Array.from(scripts.values()),
+      hasErrors: hasErrors,
+    };
   };
 
   private getBundledFileName = async (guid: string) => {
@@ -206,7 +227,7 @@ export class TTSAdapter {
 
   private runTstl = () => {
     const path = this.getTSTLPath();
-    this.info(`Running Typescript to Lua on ${path}`);
+    this.plugin.startProgress(`Running Typescript to Lua`);
     const result = runTstl(path);
 
     const errors = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Error);
@@ -214,7 +235,7 @@ export class TTSAdapter {
 
     const showLog = (option?: string) => {
       if (option) {
-        this.output.show();
+        this.plugin.showOutput();
       }
     };
 
@@ -236,7 +257,10 @@ export class TTSAdapter {
     };
 
     const output = formatDiagnostics(result.diagnostics, host);
-    this.info(output);
+    if (output.length > 0) {
+      this.plugin.info(output);
+    }
+    this.plugin.endProgress();
   };
 
   private getWorkspaceRoot = (): Uri => {
@@ -261,28 +285,21 @@ export class TTSAdapter {
     const path = configuration.tstlPath();
     return Uri.joinPath(root, path).fsPath;
   };
-
-  private info = (message: string) => {
-    console.log(message);
-    this.output.appendLine(message);
-  };
-
-  private error = (message: string) => {
-    console.error(message);
-    this.output.appendLine(message);
-  };
 }
 
 interface ObjectFile {
+  /** The GUID of the object */
+  guid: string;
+  /** Base file name created for this object (without extension). */
   fileName: string;
-  script: {
-    bundled: string;
-    content: string;
-  };
-  ui?: {
-    bundled: string;
-    content: string;
-  };
+  /** The attached Lua script */
+  script: ScriptFile;
+  ui?: ScriptFile;
+}
+
+interface ScriptFile {
+  bundled: string;
+  content: string;
 }
 
 const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
@@ -297,6 +314,7 @@ const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
     : undefined;
 
   return {
+    guid: object.guid,
     fileName: fileName,
     script: {
       bundled: object.script,
