@@ -1,0 +1,36 @@
+= Auto-completion
+
+The extension doesn't add any auto-completion on its own for the TTS API.
+However, it's possible to add that via the https://marketplace.visualstudio.com/items?itemName=sumneko.lua[Lua extension] for VS Code.
+Since this a dedicated extension for handling Lua, it is far superior to whatever auto-completion this extension could provide, and it has also active support.
+
+== Setup
+* Install the https://marketplace.visualstudio.com/items?itemName=sumneko.lua[Lua extension] in VS Code.
+* Download the file `language-server.zip` from the latest https://github.com/Sebaestschjin/typed-tabletop-simulator/releases[release] and extract it somewhere at your local file system.
+* Open the settings in VS Code and search for `lua library`.
+Add a new item for this setting and add the path in your local file system where your extracted the file from before.
++
+image::vs-code-lua-library.png[]
+
+== Usage
+
+After setup, you can use VS Code's auto-completion features to type function names and get possible functions to use, including some documentation about what the function does and what kind of parameters it requires.
+
+image::vs-code-lua-autocomplete-get.png[]
+
+It will also include your own written functions.
+
+image::vs-code-lua-autocomplete-custom.png[]
+
+The same then also applies for returned values from function calls.
+E.g. when a function returns an object reference, you get possible functions you can call on this reference.s
+
+image::vs-code-lua-autocomplete-create.png[]
+
+And also function parameters.
+E.g. in this example it lists the possible parameters to the `createButton` function and also denotes whether the argument is optional (with a `?`) or required.
+
+image::vs-code-lua-autocomplete-params.png[]
+
+The extension offers many more features to help you improve your code and coding experience, e.g. by offering diagnostics or a formatter.
+Checkout its https://luals.github.io/[documentation] for more details.

@@ -9,3 +9,7 @@ A VS Code extension that implements the External Editor API for Tabletop Simulat
 - Bundle XML
 - Execute scripts
 - Pre-Run https://typescripttolua.github.io/[Typescript to Lua]
+
+This extension doesn't offer support for auto-completion of the TTS API.
+However, this can be easily achieved by using a dedicated Lua extension for VS Code.
+Checkout xref:autocompletion.adoc[] for more details.
