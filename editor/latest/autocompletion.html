@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>TTS Editor :: TTS Tools</title>
+    <title>Auto-completion :: TTS Tools</title>
     <meta name="generator" content="Antora 3.0.1">
     <link rel="stylesheet" href="../../_/css/site.css">
   </head>
@@ -36,7 +36,7 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <a class="nav-link" href="index.html">Introduction</a>
   </li>
 </ul>
@@ -77,47 +77,90 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">TTS Editor</a></li>
-    <li><a href="index.html">Introduction</a></li>
+    <li><a href="autocompletion.html">Auto-completion</a></li>
   </ul>
 </nav>
-<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/tts-editor/docs/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
+<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/tts-editor/docs/modules/ROOT/pages/autocompletion.adoc">Edit this Page</a></div>
 </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">TTS Editor</h1>
+<h1 class="page">Auto-completion</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>A VS Code extension that implements the External Editor API for Tabletop Simulator to simplify editing and managing scripts.</p>
+<p>The extension doesn&#8217;t add any auto-completion on its own for the TTS API.
+However, it&#8217;s possible to add that via the <a href="https://marketplace.visualstudio.com/items?itemName=sumneko.lua">Lua extension</a> for VS Code.
+Since this a dedicated extension for handling Lua, it is far superior to whatever auto-completion this extension could provide, and it has also active support.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_features"><a class="anchor" href="#_features"></a>Features</h2>
+<h2 id="_setup"><a class="anchor" href="#_setup"></a>Setup</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>Bundle Lua</p>
+<p>Install the <a href="https://marketplace.visualstudio.com/items?itemName=sumneko.lua">Lua extension</a> in VS Code.</p>
 </li>
 <li>
-<p>Bundle XML</p>
+<p>Download the file <code>language-server.zip</code> from the latest <a href="https://github.com/Sebaestschjin/typed-tabletop-simulator/releases">release</a> and extract it somewhere at your local file system.</p>
 </li>
 <li>
-<p>Execute scripts</p>
-</li>
-<li>
-<p>Pre-Run <a href="https://typescripttolua.github.io/">Typescript to Lua</a></p>
+<p>Open the settings in VS Code and search for <code>lua library</code>.
+Add a new item for this setting and add the path in your local file system where your extracted the file from before.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vs-code-lua-library.png" alt="vs code lua library">
+</div>
+</div>
 </li>
 </ul>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage"><a class="anchor" href="#_usage"></a>Usage</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>This extension doesn&#8217;t offer support for auto-completion of the TTS API.
-However, this can be easily achieved by using a dedicated Lua extension for VS Code.
-Checkout <a href="autocompletion.html" class="xref page">Auto-completion</a> for more details.</p>
+<p>After setup, you can use VS Code&#8217;s auto-completion features to type function names and get possible functions to use, including some documentation about what the function does and what kind of parameters it requires.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vs-code-lua-autocomplete-get.png" alt="vs code lua autocomplete get">
+</div>
+</div>
+<div class="paragraph">
+<p>It will also include your own written functions.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vs-code-lua-autocomplete-custom.png" alt="vs code lua autocomplete custom">
+</div>
+</div>
+<div class="paragraph">
+<p>The same then also applies for returned values from function calls.
+E.g. when a function returns an object reference, you get possible functions you can call on this reference.s</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vs-code-lua-autocomplete-create.png" alt="vs code lua autocomplete create">
+</div>
+</div>
+<div class="paragraph">
+<p>And also function parameters.
+E.g. in this example it lists the possible parameters to the <code>createButton</code> function and also denotes whether the argument is optional (with a <code>?</code>) or required.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vs-code-lua-autocomplete-params.png" alt="vs code lua autocomplete params">
+</div>
+</div>
+<div class="paragraph">
+<p>The extension offers many more features to help you improve your code and coding experience, e.g. by offering diagnostics or a formatter.
+Checkout its <a href="https://luals.github.io/">documentation</a> for more details.</p>
 </div>
 </div>
 </div>
