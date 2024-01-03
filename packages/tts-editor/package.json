@@ -39,6 +39,11 @@
         "command": "ttsEditor.executeCode",
         "title": "Execute Code",
         "category": "TTS Editor"
+      },
+      {
+        "command": "ttsEditor.showOutput",
+        "title": "Show Output",
+        "category": "TTS Editor"
       }
     ],
     "keybindings": [

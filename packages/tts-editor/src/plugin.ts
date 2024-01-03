@@ -10,6 +10,7 @@ export class Plugin {
   public constructor() {
     this.output = window.createOutputChannel("TTS Edtior");
     this.status = window.createStatusBarItem("tts.status", StatusBarAlignment.Left, -1);
+    this.status.command = "ttsEditor.showOutput";
 
     this.setBaseStatus();
   }
