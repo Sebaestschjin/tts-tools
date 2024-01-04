@@ -7,4 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixes extension activation event for workspaces containing `.lua` or `.ttslua` files
+
+## [0.2.0] - 2024-01-04
+
 - Initial release

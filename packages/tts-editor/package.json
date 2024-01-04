@@ -20,8 +20,8 @@
   ],
   "activationEvents": [
     "onLanguage:lua",
-    "workspaceContains:**/.lua",
-    "workspaceContains:**/.ttslua"
+    "workspaceContains:**/*.lua",
+    "workspaceContains:**/*.ttslua"
   ],
   "main": "./dist/extension.js",
   "contributes": {
