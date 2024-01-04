@@ -45,6 +45,11 @@
         "command": "ttsEditor.showOutput",
         "title": "Show Output",
         "category": "TTS Editor"
+      },
+      {
+        "command": "ttsEditor.openBundledScript",
+        "title": "Open Bundled Script",
+        "icon": "$(file-code)"
       }
     ],
     "keybindings": [
@@ -84,6 +89,29 @@
           "default": "."
         }
       }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "ttsObjects",
+          "name": "TTS Objects"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "ttsObjects",
+        "contents": "No objects have been loaded yet\n[Load objects](command:ttsEditor.getObjects)"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "ttsEditor.openBundledScript",
+          "when": "view == ttsObjects && viewItem == script",
+          "group": "inline"
+        }
+      ]
     }
   },
   "icon": "resource/icon.png",

@@ -2,18 +2,29 @@ import * as vscode from "vscode";
 import { TTSAdapter } from "./ttsAdapter";
 import { createWorkspaceFolder } from "./io/files";
 import { Plugin } from "./plugin";
+import { TTSObjectTreeProvider, TTSScriptItem } from "./view/ttsObjectTreeProvider";
 
 export const extensionName = "ttsEditor";
 
 export function activate(context: vscode.ExtensionContext) {
   createWorkspaceFolder();
   const plugin = new Plugin();
-  const adapter: TTSAdapter = new TTSAdapter(plugin);
+  const view = new TTSObjectTreeProvider(plugin);
+  const adapter: TTSAdapter = new TTSAdapter(plugin, view);
 
   registerGetObjects(context, adapter);
   registerSaveAndPlay(context, adapter);
   registerExecuteCode(context, adapter);
   registerShowOutput(context, plugin);
+  registerView(view);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`${extensionName}.openBundledScript`, async (arg) => {
+      if (arg instanceof TTSScriptItem) {
+        arg.openBundledScript();
+      }
+    })
+  );
 
   console.log("tts-tools-vscode activated");
 }
@@ -60,6 +71,10 @@ const registerShowOutput = (context: vscode.ExtensionContext, plugin: Plugin) =>
       plugin.showOutput();
     })
   );
+};
+
+const registerView = (view: TTSObjectTreeProvider) => {
+  vscode.window.registerTreeDataProvider("ttsObjects", view);
 };
 
 export function deactivate() {

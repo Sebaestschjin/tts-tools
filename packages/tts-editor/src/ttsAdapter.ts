@@ -13,17 +13,20 @@ import { Range, Uri, window, workspace } from "vscode";
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
-import { readWorkspaceFile, writeWorkspaceFile } from "./io/files";
+import { getOutputPath, getWorkspaceRoot, readWorkspaceFile, writeWorkspaceFile } from "./io/files";
 import { Plugin } from "./plugin";
+import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
+import { ObjectFile, ScriptData } from "./model/objectData";
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
   private plugin: Plugin;
-  private objectPaths: Map<string, string> = new Map();
+  private view: TTSObjectTreeProvider;
 
-  public constructor(plugin: Plugin) {
+  public constructor(plugin: Plugin, view: TTSObjectTreeProvider) {
     this.api = new ExternalEditorApi();
     this.plugin = plugin;
+    this.view = view;
 
     this.initExternalEditorApi();
   }
@@ -43,8 +46,7 @@ export class TTSAdapter {
     try {
       await saveAllFiles();
 
-      const outputPath = this.getOutputPath();
-      const { scripts, hasErrors } = await this.createScripts(outputPath);
+      const { scripts, hasErrors } = await this.createScripts();
       if (!hasErrors) {
         this.plugin.startProgress("Sending scripts to TTS");
         this.api.saveAndPlay(scripts);
@@ -135,18 +137,18 @@ export class TTSAdapter {
   };
 
   private clearOutputPath = async () => {
-    const outputPath = this.getOutputPath();
+    const outputPath = getOutputPath();
     await workspace.fs.delete(outputPath, { recursive: true });
   };
 
   private readFilesFromTTS = async (scriptStates: IncomingJsonObject[], openFiles?: boolean) => {
-    const outputPath = this.getOutputPath();
-    const bundledPath = this.getBundledPath();
+    const outputPath = getOutputPath();
+    const bundledPath = getOutputPath(true);
 
     this.plugin.debug(`Writing scripts to ${outputPath}`);
     this.plugin.setStatus(`Recieved ${scriptStates.length} scripts`);
 
-    const writeScriptFiles = async (file: ObjectFile, script: ScriptFile, extension: string) => {
+    const writeScriptFiles = async (file: ObjectFile, script: ScriptData, extension: string) => {
       const fileName = `${file.fileName}.${extension}`;
       const baseFile = await writeWorkspaceFile(outputPath, fileName, script.content);
       const writtenFile = writeWorkspaceFile(bundledPath, fileName, script.bundled);
@@ -156,16 +158,24 @@ export class TTSAdapter {
     };
 
     scriptStates.map(toFileInfo).forEach(async (file) => {
-      this.objectPaths.set(file.guid, file.fileName);
+      this.plugin.setLoadedObject({
+        guid: file.guid,
+        name: file.name,
+        fileName: file.fileName,
+        hasUi: file.ui !== undefined,
+      });
       writeScriptFiles(file, file.script, "lua");
 
       if (file.ui) {
         writeScriptFiles(file, file.ui, "xml");
       }
     });
+
+    this.view.refresh();
   };
 
-  private createScripts = async (directory: Uri) => {
+  private createScripts = async () => {
+    const directory = getOutputPath();
     const scripts = new Map<string, OutgoingJsonObject>();
 
     const includePathsLua = configuration.luaIncludePaths();
@@ -184,7 +194,7 @@ export class TTSAdapter {
 
     let hasErrors: boolean = false;
 
-    for (const [guid, fileName] of this.objectPaths) {
+    for (const [guid, fileName] of this.plugin.getLoadedObjects()) {
       try {
         this.plugin.debug(`Reading object files ${fileName}`);
         const luaFile = await readWorkspaceFile(directory, `${fileName}.lua`);
@@ -220,14 +230,14 @@ export class TTSAdapter {
   };
 
   private getBundledFileName = async (guid: string) => {
-    const directory = this.getBundledPath();
-    const files = await workspace.fs.readDirectory(directory);
+    // const directory = this.getBundledPath();
+    // const files = await workspace.fs.readDirectory(directory);
 
-    for (const [name] of files) {
-      if (name.endsWith(`.${guid}.lua`)) {
-        return Uri.joinPath(directory, name);
-      }
-    }
+    // for (const [name] of files) {
+    //   if (name.endsWith(`.${guid}.lua`)) {
+    //     return Uri.joinPath(directory, name);
+    //   }
+    // }
 
     return undefined;
   };
@@ -260,7 +270,7 @@ export class TTSAdapter {
     }
 
     const host: FormatDiagnosticsHost = {
-      getCurrentDirectory: () => this.getOutputPath().toString(),
+      getCurrentDirectory: () => getOutputPath().toString(),
       getCanonicalFileName: (fileName: string) => fileName,
       getNewLine: () => "\n",
     };
@@ -274,45 +284,12 @@ export class TTSAdapter {
     return !hasErrors;
   };
 
-  private getWorkspaceRoot = (): Uri => {
-    if (!workspace.workspaceFolders) {
-      throw new Error("No workspace selected");
-    }
-
-    return workspace.workspaceFolders[0].uri;
-  };
-
-  private getOutputPath = (): Uri => {
-    const root = this.getWorkspaceRoot();
-    return Uri.joinPath(root, "/.tts");
-  };
-
-  private getBundledPath = (): Uri => {
-    return Uri.joinPath(this.getOutputPath(), "/bundled");
-  };
-
   private getTSTLPath = (): string => {
-    const root = this.getWorkspaceRoot();
+    const root = getWorkspaceRoot();
     const path = configuration.tstlPath();
     return Uri.joinPath(root, path).fsPath;
   };
 }
-
-interface ObjectFile {
-  /** The GUID of the object */
-  guid: string;
-  /** Base file name created for this object (without extension). */
-  fileName: string;
-  /** The attached Lua script */
-  script: ScriptFile;
-  ui?: ScriptFile;
-}
-
-interface ScriptFile {
-  bundled: string;
-  content: string;
-}
-
 const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
   const baseName = object.name.replace(/([":<>/\\|?*])/g, "");
   const fileName = `${baseName}.${object.guid}`;
@@ -326,6 +303,7 @@ const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
 
   return {
     guid: object.guid,
+    name: object.name,
     fileName: fileName,
     script: {
       bundled: object.script,

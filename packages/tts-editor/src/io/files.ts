@@ -1,8 +1,31 @@
+import { dir } from "console";
 import { tmpdir } from "os";
 import { dirname, join, normalize, posix } from "path";
 import { FileType, Uri, window, workspace } from "vscode";
 
 export const tempFolder = join(tmpdir(), "TabletopSimulator", "Tabletop Simulator Editor");
+
+export const getOutputPath = (bundled?: boolean): Uri => {
+  const root = getWorkspaceRoot();
+  const basePath = Uri.joinPath(root, "/.tts");
+
+  return bundled ? Uri.joinPath(basePath, "/bundled") : basePath;
+};
+
+export const getWorkspaceRoot = (): Uri => {
+  if (!workspace.workspaceFolders) {
+    throw new Error("No workspace selected");
+  }
+
+  return workspace.workspaceFolders[0].uri;
+};
+
+export const getOutputFileUri = (fileName: string, bundled?: boolean) => {
+  const directory = getOutputPath(bundled);
+  return directory.with({
+    path: posix.join(directory.path, fileName),
+  });
+};
 
 export async function createWorkspaceFolder() {
   try {

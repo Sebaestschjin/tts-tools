@@ -1,10 +1,8 @@
 import { bundle, unbundle } from "@tts-tools/xmlbundle";
 import * as luabundle from "luabundle";
-import { Uri } from "vscode";
 
 import * as tstl from "typescript-to-lua";
 
-import { readFile } from "./files";
 import { readMetadata } from "luabundle/metadata";
 
 export const runTstl = (path: string) => {

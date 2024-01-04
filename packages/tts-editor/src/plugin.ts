@@ -1,8 +1,10 @@
 import { OutputChannel, StatusBarAlignment, StatusBarItem, window } from "vscode";
+import { LoadedObject } from "./model/objectData";
 
 export class Plugin {
   private output: OutputChannel;
   private status: StatusBarItem;
+  private loadedObjects: Map<string, LoadedObject> = new Map();
 
   /**
    * @param output Output channel where logs will be written to
@@ -14,6 +16,14 @@ export class Plugin {
 
     this.setBaseStatus();
   }
+
+  setLoadedObject = (loaded: LoadedObject) => {
+    this.loadedObjects.set(loaded.guid, loaded);
+  };
+
+  getLoadedObjects = () => {
+    return this.loadedObjects;
+  };
 
   startProgress = (message: string) => {
     this.status.text = `$(loading~spin) ${message}`;
