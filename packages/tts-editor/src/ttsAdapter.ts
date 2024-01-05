@@ -42,11 +42,11 @@ export class TTSAdapter {
   /**
    * Sends the bundled scripts to TTS
    */
-  public saveAndPlay = async () => {
+  public saveAndPlay = async (bundled: boolean = false) => {
     try {
       await saveAllFiles();
 
-      const { scripts, hasErrors } = await this.createScripts();
+      const { scripts, hasErrors } = await this.createScripts(bundled);
       if (!hasErrors) {
         this.plugin.startProgress("Sending scripts to TTS");
         this.api.saveAndPlay(scripts);
@@ -176,8 +176,8 @@ export class TTSAdapter {
     this.view.refresh();
   };
 
-  private createScripts = async () => {
-    const directory = getOutputPath();
+  private createScripts = async (bundled: boolean) => {
+    const directory = getOutputPath(bundled);
     const scripts = new Map<string, OutgoingJsonObject>();
 
     const includePathsLua = configuration.luaIncludePaths();
@@ -185,7 +185,7 @@ export class TTSAdapter {
     this.plugin.debug(`Using Lua include paths ${includePathsLua}`);
     this.plugin.debug(`Using XML include path ${includePathXml}`);
 
-    if (configuration.tstlEnalbed()) {
+    if (configuration.tstlEnalbed() && !bundled) {
       if (!this.runTstl()) {
         return {
           scripts: [],
@@ -202,13 +202,13 @@ export class TTSAdapter {
         const luaFile = await readWorkspaceFile(directory, `${object.fileName}.lua`);
         const xmlFile = await readWorkspaceFile(directory, `${object.fileName}.xml`);
 
-        let lua: string = "";
-        let xml: string = "";
-        if (luaFile) {
+        let lua: string = luaFile ?? "";
+        let xml: string = xmlFile ?? "";
+        if (luaFile && !bundled) {
           this.plugin.debug(`Found lua for ${object.guid}`);
           lua = await bundleLua(luaFile, includePathsLua);
         }
-        if (xmlFile) {
+        if (xmlFile && !bundled) {
           this.plugin.debug(`Found xml for ${object.guid}`);
           xml = await bundleXml(xmlFile, includePathXml);
         }

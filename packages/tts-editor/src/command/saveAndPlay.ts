@@ -1,5 +1,9 @@
 import { TTSAdapter } from "../ttsAdapter";
 
-export default (adapter: TTSAdapter) => () => {
+export const saveAndPlay = (adapter: TTSAdapter) => () => {
   adapter.saveAndPlay();
+};
+
+export const saveAndPlayBundled = (adapter: TTSAdapter) => () => {
+  adapter.saveAndPlay(true);
 };

@@ -4,7 +4,7 @@ import getRuntimeUi from "./command/getRuntimeUi";
 import getScripts from "./command/getScripts";
 import locateObject from "./command/locateObject";
 import openBundledScript from "./command/openBundledScript";
-import saveAndPlay from "./command/saveAndPlay";
+import { saveAndPlay, saveAndPlayBundled } from "./command/saveAndPlay";
 import showOutput from "./command/showOutput";
 import { createWorkspaceFolder } from "./io/files";
 import { Plugin } from "./plugin";
@@ -25,6 +25,7 @@ export function activate(context: ExtensionContext) {
 
   registerCommand("getObjects", getScripts(adapter));
   registerCommand("saveAndPlay", saveAndPlay(adapter));
+  registerCommand("saveAndPlayBundled", saveAndPlayBundled(adapter));
   registerCommand("executeCode", executeScript(adapter));
   registerCommand("showOutput", showOutput(plugin));
   registerCommand("openBundledScript", openBundledScript);

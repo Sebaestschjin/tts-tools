@@ -34,7 +34,13 @@
       },
       {
         "command": "ttsEditor.saveAndPlay",
-        "title": "Save & Play",
+        "title": "Save and Play",
+        "category": "TTS Editor",
+        "icon": "$(send)"
+      },
+      {
+        "command": "ttsEditor.saveAndPlayBundled",
+        "title": "Save and Play (Bundled)",
         "category": "TTS Editor",
         "icon": "$(send)"
       },
