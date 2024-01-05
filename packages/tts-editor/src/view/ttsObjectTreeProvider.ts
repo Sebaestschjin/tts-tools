@@ -92,10 +92,11 @@ export class TTSObjectItem extends TreeItem {
     super(object.name, TreeItemCollapsibleState.Collapsed);
 
     this.object = object;
-    this.contextValue = "object";
     this.iconPath = ThemeIcon.Folder;
     if (this.isGlobal()) {
+      this.contextValue = "global";
     } else {
+      this.contextValue = "object";
       this.description = object.guid;
     }
   }

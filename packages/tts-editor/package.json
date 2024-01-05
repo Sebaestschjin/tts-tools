@@ -55,6 +55,11 @@
         "command": "ttsEditor.getRuntimeUi",
         "title": "Get Runtime UI",
         "icon": "$(window)"
+      },
+      {
+        "command": "ttsEditor.locateObject",
+        "title": "Locate Object",
+        "icon": "$(search)"
       }
     ],
     "keybindings": [
@@ -118,8 +123,13 @@
         },
         {
           "command": "ttsEditor.getRuntimeUi",
+          "when": "view == ttsObjects && (viewItem == object || viewItem == global)",
+          "group": "inline@2"
+        },
+        {
+          "command": "ttsEditor.locateObject",
           "when": "view == ttsObjects && viewItem == object",
-          "group": "inline"
+          "group": "inline@1"
         }
       ]
     }

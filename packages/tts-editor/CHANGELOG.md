@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Adds a view that lists the objects in the game that have scripts attached
 - Adds a command to show the current UI of an object as a file
+- Adds a command to locate an object on the table
 
 ### Fixed
 

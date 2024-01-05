@@ -9,6 +9,7 @@ import saveAndPlay from "./command/saveAndPlay";
 import executeScript from "./command/executeScript";
 import showOutput from "./command/showOutput";
 import getRuntimeUi from "./command/getRuntimeUi";
+import locateObject from "./command/locateObject";
 
 export const extensionName = "ttsEditor";
 
@@ -28,6 +29,7 @@ export function activate(context: ExtensionContext) {
   registerCommand("showOutput", showOutput(plugin));
   registerCommand("openBundledScript", openBundledScript);
   registerCommand("getRuntimeUi", getRuntimeUi(adapter));
+  registerCommand("locateObject", locateObject(adapter));
 
   window.registerTreeDataProvider("ttsObjects", view);
 
