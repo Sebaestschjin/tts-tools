@@ -17,8 +17,17 @@ export class Plugin {
     this.setBaseStatus();
   }
 
+  resetLoadedObjects = () => {
+    this.loadedObjects.clear();
+    this.endProgress();
+  };
+
   setLoadedObject = (loaded: LoadedObject) => {
     this.loadedObjects.set(loaded.guid, loaded);
+  };
+
+  getLoadedObject = (guid: string): LoadedObject | undefined => {
+    return this.loadedObjects.get(guid);
   };
 
   getLoadedObjects = (): LoadedObject[] => {

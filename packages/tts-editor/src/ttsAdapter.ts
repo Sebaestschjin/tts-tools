@@ -13,7 +13,7 @@ import { Range, Uri, window, workspace } from "vscode";
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
-import { getOutputPath, getWorkspaceRoot, readWorkspaceFile, writeWorkspaceFile } from "./io/files";
+import { getOutputFileUri, getOutputPath, getWorkspaceRoot, readWorkspaceFile, writeWorkspaceFile } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
 import { ObjectFile, ScriptData } from "./model/objectData";
@@ -86,8 +86,8 @@ export class TTSAdapter {
 
   private onLoadGame = async (message: LoadingANewGame) => {
     this.plugin.debug("recieved onLoadGame");
-    this.plugin.endProgress();
     await this.clearOutputPath();
+    this.plugin.resetLoadedObjects();
     this.readFilesFromTTS(message.scriptStates);
   };
 
@@ -106,18 +106,18 @@ export class TTSAdapter {
 
   private onErrorMessage = async (message: ErrorMessage) => {
     this.plugin.info(`${message.guid} ${message.errorMessagePrefix}`);
-    console.log(message.error);
 
     const action = await window.showErrorMessage(`${message.errorMessagePrefix}`, "Go To Error");
     if (!action) {
       return;
     }
 
-    const file = await this.getBundledFileName(message.guid);
-    if (!file) {
+    const object = this.plugin.getLoadedObject(message.guid);
+    if (!object) {
       return;
     }
 
+    const fileUri = getOutputFileUri(`${object.fileName}.lua`, true);
     let selection: Range | undefined = undefined;
     const rangeExpression = /.*:\((\d+),(\d+)-(\d+)\):/;
     const range = message.errorMessagePrefix.match(rangeExpression);
@@ -128,7 +128,7 @@ export class TTSAdapter {
       selection = new Range(lineNumber, Number(start), lineNumber, Number(end));
     }
 
-    window.showTextDocument(file, {
+    window.showTextDocument(fileUri, {
       selection: selection,
     });
   };
@@ -232,6 +232,7 @@ export class TTSAdapter {
   };
 
   private getBundledFileName = async (guid: string) => {
+    this.plugin.getLoadedObjects;
     // const directory = this.getBundledPath();
     // const files = await workspace.fs.readDirectory(directory);
 
