@@ -41,6 +41,16 @@ export class Plugin {
     return this.loadedObjects.get(guid);
   };
 
+  getLoadedObjectByFileName = (fileName: string): LoadedObject | undefined => {
+    for (const [_, object] of this.loadedObjects) {
+      if (object.fileName.toLocaleLowerCase() === fileName.toLocaleLowerCase()) {
+        return object;
+      }
+    }
+
+    return undefined;
+  };
+
   getLoadedObjects = (): LoadedObject[] => {
     const objects: LoadedObject[] = [];
 
