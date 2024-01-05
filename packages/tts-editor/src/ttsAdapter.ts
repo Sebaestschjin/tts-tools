@@ -61,8 +61,8 @@ export class TTSAdapter {
    *
    * @param script the Lua script to execute
    */
-  public executeCode = async (script: string) => {
-    return this.api.executeLuaCodeAndReturn(script);
+  public executeCode = async <T = void>(script: string) => {
+    return this.api.executeLuaCodeAndReturn(script) as T;
   };
 
   /**

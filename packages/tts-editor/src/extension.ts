@@ -1,15 +1,15 @@
 import { ExtensionContext, commands, window } from "vscode";
+import executeScript from "./command/executeScript";
+import getRuntimeUi from "./command/getRuntimeUi";
+import getScripts from "./command/getScripts";
+import locateObject from "./command/locateObject";
 import openBundledScript from "./command/openBundledScript";
+import saveAndPlay from "./command/saveAndPlay";
+import showOutput from "./command/showOutput";
 import { createWorkspaceFolder } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSAdapter } from "./ttsAdapter";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
-import getScripts from "./command/getScripts";
-import saveAndPlay from "./command/saveAndPlay";
-import executeScript from "./command/executeScript";
-import showOutput from "./command/showOutput";
-import getRuntimeUi from "./command/getRuntimeUi";
-import locateObject from "./command/locateObject";
 
 export const extensionName = "ttsEditor";
 
@@ -30,6 +30,9 @@ export function activate(context: ExtensionContext) {
   registerCommand("openBundledScript", openBundledScript);
   registerCommand("getRuntimeUi", getRuntimeUi(plugin, adapter));
   registerCommand("locateObject", locateObject(plugin, adapter));
+
+  // wip
+  // registerCommand("getAllObjects", getAllObjects(adapter));
 
   window.registerTreeDataProvider("ttsObjects", view);
 
