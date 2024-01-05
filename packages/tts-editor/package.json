@@ -29,17 +29,20 @@
       {
         "command": "ttsEditor.getObjects",
         "title": "Get Objects",
-        "category": "TTS Editor"
+        "category": "TTS Editor",
+        "icon": "$(git-fetch)"
       },
       {
         "command": "ttsEditor.saveAndPlay",
         "title": "Save & Play",
-        "category": "TTS Editor"
+        "category": "TTS Editor",
+        "icon": "$(send)"
       },
       {
         "command": "ttsEditor.executeCode",
         "title": "Execute Code",
-        "category": "TTS Editor"
+        "category": "TTS Editor",
+        "icon": "$(run)"
       },
       {
         "command": "ttsEditor.showOutput",
@@ -49,17 +52,20 @@
       {
         "command": "ttsEditor.openBundledScript",
         "title": "Open Bundled Script",
-        "icon": "$(file-code)"
+        "category": "TTS Editor",
+        "icon": "$(go-to-file)"
       },
       {
         "command": "ttsEditor.getRuntimeUi",
         "title": "Get Runtime UI",
+        "category": "TTS Editor",
         "icon": "$(window)"
       },
       {
         "command": "ttsEditor.locateObject",
         "title": "Locate Object",
-        "icon": "$(search)"
+        "category": "TTS Editor",
+        "icon": "$(location)"
       }
     ],
     "keybindings": [
