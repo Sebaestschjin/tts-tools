@@ -41,6 +41,11 @@ export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
     }
   }
 
+  // Just required to make the showView command possible. Doesn't actually work
+  getParent(_: TTSItem): ProviderResult<TTSItem> {
+    return null;
+  }
+
   refresh(): void {
     this._onDidChangeTreeData.fire();
   }
@@ -79,7 +84,7 @@ export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
   }
 }
 
-type TTSItem = TTSObjectItem | TTSScriptItem;
+export type TTSItem = TTSObjectItem | TTSScriptItem;
 
 export class TTSObjectItem extends TreeItem {
   public readonly object: LoadedObject;

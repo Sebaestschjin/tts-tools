@@ -10,14 +10,18 @@ import { createWorkspaceFolder } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSAdapter } from "./ttsAdapter";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
+import showView from "./command/showView";
 
 export const extensionName = "ttsEditor";
 
 export function activate(context: ExtensionContext) {
   createWorkspaceFolder();
   const plugin = new Plugin();
-  const view = new TTSObjectTreeProvider(plugin);
-  const adapter: TTSAdapter = new TTSAdapter(plugin, view);
+  const viewProvider = new TTSObjectTreeProvider(plugin);
+  const view = window.createTreeView("ttsEditor.objectView", {
+    treeDataProvider: viewProvider,
+  });
+  const adapter: TTSAdapter = new TTSAdapter(plugin, viewProvider);
 
   const registerCommand = (name: string, handler: Parameters<typeof commands.registerCommand>[1]) => {
     context.subscriptions.push(commands.registerCommand(`${extensionName}.${name}`, handler));
@@ -28,6 +32,7 @@ export function activate(context: ExtensionContext) {
   registerCommand("saveAndPlayBundled", saveAndPlayBundled(adapter));
   registerCommand("executeCode", executeScript(adapter));
   registerCommand("showOutput", showOutput(plugin));
+  registerCommand("showView", showView(view));
   registerCommand("openBundledScript", openBundledScript);
   registerCommand("getRuntimeUi", getRuntimeUi(plugin, adapter));
   registerCommand("locateObject", locateObject(plugin, adapter));
@@ -35,7 +40,7 @@ export function activate(context: ExtensionContext) {
   // wip
   // registerCommand("getAllObjects", getAllObjects(adapter));
 
-  window.registerTreeDataProvider("ttsObjects", view);
+  window.registerTreeDataProvider("ttsEditor.objectView", viewProvider);
 
   console.log("tts-tools-vscode activated");
 }
