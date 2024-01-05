@@ -8,15 +8,15 @@ import ExternalEditorApi, {
   PrintDebugMessage,
   PushingNewObject,
 } from "@matanlurey/tts-editor";
-import { Range, Uri, window, workspace } from "vscode";
+import { Range, window, workspace } from "vscode";
 
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
-import { getOutputFileUri, getOutputPath, getWorkspaceRoot, readWorkspaceFile, writeWorkspaceFile } from "./io/files";
+import { getOutputFileUri, getOutputPath, getTstlPath, readOutputFile, writeOutputFile } from "./io/files";
+import { ObjectFile, ScriptData } from "./model/objectData";
 import { Plugin } from "./plugin";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
-import { ObjectFile, ScriptData } from "./model/objectData";
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
@@ -143,16 +143,12 @@ export class TTSAdapter {
   };
 
   private readFilesFromTTS = async (scriptStates: IncomingJsonObject[], openFiles?: boolean) => {
-    const outputPath = getOutputPath();
-    const bundledPath = getOutputPath(true);
-
-    this.plugin.debug(`Writing scripts to ${outputPath}`);
     this.plugin.setStatus(`Recieved ${scriptStates.length} scripts`);
 
     const writeScriptFiles = async (file: ObjectFile, script: ScriptData, extension: string) => {
       const fileName = `${file.fileName}.${extension}`;
-      const baseFile = await writeWorkspaceFile(outputPath, fileName, script.content);
-      const writtenFile = writeWorkspaceFile(bundledPath, fileName, script.bundled);
+      const baseFile = await writeOutputFile(fileName, script.content);
+      const writtenFile = writeOutputFile(fileName, script.bundled, true);
       if (openFiles) {
         writtenFile.then(() => window.showTextDocument(baseFile));
       }
@@ -199,8 +195,8 @@ export class TTSAdapter {
     for (const object of this.plugin.getLoadedObjects()) {
       try {
         this.plugin.debug(`Reading object files ${object.fileName}`);
-        const luaFile = await readWorkspaceFile(directory, `${object.fileName}.lua`);
-        const xmlFile = await readWorkspaceFile(directory, `${object.fileName}.xml`);
+        const luaFile = await readOutputFile(`${object.fileName}.lua`, bundled);
+        const xmlFile = await readOutputFile(`${object.fileName}.xml`, bundled);
 
         let lua: string = luaFile ?? "";
         let xml: string = xmlFile ?? "";
@@ -231,27 +227,9 @@ export class TTSAdapter {
     };
   };
 
-  private getBundledFileName = async (guid: string) => {
-    this.plugin.getLoadedObjects;
-    // const directory = this.getBundledPath();
-    // const files = await workspace.fs.readDirectory(directory);
-
-    // for (const [name] of files) {
-    //   if (name.endsWith(`.${guid}.lua`)) {
-    //     return Uri.joinPath(directory, name);
-    //   }
-    // }
-
-    if (guid === "-2") {
-      return null;
-    }
-
-    return undefined;
-  };
-
   private runTstl = (): boolean => {
     let hasErrors = false;
-    const path = this.getTSTLPath();
+    const path = getTstlPath();
     this.plugin.startProgress(`Running Typescript to Lua`);
     const result = runTstl(path);
 
@@ -289,12 +267,6 @@ export class TTSAdapter {
     this.plugin.endProgress();
 
     return !hasErrors;
-  };
-
-  private getTSTLPath = (): string => {
-    const root = getWorkspaceRoot();
-    const path = configuration.tstlPath();
-    return Uri.joinPath(root, path).fsPath;
   };
 }
 const toFileInfo = (object: IncomingJsonObject): ObjectFile => {

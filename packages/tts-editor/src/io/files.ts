@@ -1,18 +1,63 @@
-import { dir } from "console";
-import { tmpdir } from "os";
-import { dirname, join, normalize, posix } from "path";
-import { FileType, Uri, window, workspace } from "vscode";
+import { posix } from "path";
+import { Uri, workspace } from "vscode";
+import configuration from "../configuration";
 
-export const tempFolder = join(tmpdir(), "TabletopSimulator", "Tabletop Simulator Editor");
-
-export const getOutputPath = (bundled?: boolean): Uri => {
+/**
+ * Returns the path where all data files will be written to.
+ *
+ * @param bundled Determines whether the output is for a regular file or for a bundled file.
+ */
+export const getOutputPath = (bundled: boolean = false): Uri => {
   const root = getWorkspaceRoot();
   const basePath = Uri.joinPath(root, "/.tts");
 
   return bundled ? Uri.joinPath(basePath, "/bundled") : basePath;
 };
 
-export const getWorkspaceRoot = (): Uri => {
+/**
+ * Returns the path for a data file to write.
+ *
+ * @param fileName The name of the file to write.
+ * @param bundled Determines whether the file is for a regular file or for a bundled file.
+ */
+export const getOutputFileUri = (fileName: string, bundled: boolean = false) => {
+  const directory = getOutputPath(bundled);
+  return directory.with({
+    path: posix.join(directory.path, fileName),
+  });
+};
+
+/**
+ * Returns the path to the TSTL project to use.
+ */
+export const getTstlPath = () => {
+  const root = getWorkspaceRoot();
+  const path = configuration.tstlPath();
+  return Uri.joinPath(root, path).fsPath;
+};
+
+/**
+ * Writes a data file to the output directory of the extension.
+ *
+ * @param fileName The name of the file to write.
+ * @param content The content of the file.
+ * @param bundled Determines whether the file is for a regular file or for a bundled file.
+ */
+export const writeOutputFile = async (fileName: string, content: string, bundled: boolean = false) => {
+  return writeFile(getOutputPath(bundled), fileName, content);
+};
+
+/**
+ * Reads a data file from the output directory of the extension.
+ *
+ * @param fileName The name of the file to write.
+ * @param bundled Determines whether the file is for a regular file or for a bundled file.
+ */
+export const readOutputFile = async (fileName: string, bundled: boolean = false) => {
+  return readWorkspaceFile(getOutputPath(bundled), fileName);
+};
+
+const getWorkspaceRoot = (): Uri => {
   if (!workspace.workspaceFolders) {
     throw new Error("No workspace selected");
   }
@@ -20,52 +65,7 @@ export const getWorkspaceRoot = (): Uri => {
   return workspace.workspaceFolders[0].uri;
 };
 
-export const getOutputFileUri = (fileName: string, bundled?: boolean) => {
-  const directory = getOutputPath(bundled);
-  return directory.with({
-    path: posix.join(directory.path, fileName),
-  });
-};
-
-export const writeOutputFile = async (fileName: string, content: string) => {
-  return writeWorkspaceFile(getOutputPath(), fileName, content);
-};
-
-export async function createWorkspaceFolder() {
-  try {
-    await workspace.fs.createDirectory(Uri.file(tempFolder));
-  } catch (reason: any) {
-    window.showErrorMessage(`Failed to create workspace folder: ${reason}`);
-  }
-}
-
-export const writeTempFile = (fileName: string, content: string) => {
-  const fileUri = getTempFileUri(fileName);
-  workspace.fs.createDirectory(Uri.file(dirname(fileUri.fsPath))).then(() => {
-    workspace.fs.writeFile(fileUri, Buffer.from(content, "utf-8"));
-  });
-};
-
-export const openTempFile = (fileName: string) => {
-  const fileUri = getTempFileUri(fileName);
-
-  return window.showTextDocument(fileUri, {
-    preserveFocus: true,
-    preview: false,
-  });
-};
-
-const getTempFileUri = (fileName: string) => Uri.file(normalize(join(tempFolder, fileName)));
-
-export const readFile = async (file: Uri) =>
-  workspace.fs
-    .readFile(file)
-    .then(Buffer.from)
-    .then((b) => b.toString("utf-8"));
-
-export type FileInfo = [string, FileType];
-
-export const readWorkspaceFile = async (directory: Uri, fileName: string): Promise<string | undefined> => {
+const readWorkspaceFile = async (directory: Uri, fileName: string): Promise<string | undefined> => {
   const fileUri = directory.with({
     path: posix.join(directory.path, fileName),
   });
@@ -76,7 +76,13 @@ export const readWorkspaceFile = async (directory: Uri, fileName: string): Promi
   );
 };
 
-export const writeWorkspaceFile = async (base: Uri, fileName: string, content: string) => {
+const readFile = async (file: Uri) =>
+  workspace.fs
+    .readFile(file)
+    .then(Buffer.from)
+    .then((b) => b.toString("utf-8"));
+
+const writeFile = async (base: Uri, fileName: string, content: string) => {
   const fileUri = Uri.joinPath(base, `/${fileName}`);
   return workspace.fs
     .createDirectory(base)

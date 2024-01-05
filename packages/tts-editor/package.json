@@ -74,6 +74,12 @@
         "icon": "$(window)"
       },
       {
+        "command": "ttsEditor.createUi",
+        "title": "Create UI",
+        "category": "TTS Editor",
+        "enablement": "false"
+      },
+      {
         "command": "ttsEditor.locateObject",
         "title": "Locate Object",
         "category": "TTS Editor",
@@ -140,13 +146,16 @@
           "group": "inline"
         },
         {
-          "command": "ttsEditor.getRuntimeUi",
-          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)",
-          "group": "inline@2"
+          "command": "ttsEditor.createUi",
+          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)"
         },
         {
           "command": "ttsEditor.locateObject",
-          "when": "view == ttsEditor.objectView && viewItem == object",
+          "when": "view == ttsEditor.objectView && viewItem == object"
+        },
+        {
+          "command": "ttsEditor.getRuntimeUi",
+          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)",
           "group": "inline@1"
         }
       ]
@@ -202,17 +211,9 @@
             ]
           },
           {
-            "id": "editScripts",
-            "title": "Edit Some Scripts",
-            "description": "Go ahead and edit some scripts",
-            "media": {
-              "markdown": "media/tour/empty.md"
-            }
-          },
-          {
             "id": "saveAndPlay",
-            "title": "Save & Play",
-            "description": "Send the adjusted scripts back to TTS via Save & Play.\n[Save and Play](command:ttsEditor.saveAndPlay)",
+            "title": "Edit, Save & Play",
+            "description": "Edit some scripts. Then send the adjusted scripts back to TTS via Save & Play.\n[Save and Play](command:ttsEditor.saveAndPlay)",
             "media": {
               "markdown": "media/tour/saveAndPlay.md"
             },
@@ -234,7 +235,7 @@
           {
             "id": "moreFeatures",
             "title": "More Features",
-            "description": "More features await! Checkout the [https://sebaestschjin.github.io/tts-tools/editor/latest/index.html](documentation)",
+            "description": "More features await! Checkout the [https://sebaestschjin.github.io/tts-tools/editor/latest](documentation)",
             "media": {
               "markdown": "media/tour/openView.md"
             }

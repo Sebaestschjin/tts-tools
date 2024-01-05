@@ -6,16 +6,15 @@ import locateObject from "./command/locateObject";
 import openBundledScript from "./command/openBundledScript";
 import { saveAndPlay, saveAndPlayBundled } from "./command/saveAndPlay";
 import showOutput from "./command/showOutput";
-import { createWorkspaceFolder } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSAdapter } from "./ttsAdapter";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
 import showView from "./command/showView";
+import createUi from "./command/createUi";
 
 export const extensionName = "ttsEditor";
 
 export function activate(context: ExtensionContext) {
-  createWorkspaceFolder();
   const plugin = new Plugin();
   const viewProvider = new TTSObjectTreeProvider(plugin);
   const view = window.createTreeView("ttsEditor.objectView", {
@@ -34,6 +33,7 @@ export function activate(context: ExtensionContext) {
   registerCommand("showOutput", showOutput(plugin));
   registerCommand("showView", showView(view));
   registerCommand("openBundledScript", openBundledScript);
+  registerCommand("createUi", createUi(plugin));
   registerCommand("getRuntimeUi", getRuntimeUi(plugin, adapter));
   registerCommand("locateObject", locateObject(plugin, adapter));
 
