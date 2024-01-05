@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Adds command to add UI file from object view
+- Adds command to get objects and save and play to object view toolbar
+- Adds walkthrough
+
 ## [0.3.0] - 2024-01-05
 
 ### Added

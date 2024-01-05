@@ -36,15 +36,11 @@ export const getTstlPath = () => {
   return Uri.joinPath(root, path).fsPath;
 };
 
-/**
- * Writes a data file to the output directory of the extension.
- *
- * @param fileName The name of the file to write.
- * @param content The content of the file.
- * @param bundled Determines whether the file is for a regular file or for a bundled file.
- */
-export const writeOutputFile = async (fileName: string, content: string, bundled: boolean = false) => {
-  return writeFile(getOutputPath(bundled), fileName, content);
+export const hasOutputFile = async (fileName: string, bundled: boolean = false) => {
+  return await workspace.fs.stat(getOutputFileUri(fileName, bundled)).then(
+    () => true,
+    () => false
+  );
 };
 
 /**
@@ -55,6 +51,17 @@ export const writeOutputFile = async (fileName: string, content: string, bundled
  */
 export const readOutputFile = async (fileName: string, bundled: boolean = false) => {
   return readWorkspaceFile(getOutputPath(bundled), fileName);
+};
+
+/**
+ * Writes a data file to the output directory of the extension.
+ *
+ * @param fileName The name of the file to write.
+ * @param content The content of the file.
+ * @param bundled Determines whether the file is for a regular file or for a bundled file.
+ */
+export const writeOutputFile = async (fileName: string, content: string, bundled: boolean = false) => {
+  return writeFile(getOutputPath(bundled), fileName, content);
 };
 
 const getWorkspaceRoot = (): Uri => {

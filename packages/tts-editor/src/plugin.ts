@@ -1,6 +1,6 @@
 import { OutputChannel, StatusBarAlignment, StatusBarItem, window } from "vscode";
 import { LoadedObject } from "./model/objectData";
-import { writeOutputFile } from "./io/files";
+import { hasOutputFile, writeOutputFile } from "./io/files";
 
 export class Plugin {
   private output: OutputChannel;
@@ -23,10 +23,14 @@ export class Plugin {
     this.endProgress();
   };
 
-  createObjectFile = (object: LoadedObject, extension: string, content: string) => {
+  createObjectFile = async (object: LoadedObject, extension: string, content: string) => {
     const file = `${object.fileName}.${extension}`;
-    writeOutputFile(file, content);
-    this.loadedObjects.get(object.guid)!.hasUi = true;
+    if (await hasOutputFile(file)) {
+      window.showWarningMessage("UI file already exists.");
+    } else {
+      writeOutputFile(file, content);
+      this.loadedObjects.get(object.guid)!.hasUi = true;
+    }
   };
 
   setLoadedObject = (loaded: LoadedObject) => {
