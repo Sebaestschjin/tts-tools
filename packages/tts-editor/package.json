@@ -4,7 +4,7 @@
   "author": "Sebastian Stern",
   "publisher": "sebaestschjin",
   "description": "Implementation of the external editor API for Tabletop Simulator (TTS)",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.82.0"
   },
