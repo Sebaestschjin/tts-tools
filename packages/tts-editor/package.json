@@ -65,7 +65,20 @@
         "command": "ttsEditor.getRuntimeUi",
         "title": "Get Runtime UI",
         "category": "TTS Editor",
-        "icon": "$(window)"
+        "icon": "$(editor-layout)"
+      },
+      {
+        "command": "ttsEditor.getObjectState",
+        "title": "Get Object State",
+        "category": "TTS Editor",
+        "icon": "$(file-binary)"
+      },
+      {
+        "command": "ttsEditor.updateObjectState",
+        "title": "Update Object State",
+        "category": "TTS Editor",
+        "icon": "$(link-external)",
+        "enablement": "resourceFilename =~ /\\.state\\.txt$/"
       },
       {
         "command": "ttsEditor.createUi",
@@ -153,9 +166,14 @@
       ],
       "view/item/context": [
         {
-          "command": "ttsEditor.openBundledScript",
-          "when": "view == ttsEditor.objectView && viewItem == script",
-          "group": "inline"
+          "command": "ttsEditor.getRuntimeUi",
+          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)",
+          "group": "inline@1"
+        },
+        {
+          "command": "ttsEditor.getObjectState",
+          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)",
+          "group": "inline@2"
         },
         {
           "command": "ttsEditor.createUi",
@@ -166,9 +184,13 @@
           "when": "view == ttsEditor.objectView && viewItem == object"
         },
         {
-          "command": "ttsEditor.getRuntimeUi",
-          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)",
-          "group": "inline@1"
+          "command": "ttsEditor.updateObjectState",
+          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)"
+        },
+        {
+          "command": "ttsEditor.openBundledScript",
+          "when": "view == ttsEditor.objectView && viewItem == script",
+          "group": "inline"
         }
       ]
     },

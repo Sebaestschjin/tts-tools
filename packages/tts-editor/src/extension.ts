@@ -11,6 +11,8 @@ import { TTSAdapter } from "./ttsAdapter";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
 import showView from "./command/showView";
 import createUi from "./command/createUi";
+import getObjectState from "./command/getObjectState";
+import updateObjectState from "./command/updateObjectState";
 
 export const extensionName = "ttsEditor";
 
@@ -35,10 +37,9 @@ export function activate(context: ExtensionContext) {
   registerCommand("openBundledScript", openBundledScript);
   registerCommand("createUi", createUi(plugin));
   registerCommand("getRuntimeUi", getRuntimeUi(plugin, adapter));
+  registerCommand("getObjectState", getObjectState(plugin, adapter));
+  registerCommand("updateObjectState", updateObjectState(plugin, adapter));
   registerCommand("locateObject", locateObject(plugin, adapter));
-
-  // wip
-  // registerCommand("getAllObjects", getAllObjects(adapter));
 
   window.registerTreeDataProvider("ttsEditor.objectView", viewProvider);
 
