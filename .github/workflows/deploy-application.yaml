@@ -14,10 +14,12 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
+          cache-dependency-path: packages/tts-editor/package-lock.json
       - name: Install Dependencies
         run: npm install --frozen-lockfile
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          packagePath: packages/tts-editor
           registryUrl: https://marketplace.visualstudio.com
