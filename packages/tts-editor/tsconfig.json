@@ -6,6 +6,7 @@
 		"lib": [
 			"ES2020"
 		],
+    "types": ["node", "@typed-tabletop-simulator/declaration", "@typescript-to-lua/language-extensions"],
 		"sourceMap": true,
 		"rootDir": "src",
 		"strict": true,

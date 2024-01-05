@@ -142,6 +142,23 @@ export class TTSAdapter {
     await workspace.fs.delete(outputPath, { recursive: true });
   };
 
+  private getObjectData = async (guid: string) => {
+    const command = `
+local obj = getObjectFromGUID("${guid}")
+if obj and not obj.isDestroyed() then
+  return obj.getJSON()
+end
+
+return {}
+`;
+
+    const data = await this.executeCode<string>(command);
+    const parsed = JSON.parse(data) as ObjectData;
+    parsed.LuaScript = "";
+    parsed.XmlUI = "";
+    return parsed;
+  };
+
   private readFilesFromTTS = async (scriptStates: IncomingJsonObject[], openFiles?: boolean) => {
     this.plugin.setStatus(`Recieved ${scriptStates.length} scripts`);
 
@@ -154,26 +171,39 @@ export class TTSAdapter {
       }
     };
 
-    scriptStates.map(toFileInfo).forEach(async (file) => {
-      this.plugin.setLoadedObject({
-        guid: file.guid,
-        name: file.name,
-        fileName: file.fileName,
-        hasUi: file.ui !== undefined,
-        isGlobal: file.guid === "-1",
-      });
+    for (const file of scriptStates.map(toFileInfo)) {
       writeScriptFiles(file, file.script, "lua");
 
       if (file.ui) {
         writeScriptFiles(file, file.ui, "xml");
       }
-    });
+
+      if (file.guid === "-1") {
+        this.plugin.setLoadedObject({
+          isGlobal: true,
+          guid: file.guid,
+          name: file.name,
+          fileName: file.fileName,
+          hasUi: file.ui !== undefined,
+        });
+      } else {
+        const data = await this.getObjectData(file.guid);
+        this.plugin.setLoadedObject({
+          isGlobal: false,
+          guid: file.guid,
+          name: file.name,
+          fileName: file.fileName,
+          hasUi: file.ui !== undefined,
+          data: data,
+        });
+        writeOutputFile(`${file.fileName}.json`, JSON.stringify(data, null, 2));
+      }
+    }
 
     this.view.refresh();
   };
 
   private createScripts = async (bundled: boolean) => {
-    const directory = getOutputPath(bundled);
     const scripts = new Map<string, OutgoingJsonObject>();
 
     const includePathsLua = configuration.luaIncludePaths();

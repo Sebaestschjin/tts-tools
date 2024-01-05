@@ -273,10 +273,12 @@
     "typescript-to-lua": "^1.23.0"
   },
   "devDependencies": {
+    "@typed-tabletop-simulator/declaration": "^2.0.0",
     "@types/node": "16.x",
     "@types/vscode": "^1.82.0",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
+    "@typescript-to-lua/language-extensions": "^1.19.0",
     "@vscode/test-electron": "^2.3.4",
     "esbuild": "^0.19.3",
     "eslint": "^8.47.0",

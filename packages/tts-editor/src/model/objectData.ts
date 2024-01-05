@@ -7,9 +7,16 @@ interface ObjectInfo {
   fileName: string;
 }
 
-export interface LoadedObject extends ObjectInfo {
+export type LoadedObject = RegularLoadedObject | GlobalLoadedObject;
+
+interface RegularLoadedObject extends ObjectInfo {
+  isGlobal: false;
   hasUi: boolean;
-  isGlobal: boolean;
+  data: ObjectData;
+}
+interface GlobalLoadedObject extends ObjectInfo {
+  hasUi: boolean;
+  isGlobal: true;
 }
 
 export interface ObjectFile extends ObjectInfo {
