@@ -50,6 +50,11 @@
         "command": "ttsEditor.openBundledScript",
         "title": "Open Bundled Script",
         "icon": "$(file-code)"
+      },
+      {
+        "command": "ttsEditor.getRuntimeUi",
+        "title": "Get Runtime UI",
+        "icon": "$(window)"
       }
     ],
     "keybindings": [
@@ -109,6 +114,11 @@
         {
           "command": "ttsEditor.openBundledScript",
           "when": "view == ttsObjects && viewItem == script",
+          "group": "inline"
+        },
+        {
+          "command": "ttsEditor.getRuntimeUi",
+          "when": "view == ttsObjects && viewItem == object",
           "group": "inline"
         }
       ]

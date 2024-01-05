@@ -1,5 +1,5 @@
 import { ExtensionContext, commands, window } from "vscode";
-import openScript from "./command/openScript";
+import openBundledScript from "./command/openBundledScript";
 import { createWorkspaceFolder } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSAdapter } from "./ttsAdapter";
@@ -8,6 +8,7 @@ import getScripts from "./command/getScripts";
 import saveAndPlay from "./command/saveAndPlay";
 import executeScript from "./command/executeScript";
 import showOutput from "./command/showOutput";
+import getRuntimeUi from "./command/getRuntimeUi";
 
 export const extensionName = "ttsEditor";
 
@@ -25,7 +26,8 @@ export function activate(context: ExtensionContext) {
   registerCommand("saveAndPlay", saveAndPlay(adapter));
   registerCommand("executeCode", executeScript(adapter));
   registerCommand("showOutput", showOutput(plugin));
-  registerCommand("openBundledScript", openScript);
+  registerCommand("openBundledScript", openBundledScript);
+  registerCommand("getRuntimeUi", getRuntimeUi(adapter));
 
   window.registerTreeDataProvider("ttsObjects", view);
 

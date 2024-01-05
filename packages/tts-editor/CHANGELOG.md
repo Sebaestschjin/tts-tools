@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Adds a view that lists the objects in the game that have scripts attached
+- Adds a command to show the current UI of an object as a file
+
 ### Fixed
 
 - Fixes extension activation event for workspaces containing `.lua` or `.ttslua` files

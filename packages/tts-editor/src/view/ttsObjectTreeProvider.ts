@@ -85,19 +85,22 @@ export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
 
 type TTSItem = TTSObjectItem | TTSScriptItem;
 
-class TTSObjectItem extends TreeItem {
+export class TTSObjectItem extends TreeItem {
   public readonly object: LoadedObject;
 
   constructor(object: LoadedObject) {
     super(object.name, TreeItemCollapsibleState.Collapsed);
 
     this.object = object;
+    this.contextValue = "object";
     this.iconPath = ThemeIcon.Folder;
-    if (object.name === "Global") {
+    if (this.isGlobal()) {
     } else {
       this.description = object.guid;
     }
   }
+
+  isGlobal = () => this.object.guid === "-1";
 }
 
 export class TTSScriptItem extends TreeItem {

@@ -27,6 +27,10 @@ export const getOutputFileUri = (fileName: string, bundled?: boolean) => {
   });
 };
 
+export const writeOutputFile = async (fileName: string, content: string) => {
+  return writeWorkspaceFile(getOutputPath(), fileName, content);
+};
+
 export async function createWorkspaceFolder() {
   try {
     await workspace.fs.createDirectory(Uri.file(tempFolder));
