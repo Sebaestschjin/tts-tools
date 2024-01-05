@@ -46,11 +46,7 @@ export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
   }
 
   private getLoadedObjects() {
-    const elements: TTSObjectItem[] = [];
-
-    for (const [_, object] of this.plugin.getLoadedObjects()) {
-      elements.push(new TTSObjectItem(object));
-    }
+    const elements = this.plugin.getLoadedObjects().map((o) => new TTSObjectItem(o));
     elements.sort((a, b) => {
       const nameA = a.object.name;
       const nameB = b.object.name;
@@ -93,15 +89,13 @@ export class TTSObjectItem extends TreeItem {
 
     this.object = object;
     this.iconPath = ThemeIcon.Folder;
-    if (this.isGlobal()) {
+    if (object.isGlobal) {
       this.contextValue = "global";
     } else {
       this.contextValue = "object";
       this.description = object.guid;
     }
   }
-
-  isGlobal = () => this.object.guid === "-1";
 }
 
 export class TTSScriptItem extends TreeItem {

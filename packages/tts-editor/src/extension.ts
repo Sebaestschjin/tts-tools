@@ -28,8 +28,8 @@ export function activate(context: ExtensionContext) {
   registerCommand("executeCode", executeScript(adapter));
   registerCommand("showOutput", showOutput(plugin));
   registerCommand("openBundledScript", openBundledScript);
-  registerCommand("getRuntimeUi", getRuntimeUi(adapter));
-  registerCommand("locateObject", locateObject(adapter));
+  registerCommand("getRuntimeUi", getRuntimeUi(plugin, adapter));
+  registerCommand("locateObject", locateObject(plugin, adapter));
 
   window.registerTreeDataProvider("ttsObjects", view);
 

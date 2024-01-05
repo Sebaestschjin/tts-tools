@@ -21,8 +21,14 @@ export class Plugin {
     this.loadedObjects.set(loaded.guid, loaded);
   };
 
-  getLoadedObjects = () => {
-    return this.loadedObjects;
+  getLoadedObjects = (): LoadedObject[] => {
+    const objects: LoadedObject[] = [];
+
+    for (const [_, object] of this.loadedObjects) {
+      objects.push(object);
+    }
+
+    return objects;
   };
 
   startProgress = (message: string) => {

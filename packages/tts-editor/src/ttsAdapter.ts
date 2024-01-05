@@ -106,6 +106,7 @@ export class TTSAdapter {
 
   private onErrorMessage = async (message: ErrorMessage) => {
     this.plugin.info(`${message.guid} ${message.errorMessagePrefix}`);
+    console.log(message.error);
 
     const action = await window.showErrorMessage(`${message.errorMessagePrefix}`, "Go To Error");
     if (!action) {
@@ -163,6 +164,7 @@ export class TTSAdapter {
         name: file.name,
         fileName: file.fileName,
         hasUi: file.ui !== undefined,
+        isGlobal: file.guid === "-1",
       });
       writeScriptFiles(file, file.script, "lua");
 
@@ -194,25 +196,25 @@ export class TTSAdapter {
 
     let hasErrors: boolean = false;
 
-    for (const [guid, fileName] of this.plugin.getLoadedObjects()) {
+    for (const object of this.plugin.getLoadedObjects()) {
       try {
-        this.plugin.debug(`Reading object files ${fileName}`);
-        const luaFile = await readWorkspaceFile(directory, `${fileName}.lua`);
-        const xmlFile = await readWorkspaceFile(directory, `${fileName}.xml`);
+        this.plugin.debug(`Reading object files ${object.fileName}`);
+        const luaFile = await readWorkspaceFile(directory, `${object.fileName}.lua`);
+        const xmlFile = await readWorkspaceFile(directory, `${object.fileName}.xml`);
 
         let lua: string = "";
         let xml: string = "";
         if (luaFile) {
-          this.plugin.debug(`Found lua for ${guid}`);
+          this.plugin.debug(`Found lua for ${object.guid}`);
           lua = await bundleLua(luaFile, includePathsLua);
         }
         if (xmlFile) {
-          this.plugin.debug(`Found xml for ${guid}`);
+          this.plugin.debug(`Found xml for ${object.guid}`);
           xml = await bundleXml(xmlFile, includePathXml);
         }
 
-        scripts.set(guid, {
-          guid: guid,
+        scripts.set(object.guid, {
+          guid: object.guid,
           script: lua,
           ui: xml,
         });
@@ -238,6 +240,10 @@ export class TTSAdapter {
     //     return Uri.joinPath(directory, name);
     //   }
     // }
+
+    if (guid === "-2") {
+      return null;
+    }
 
     return undefined;
   };

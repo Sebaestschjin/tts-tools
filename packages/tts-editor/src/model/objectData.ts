@@ -9,6 +9,7 @@ interface ObjectInfo {
 
 export interface LoadedObject extends ObjectInfo {
   hasUi: boolean;
+  isGlobal: boolean;
 }
 
 export interface ObjectFile extends ObjectInfo {
