@@ -20,6 +20,8 @@ import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
 import { EditorMessage, RequestEditorMessage } from "./message";
 import { selectObject } from "./interaction/selectObject";
 
+const defaultPolyFills = ["messageBridge", "object"];
+
 export class TTSAdapter {
   private api: ExternalEditorApi;
   private plugin: Plugin;
@@ -65,7 +67,7 @@ export class TTSAdapter {
    */
   public executeCode = async <T = void>(
     script: string,
-    polyFills: string[] = [],
+    polyFills: string[] = defaultPolyFills,
     parameters: Record<string, string> = {}
   ) => {
     let completeScript = "";

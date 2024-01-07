@@ -1,9 +1,18 @@
 latestHandler = nil
 
----@param options? __object__Options
+---@param options __object__Options | nil
 ---@param handler fun(object: tts__Object)
 function __object__(options, handler)
   options = options or {}
+
+  local optionType = type(options)
+  local handlerType = type(handler)
+  if optionType ~= "table" or handlerType ~= "function" then
+    error("Wrong argument types for __object__."
+      .. "\nExpected table and function."
+      .. "\nGot " .. optionType .. " and " .. handlerType)
+  end
+
   latestHandler = handler
 
   sendEditorMessage({
