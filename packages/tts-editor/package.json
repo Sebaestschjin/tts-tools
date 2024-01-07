@@ -167,29 +167,25 @@
       "view/item/context": [
         {
           "command": "ttsEditor.getRuntimeUi",
-          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)",
+          "when": "view == ttsEditor.objectView && (viewItem =~ /^object/ || viewItem =~ /^global/)",
           "group": "inline@1"
         },
         {
           "command": "ttsEditor.getObjectState",
-          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)",
+          "when": "view == ttsEditor.objectView && (viewItem =~ /^object/ || viewItem =~ /^global/)",
           "group": "inline@2"
         },
         {
           "command": "ttsEditor.createUi",
-          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)"
+          "when": "view == ttsEditor.objectView && (viewItem =~ /^object/ || viewItem =~ /^global/) && !(viewItem =~ /\\.ui/)"
         },
         {
           "command": "ttsEditor.locateObject",
-          "when": "view == ttsEditor.objectView && viewItem == object"
-        },
-        {
-          "command": "ttsEditor.updateObjectState",
-          "when": "view == ttsEditor.objectView && (viewItem == object || viewItem == global)"
+          "when": "view == ttsEditor.objectView && viewItem =~ /^object/"
         },
         {
           "command": "ttsEditor.openBundledScript",
-          "when": "view == ttsEditor.objectView && viewItem == script",
+          "when": "view == ttsEditor.objectView && viewItem == file",
           "group": "inline"
         }
       ]

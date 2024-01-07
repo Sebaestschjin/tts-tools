@@ -105,6 +105,10 @@ export class TTSObjectItem extends TreeItem {
       this.contextValue = "object";
       this.description = object.guid;
     }
+
+    if (object.hasUi) {
+      this.contextValue += ".ui";
+    }
   }
 }
 
@@ -116,7 +120,7 @@ export class TTSScriptItem extends TreeItem {
     super(name);
     this.object = object;
     this.extension = extension;
-    this.contextValue = "script";
+    this.contextValue = "file";
     this.iconPath = ThemeIcon.File;
     this.resourceUri = getOutputFileUri(this.fileName());
 
