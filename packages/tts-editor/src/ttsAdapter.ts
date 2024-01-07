@@ -14,9 +14,11 @@ import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "ty
 import configuration from "./configuration";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
 import { getOutputFileUri, getOutputPath, getTstlPath, readOutputFile, writeOutputFile } from "./io/files";
-import { ObjectFile, ScriptData } from "./model/objectData";
+import { LoadedObject, ObjectFile, ScriptData } from "./model/objectData";
 import { Plugin } from "./plugin";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
+import { EditorMessage, RequestEditorMessage } from "./message";
+import { selectObject } from "./interaction/selectObject";
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
@@ -61,8 +63,41 @@ export class TTSAdapter {
    *
    * @param script the Lua script to execute
    */
-  public executeCode = async <T = void>(script: string) => {
-    return this.api.executeLuaCodeAndReturn(script) as T;
+  public executeCode = async <T = void>(
+    script: string,
+    polyFills: string[] = [],
+    parameters: Record<string, string> = {}
+  ) => {
+    let completeScript = "";
+
+    for (const polyFill of polyFills) {
+      let content = await this.plugin.fileHandler.readExtensionFile(`polyFill/${polyFill}.lua`);
+      for (const [name, value] of Object.entries(parameters)) {
+        content = content.replace(`$\{${name}\}`, value);
+      }
+      completeScript += content + "\n\n";
+    }
+    completeScript += script;
+
+    console.log(completeScript);
+
+    return this.api.executeLuaCodeAndReturn(completeScript) as T;
+  };
+
+  public executeMacro = async (name: string, object?: LoadedObject) => {
+    const command = await this.plugin.fileHandler.readExtensionFile(`macro/${name}.lua`);
+    const parameters: Record<string, string> = {};
+
+    const polyFills = ["messageBridge"];
+    if (!object) {
+      polyFills.push("object");
+    } else {
+      console.log(object);
+      polyFills.push("objectResolved");
+      parameters.guid = object.guid;
+    }
+
+    this.executeCode(command, polyFills, parameters);
   };
 
   /**
@@ -70,7 +105,7 @@ export class TTSAdapter {
    *
    * @param object - Table to be sent to game
    */
-  public async customMessage(object: any) {
+  public async customMessage(object: EditorMessage) {
     return this.api.customMessage(object);
   }
 
@@ -133,8 +168,23 @@ export class TTSAdapter {
     });
   };
 
-  private onCustomMessage = async (message: CustomMessage) => {
-    this.plugin.debug(`recieved onCustomMessage ${message.customMessage}`);
+  private onCustomMessage = async (customMessage: CustomMessage) => {
+    const message = customMessage.customMessage as RequestEditorMessage;
+
+    this.plugin.debug(`recieved onCustomMessage ${JSON.stringify(message, null, 2)}`);
+
+    if (message.type === "object") {
+      const object = await selectObject(this.plugin, {
+        title: message.title,
+        includeGlobal: message.withGlobal,
+      });
+      if (object) {
+        this.customMessage({
+          type: "object",
+          guid: object.guid,
+        });
+      }
+    }
   };
 
   private clearOutputPath = async () => {

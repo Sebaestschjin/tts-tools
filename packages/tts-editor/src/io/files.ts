@@ -1,6 +1,24 @@
 import { posix } from "path";
-import { Uri, workspace } from "vscode";
+import { Extension, Uri, workspace } from "vscode";
 import configuration from "../configuration";
+
+export class FileHandler {
+  private extension: Extension<any>;
+
+  constructor(extension: Extension<any>) {
+    this.extension = extension;
+  }
+
+  readExtensionFile = async (fileName: string) => {
+    return readFile(Uri.joinPath(this.extension.extensionUri, fileName));
+  };
+
+  private readFile = (file: Uri) =>
+    workspace.fs
+      .readFile(file)
+      .then(Buffer.from)
+      .then((b) => b.toString("utf-8"));
+}
 
 /**
  * Returns the path where all data files will be written to.

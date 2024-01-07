@@ -1,23 +1,24 @@
 import { ExtensionContext, commands, window } from "vscode";
+import createUi from "./command/createUi";
 import executeScript from "./command/executeScript";
+import getObjectState from "./command/getObjectState";
 import getRuntimeUi from "./command/getRuntimeUi";
 import getScripts from "./command/getScripts";
-import locateObject from "./command/locateObject";
 import openBundledScript from "./command/openBundledScript";
 import { saveAndPlay, saveAndPlayBundled } from "./command/saveAndPlay";
 import showOutput from "./command/showOutput";
+import showView from "./command/showView";
+import updateObjectState from "./command/updateObjectState";
+import { FileHandler } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSAdapter } from "./ttsAdapter";
-import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
-import showView from "./command/showView";
-import createUi from "./command/createUi";
-import getObjectState from "./command/getObjectState";
-import updateObjectState from "./command/updateObjectState";
+import { TTSObjectItem, TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
 
 export const extensionName = "ttsEditor";
 
 export function activate(context: ExtensionContext) {
-  const plugin = new Plugin();
+  const fileHandler = new FileHandler(context.extension);
+  const plugin = new Plugin(fileHandler);
   const viewProvider = new TTSObjectTreeProvider(plugin);
   const view = window.createTreeView("ttsEditor.objectView", {
     treeDataProvider: viewProvider,
@@ -39,7 +40,7 @@ export function activate(context: ExtensionContext) {
   registerCommand("getRuntimeUi", getRuntimeUi(plugin, adapter));
   registerCommand("getObjectState", getObjectState(plugin, adapter));
   registerCommand("updateObjectState", updateObjectState(plugin, adapter));
-  registerCommand("locateObject", locateObject(plugin, adapter));
+  registerCommand("locateObject", (arg?: TTSObjectItem) => adapter.executeMacro("locateObject", arg?.object));
 
   window.registerTreeDataProvider("ttsEditor.objectView", viewProvider);
 

@@ -1,8 +1,9 @@
 import { OutputChannel, StatusBarAlignment, StatusBarItem, window } from "vscode";
 import { LoadedObject } from "./model/objectData";
-import { hasOutputFile, writeOutputFile } from "./io/files";
+import { FileHandler, hasOutputFile, writeOutputFile } from "./io/files";
 
 export class Plugin {
+  public readonly fileHandler: FileHandler;
   private output: OutputChannel;
   private status: StatusBarItem;
   private loadedObjects: Map<string, LoadedObject> = new Map();
@@ -10,7 +11,8 @@ export class Plugin {
   /**
    * @param output Output channel where logs will be written to
    */
-  public constructor() {
+  public constructor(fileHandler: FileHandler) {
+    this.fileHandler = fileHandler;
     this.output = window.createOutputChannel("TTS Edtior");
     this.status = window.createStatusBarItem("tts.status", StatusBarAlignment.Left, -1);
     this.status.command = "ttsEditor.showOutput";
