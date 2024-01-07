@@ -7,8 +7,11 @@
 ---@field guid string
 
 --- Messages send from TTS to the extension as custom messages.
----@alias RequestEditorMessage RequestObjectMessage
+---@alias RequestEditorMessage RequestObjectMessage | WriteContentMessage
 
 --- Request to select an object from the currently loaded ones.
 ---@class RequestObjectMessage : __object__Options
 ---@field type "object"
+
+---@class WriteContentMessage : __write__Options
+---@field type "write"

@@ -1,8 +1,6 @@
 import { ExtensionContext, commands, window } from "vscode";
 import createUi from "./command/createUi";
 import executeScript from "./command/executeScript";
-import getObjectState from "./command/getObjectState";
-import getRuntimeUi from "./command/getRuntimeUi";
 import getScripts from "./command/getScripts";
 import openBundledScript from "./command/openBundledScript";
 import { saveAndPlay, saveAndPlayBundled } from "./command/saveAndPlay";
@@ -29,6 +27,10 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand(`${extensionName}.${name}`, handler));
   };
 
+  const registerMacro = (name: string) => {
+    registerCommand(name, (arg?: TTSObjectItem) => adapter.executeMacro(name, arg?.object));
+  };
+
   registerCommand("getObjects", getScripts(adapter));
   registerCommand("saveAndPlay", saveAndPlay(adapter));
   registerCommand("saveAndPlayBundled", saveAndPlayBundled(adapter));
@@ -37,10 +39,10 @@ export function activate(context: ExtensionContext) {
   registerCommand("showView", showView(view));
   registerCommand("openBundledScript", openBundledScript);
   registerCommand("createUi", createUi(plugin));
-  registerCommand("getRuntimeUi", getRuntimeUi(plugin, adapter));
-  registerCommand("getObjectState", getObjectState(plugin, adapter));
   registerCommand("updateObjectState", updateObjectState(plugin, adapter));
-  registerCommand("locateObject", (arg?: TTSObjectItem) => adapter.executeMacro("locateObject", arg?.object));
+  registerMacro("getObjectState");
+  registerMacro("getRuntimeUi");
+  registerMacro("locateObject");
 
   window.registerTreeDataProvider("ttsEditor.objectView", viewProvider);
 

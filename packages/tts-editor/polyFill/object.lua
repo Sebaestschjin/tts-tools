@@ -15,11 +15,13 @@ function __object__(options, handler)
 
   latestHandler = handler
 
-  sendEditorMessage({
+  ---@type RequestObjectMessage
+  local message = {
     type = "object",
     withGlobal = options.withGlobal,
     title = options.title,
-  })
+  }
+  sendEditorMessage(message)
 end
 
 ---@param message ObjectMessage

@@ -17,10 +17,15 @@ import { getOutputFileUri, getOutputPath, getTstlPath, readOutputFile, writeOutp
 import { LoadedObject, ObjectFile, ScriptData } from "./model/objectData";
 import { Plugin } from "./plugin";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
-import { EditorMessage, RequestEditorMessage } from "./message";
+import {
+  EditorMessage,
+  RequestEditorMessage,
+  RequestObjectMessage,
+  WriteContentMessag as WriteContentMessage,
+} from "./message";
 import { selectObject } from "./interaction/selectObject";
 
-const defaultPolyFills = ["messageBridge", "object"];
+const defaultPolyFills = ["messageBridge", "object", "write"];
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
@@ -90,7 +95,7 @@ export class TTSAdapter {
     const command = await this.plugin.fileHandler.readExtensionFile(`macro/${name}.lua`);
     const parameters: Record<string, string> = {};
 
-    const polyFills = ["messageBridge"];
+    const polyFills = ["messageBridge", "write"];
     if (!object) {
       polyFills.push("object");
     } else {
@@ -175,18 +180,36 @@ export class TTSAdapter {
 
     this.plugin.debug(`recieved onCustomMessage ${JSON.stringify(message, null, 2)}`);
 
-    if (message.type === "object") {
-      const object = await selectObject(this.plugin, {
-        title: message.title,
-        includeGlobal: message.withGlobal,
-      });
-      if (object) {
-        this.customMessage({
-          type: "object",
-          guid: object.guid,
-        });
-      }
+    switch (message.type) {
+      case "object":
+        this.handleObjectMessage(message);
+        break;
+      case "write":
+        this.handleWriteMessage(message);
+        break;
     }
+  };
+
+  private handleObjectMessage = async (message: RequestObjectMessage) => {
+    const object = await selectObject(this.plugin, {
+      title: message.title,
+      includeGlobal: message.withGlobal,
+    });
+    if (object) {
+      this.customMessage({
+        type: "object",
+        guid: object.guid,
+      });
+    }
+  };
+
+  private handleWriteMessage = async (message: WriteContentMessage) => {
+    const stateFile = await writeOutputFile(message.name, message.content);
+    window.showTextDocument(stateFile);
+    // TODO beautify
+    // TODO make sure to only allow to write into workspace path
+    // TODO file name for object
+    // TODO preview when name is not given
   };
 
   private clearOutputPath = async () => {
