@@ -4,7 +4,9 @@ function __write__(options)
   local message = {
     type = "write",
     name = options.name,
-    content = options.content
+    object = options.object,
+    content = options.content,
+    format = options.format,
   }
   sendEditorMessage(message)
 end

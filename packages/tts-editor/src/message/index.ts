@@ -19,6 +19,10 @@ export interface RequestObjectMessage {
 
 export interface WriteContentMessag {
   type: "write";
-  name: string;
+  name?: string;
+  object?: string;
   content: string;
+  format?: MessageFormat;
 }
+
+export type MessageFormat = "auto" | "none";

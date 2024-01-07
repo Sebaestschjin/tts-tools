@@ -1,5 +1,5 @@
-import { posix } from "path";
-import { Extension, Uri, workspace } from "vscode";
+import path, { posix } from "path";
+import { Extension, Uri, window, workspace } from "vscode";
 import configuration from "../configuration";
 
 export class FileHandler {
@@ -10,14 +10,48 @@ export class FileHandler {
   }
 
   readExtensionFile = async (fileName: string) => {
-    return readFile(Uri.joinPath(this.extension.extensionUri, fileName));
+    return this.readFile(Uri.joinPath(this.extension.extensionUri, fileName));
   };
 
-  private readFile = (file: Uri) =>
-    workspace.fs
+  writeOutputFile = async (fileName: string, content: string) => {
+    return this.writeWorkspaceFile(`.tts/${fileName}`, content);
+  };
+
+  writeWorkspaceFile = async (fileName: string, content: string) => {
+    if (!this.isInWorkspace(fileName)) {
+      const errorMessage = `Can not write file outside of workspace while writing file ${fileName}`;
+      window.showErrorMessage(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    return this.writeFile(getWorkspaceRoot(), fileName, content);
+  };
+
+  private isInWorkspace(fileName: string): boolean {
+    const root = getWorkspaceRoot();
+    const filePath = Uri.joinPath(root, fileName);
+    const asPath = path.normalize(filePath.fsPath);
+    const resolvedFilePath = path.resolve(root.fsPath, asPath);
+
+    return resolvedFilePath.startsWith(root.fsPath);
+  }
+
+  private async readFile(file: Uri) {
+    return workspace.fs
       .readFile(file)
       .then(Buffer.from)
       .then((b) => b.toString("utf-8"));
+  }
+
+  private async writeFile(base: Uri, fileName: string, content: string) {
+    const fileUri = Uri.joinPath(base, `/${fileName}`);
+    return workspace.fs
+      .createDirectory(base)
+      .then(() => {
+        workspace.fs.writeFile(fileUri, Buffer.from(content, "utf-8"));
+      })
+      .then(() => fileUri);
+  }
 }
 
 /**

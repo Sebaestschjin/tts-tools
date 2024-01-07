@@ -19,6 +19,7 @@ import { Plugin } from "./plugin";
 import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
 import {
   EditorMessage,
+  MessageFormat,
   RequestEditorMessage,
   RequestObjectMessage,
   WriteContentMessag as WriteContentMessage,
@@ -204,12 +205,38 @@ export class TTSAdapter {
   };
 
   private handleWriteMessage = async (message: WriteContentMessage) => {
-    const stateFile = await writeOutputFile(message.name, message.content);
-    window.showTextDocument(stateFile);
-    // TODO beautify
-    // TODO make sure to only allow to write into workspace path
-    // TODO file name for object
-    // TODO preview when name is not given
+    const content = this.formatContent(message.content, message.format);
+    if (message.name) {
+      let fileName = message.name;
+      let file;
+      if (message.object) {
+        const object = this.plugin.getLoadedObject(message.object);
+        if (!object) {
+          window.showErrorMessage(`Requested to write file for object ${message.object}, but it wasn't loaded.`);
+          return;
+        }
+        file = await this.plugin.fileHandler.writeOutputFile(`${object.fileName}.${fileName}`, content);
+      } else {
+        file = await this.plugin.fileHandler.writeWorkspaceFile(fileName, content);
+      }
+
+      window.showTextDocument(file);
+    } else {
+      workspace.openTextDocument({ content: content });
+    }
+  };
+
+  private formatContent = (message: string, format: MessageFormat = "auto"): string => {
+    if (format === "none") {
+      return message;
+    }
+
+    try {
+      const parsed = JSON.parse(message);
+      return JSON.stringify(parsed, null, 2);
+    } catch (e) {
+      return message;
+    }
   };
 
   private clearOutputPath = async () => {

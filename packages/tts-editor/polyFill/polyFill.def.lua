@@ -7,8 +7,10 @@
 function __object__(options, handler) end
 
 ---@class (exact) __write__Options
----@field name string
+---@field name? string
+---@field object? string
 ---@field content string
+---@field format? "auto" | "none"
 
 ---@param options  __write__Options
 function __write__(options) end
