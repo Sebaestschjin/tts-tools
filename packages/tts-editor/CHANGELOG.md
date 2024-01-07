@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds command to add UI file from object view
 - Adds command to get objects and save and play to object view toolbar
 - Adds command to get and update the current state of an object
+- Adds macro functions for executing Lua scripts to interact with VS Code
 - Adds walkthrough
 
 ## [0.3.0] - 2024-01-05

@@ -9,6 +9,7 @@ import ExternalEditorApi, {
   PushingNewObject,
 } from "@matanlurey/tts-editor";
 import { Range, window, workspace } from "vscode";
+import { unbundleObject, TTSObject as SaveFileObject } from "@tts-tools/savefile";
 
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import configuration from "./configuration";
@@ -255,10 +256,9 @@ return {}
 `;
 
     const data = await this.executeCode<string>(command);
-    const parsed = JSON.parse(data) as ObjectData;
-    parsed.LuaScript = "";
-    parsed.XmlUI = "";
-    return parsed;
+    const parsed = JSON.parse(data) as SaveFileObject;
+    const unbundled = unbundleObject(parsed);
+    return unbundled;
   };
 
   private readFilesFromTTS = async (scriptStates: IncomingJsonObject[], openFiles?: boolean) => {

@@ -290,6 +290,7 @@
   },
   "dependencies": {
     "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
+    "@tts-tools/savefile": "^2.2.2",
     "@tts-tools/xmlbundle": "^1.0.0",
     "luabundle": "^1.6.0",
     "typescript-to-lua": "^1.23.0"
