@@ -1,4 +1,4 @@
-import { OutputChannel, StatusBarAlignment, StatusBarItem, window } from "vscode";
+import { OutputChannel, ProgressLocation, StatusBarAlignment, StatusBarItem, window } from "vscode";
 
 import { LoadedObject, SetLoadedObject } from "./model/objectData";
 import { FileHandler, hasOutputFile, writeOutputFile } from "./io/files";
@@ -24,7 +24,6 @@ export class Plugin {
 
   resetLoadedObjects = () => {
     this.loadedObjects.clear();
-    this.endProgress();
 
     command.refreshView();
   };
@@ -95,14 +94,6 @@ export class Plugin {
     return objects;
   };
 
-  startProgress = (message: string) => {
-    this.status.text = `$(loading~spin) ${message}`;
-  };
-
-  endProgress = () => {
-    this.setBaseStatus();
-  };
-
   setStatus = (result: string) => {
     this.setBaseStatus(result);
     setTimeout(() => this.setBaseStatus(), 5000);
@@ -124,6 +115,16 @@ export class Plugin {
   error = (message: string) => {
     console.error(message);
     this.output.appendLine(message);
+  };
+
+  progress = <T>(title: string, handler: () => Promise<T>): Thenable<T> => {
+    return window.withProgress(
+      {
+        location: ProgressLocation.Window,
+        title: title,
+      },
+      handler
+    );
   };
 
   private setBaseStatus = (postfix?: string) => {

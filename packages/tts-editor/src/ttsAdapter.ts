@@ -44,7 +44,6 @@ export class TTSAdapter {
    * Retrieves scripts from currently open game.
    */
   public getObjects = async () => {
-    this.plugin.startProgress("Getting object scripts");
     this.api.getLuaScripts();
   };
 
@@ -55,10 +54,11 @@ export class TTSAdapter {
     try {
       await saveAllFiles();
 
-      const { scripts, hasErrors } = await this.createScripts(bundled);
+      const { scripts, hasErrors } = await this.plugin.progress("Bundling scripts", async () =>
+        this.createScripts(bundled)
+      );
       if (!hasErrors) {
-        this.plugin.startProgress("Sending scripts to TTS");
-        this.api.saveAndPlay(scripts);
+        this.plugin.progress("Sending scripts to TTS", async () => this.api.saveAndPlay(scripts));
       }
     } catch (e: any) {
       this.plugin.error(`${e}`);
@@ -86,8 +86,6 @@ export class TTSAdapter {
     }
     completeScript += script;
 
-    console.log(completeScript);
-
     return this.api.executeLuaCodeAndReturn(completeScript) as T;
   };
 
@@ -99,7 +97,6 @@ export class TTSAdapter {
     if (!object) {
       polyFills.push("object");
     } else {
-      console.log(object);
       polyFills.push("objectResolved");
       parameters.guid = object.guid;
     }
@@ -140,6 +137,11 @@ export class TTSAdapter {
       data.LuaScriptState = state;
     }
 
+    const tstl = await this.runTstl();
+    if (!tstl) {
+      return;
+    }
+
     const bundled = bundleObject(data, {
       includePath: configuration.xmlIncludePath(),
     });
@@ -177,7 +179,7 @@ spawnObjectJSON({
     this.plugin.debug("recieved onLoadGame");
     await this.clearOutputPath();
     this.plugin.resetLoadedObjects();
-    this.readFilesFromTTS(message.scriptStates);
+    this.plugin.progress("Reading objects", async () => this.readFilesFromTTS(message.scriptStates));
   };
 
   private onPushObject = async (message: PushingNewObject) => {
@@ -290,17 +292,22 @@ spawnObjectJSON({
     await workspace.fs.delete(outputPath, { recursive: true });
   };
 
-  private getObjectData = async (guid: string): Promise<SaveFileObject> => {
+  private getObjectData = async (guid: string): Promise<SaveFileObject | undefined> => {
     const command = `
 local obj = getObjectFromGUID("${guid}")
 if obj and not obj.isDestroyed() then
   return obj.getJSON()
 end
 
-return "{}"
+return nil
 `;
 
     const data = await this.executeCode<string>(command);
+
+    if (!data) {
+      return undefined;
+    }
+
     return JSON.parse(data) as SaveFileObject;
   };
 
@@ -336,8 +343,12 @@ return "{}"
 
   private readObject = async (guid: string) => {
     const bundledData = await this.getObjectData(guid);
-    const unbundledData = unbundleObject(bundledData);
+    if (!bundledData) {
+      // The object doesn't exist anymore
+      return;
+    }
 
+    const unbundledData = unbundleObject(bundledData);
     const objectName = bundledData.Nickname.length === 0 ? bundledData.Name : bundledData.Nickname;
     const baseName = objectName.replace(/([":<>/\\|?*])/g, "");
     const fileName = `${baseName}.${guid}`;
@@ -354,7 +365,7 @@ return "{}"
 
     this.plugin.setLoadedObject({
       isGlobal: false,
-      name: bundledData.Nickname,
+      name: objectName,
       guid: guid,
       fileName: fileName,
       data: unbundledData,
@@ -369,8 +380,9 @@ return "{}"
     this.plugin.debug(`Using Lua include paths ${includePathsLua}`);
     this.plugin.debug(`Using XML include path ${includePathXml}`);
 
-    if (configuration.tstlEnalbed() && !bundled) {
-      if (!this.runTstl()) {
+    if (!bundled) {
+      const tstl = await this.runTstl();
+      if (!tstl) {
         return {
           scripts: [],
           hasErrors: true,
@@ -413,46 +425,50 @@ return "{}"
     };
   };
 
-  private runTstl = (): boolean => {
-    let hasErrors = false;
-    const path = getTstlPath();
-    this.plugin.startProgress(`Running Typescript to Lua`);
-    const result = runTstl(path);
-
-    const errors = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Error);
-    const warnings = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Warning);
-
-    const showLog = (option?: string) => {
-      if (option) {
-        this.plugin.showOutput();
+  private runTstl = async (): Promise<boolean> => {
+    return this.plugin.progress("Running TSTL", async () => {
+      if (!configuration.tstlEnalbed()) {
+        return true;
       }
-    };
 
-    if (errors.length > 0) {
-      hasErrors = true;
-      window
-        .showErrorMessage("There were errors while running TSTL. Check the log for more information", "Show Log")
-        .then(showLog);
-    }
-    if (warnings.length > 0) {
-      window
-        .showWarningMessage("There were warnings while running TSTL. Check the log for more information", "Show Log")
-        .then(showLog);
-    }
+      let hasErrors = false;
+      const path = getTstlPath();
+      const result = runTstl(path);
 
-    const host: FormatDiagnosticsHost = {
-      getCurrentDirectory: () => getOutputPath().toString(),
-      getCanonicalFileName: (fileName: string) => fileName,
-      getNewLine: () => "\n",
-    };
+      const errors = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Error);
+      const warnings = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Warning);
 
-    const output = formatDiagnostics(result.diagnostics, host);
-    if (output.length > 0) {
-      this.plugin.info(output);
-    }
-    this.plugin.endProgress();
+      const showLog = (option?: string) => {
+        if (option) {
+          this.plugin.showOutput();
+        }
+      };
 
-    return !hasErrors;
+      if (errors.length > 0) {
+        hasErrors = true;
+        window
+          .showErrorMessage("There were errors while running TSTL. Check the log for more information", "Show Log")
+          .then(showLog);
+      }
+      if (warnings.length > 0) {
+        window
+          .showWarningMessage("There were warnings while running TSTL. Check the log for more information", "Show Log")
+          .then(showLog);
+      }
+
+      const host: FormatDiagnosticsHost = {
+        getCurrentDirectory: () => getOutputPath().toString(),
+        getCanonicalFileName: (fileName: string) => fileName,
+        getNewLine: () => "\n",
+      };
+
+      const output = formatDiagnostics(result.diagnostics, host);
+      if (output.length > 0) {
+        this.plugin.info(output);
+      }
+
+      return !hasErrors;
+    });
   };
 }
 
