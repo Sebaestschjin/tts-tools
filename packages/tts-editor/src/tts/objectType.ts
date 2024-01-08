@@ -15,6 +15,9 @@ export const getObjectType = (data: ObjectData): ObjectType => {
   if (data.Name === "Custom_Model") {
     const modelType = (data as ModelData).CustomMesh.TypeIndex ?? ModelType.Generic;
     return getObjectTypeForName(mapModelType(modelType));
+  } else if (data.Name === "Custom_Assetbundle") {
+    const modelType = (data as AssetBundleData).CustomAssetbundle.TypeIndex ?? ModelType.Generic;
+    return getObjectTypeForName(mapModelType(modelType));
   }
 
   return getObjectTypeForName(data.Name);
@@ -51,6 +54,10 @@ const getObjectTypeForName = (name: string): ObjectType => {
 
   if (name.includes("Block")) {
     return ObjectType.block;
+  }
+
+  if (name.includes("Figurine")) {
+    return ObjectType.figure;
   }
 
   return ObjectType.other;

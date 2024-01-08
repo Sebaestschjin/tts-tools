@@ -8,6 +8,7 @@ import {
   TreeItemCollapsibleState,
   window,
 } from "vscode";
+
 import { getOutputFileUri, iconPath } from "../io/files";
 import { LoadedObject } from "../model/objectData";
 import { Plugin } from "../plugin";
