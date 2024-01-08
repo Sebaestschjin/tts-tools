@@ -86,6 +86,11 @@
         "category": "TTS Editor"
       },
       {
+        "command": "ttsEditor.updateObject",
+        "title": "Update Object",
+        "category": "TTS Editor"
+      },
+      {
         "command": "ttsEditor.locateObject",
         "title": "Locate Object",
         "category": "TTS Editor",
@@ -174,6 +179,10 @@
           "command": "ttsEditor.getObjectState",
           "when": "view == ttsEditor.objectView && (viewItem =~ /^object/ || viewItem =~ /^global/)",
           "group": "inline@2"
+        },
+        {
+          "command": "ttsEditor.updateObject",
+          "when": "view == ttsEditor.objectView && viewItem =~ /^object/"
         },
         {
           "command": "ttsEditor.createUi",

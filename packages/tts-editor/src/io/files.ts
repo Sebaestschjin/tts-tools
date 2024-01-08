@@ -1,6 +1,7 @@
 import path, { posix } from "path";
 import { Extension, Uri, window, workspace } from "vscode";
 import configuration from "../configuration";
+import { LoadedObject } from "../model/objectData";
 
 export class FileHandler {
   private extension: Extension<any>;
@@ -10,11 +11,17 @@ export class FileHandler {
   }
 
   readExtensionFile = async (fileName: string) => {
-    return this.readFile(Uri.joinPath(this.extension.extensionUri, fileName));
+    return this.readFile(this.extension.extensionUri, fileName);
   };
 
-  writeOutputFile = async (fileName: string, content: string) => {
-    return this.writeWorkspaceFile(`.tts/${fileName}`, content);
+  readWorkspaceFile = async (fileName: string) => {
+    if (!this.isInWorkspace(fileName)) {
+      const errorMessage = `Can not read file outside of workspace while reading file ${fileName}`;
+      window.showErrorMessage(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    return this.readFile(getWorkspaceRoot(), fileName);
   };
 
   writeWorkspaceFile = async (fileName: string, content: string) => {
@@ -27,6 +34,14 @@ export class FileHandler {
     return this.writeFile(getWorkspaceRoot(), fileName, content);
   };
 
+  readOutputFile = async (object: LoadedObject, extension: string) => {
+    return this.readWorkspaceFile(`.tts/${object.fileName}.${extension}`);
+  };
+
+  writeOutputFile = async (fileName: string, content: string) => {
+    return this.writeWorkspaceFile(`.tts/${fileName}`, content);
+  };
+
   private isInWorkspace(fileName: string): boolean {
     const root = getWorkspaceRoot();
     const filePath = Uri.joinPath(root, fileName);
@@ -36,9 +51,10 @@ export class FileHandler {
     return resolvedFilePath.startsWith(root.fsPath);
   }
 
-  private async readFile(file: Uri) {
+  private async readFile(base: Uri, fileName: string) {
+    const fileUri = Uri.joinPath(base, `/${fileName}`);
     return workspace.fs
-      .readFile(file)
+      .readFile(fileUri)
       .then(Buffer.from)
       .then((b) => b.toString("utf-8"));
   }

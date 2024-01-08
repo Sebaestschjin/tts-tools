@@ -1,4 +1,5 @@
 import { ExtensionContext, commands, window } from "vscode";
+
 import createUi from "./command/createUi";
 import executeScript from "./command/executeScript";
 import getScripts from "./command/getScripts";
@@ -11,6 +12,7 @@ import { FileHandler } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSAdapter } from "./ttsAdapter";
 import { TTSObjectItem, TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
+import updateObject from "./command/updateObject";
 
 export const extensionName = "ttsEditor";
 
@@ -39,6 +41,7 @@ export function activate(context: ExtensionContext) {
   registerCommand("showView", showView(view));
   registerCommand("openBundledScript", openBundledScript);
   registerCommand("createUi", createUi(plugin));
+  registerCommand("updateObject", updateObject(plugin, adapter));
   registerCommand("updateObjectState", updateObjectState(plugin, adapter));
   registerMacro("getObjectState");
   registerMacro("getRuntimeUi");

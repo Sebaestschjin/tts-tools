@@ -79,7 +79,7 @@ export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
     const elements = [];
 
     if (!element.object.isGlobal) {
-      elements.push(new TTSScriptItem(element.object, "Data", "json"));
+      elements.push(new TTSScriptItem(element.object, "Data", "data.json"));
     }
 
     elements.push(new TTSScriptItem(element.object, "Script", "lua"));

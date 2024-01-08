@@ -298,7 +298,7 @@ return {}
           hasUi: file.ui !== undefined,
           data: data,
         });
-        writeOutputFile(`${file.fileName}.json`, JSON.stringify(data, null, 2));
+        writeOutputFile(`${file.fileName}.data.json`, JSON.stringify(data, null, 2));
       }
     }
 
