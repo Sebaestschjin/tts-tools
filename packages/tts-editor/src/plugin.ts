@@ -1,6 +1,6 @@
 import { OutputChannel, StatusBarAlignment, StatusBarItem, window } from "vscode";
 
-import { LoadedObject } from "./model/objectData";
+import { LoadedObject, SetLoadedObject } from "./model/objectData";
 import { FileHandler, hasOutputFile, writeOutputFile } from "./io/files";
 import { command } from "./command";
 
@@ -35,14 +35,32 @@ export class Plugin {
       window.showWarningMessage("UI file already exists.");
     } else {
       writeOutputFile(file, content);
-      this.loadedObjects.get(object.guid)!.hasUi = true;
     }
 
     command.refreshView();
   };
 
-  setLoadedObject = (loaded: LoadedObject) => {
-    this.loadedObjects.set(loaded.guid, loaded);
+  setLoadedObject = (loaded: SetLoadedObject) => {
+    const guid = loaded.isGlobal ? "-1" : loaded.guid;
+    const loadedObject: LoadedObject = loaded.isGlobal
+      ? {
+          isGlobal: true,
+          name: "Global",
+          guid: "-1",
+          fileName: loaded.fileName,
+          data: loaded.data,
+          hasUi: !!loaded.data.XmlUI,
+        }
+      : {
+          isGlobal: false,
+          name: loaded.name,
+          guid: loaded.guid,
+          fileName: loaded.fileName,
+          data: loaded.data,
+          hasUi: !!loaded.data.XmlUI,
+        };
+
+    this.loadedObjects.set(guid, loadedObject);
 
     command.refreshView();
   };

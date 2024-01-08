@@ -1,22 +1,33 @@
 interface ObjectInfo {
-  /** The GUID of the object */
-  guid: string;
   /** The name of the object */
   name: string;
+  /** The GUID of the object */
+  guid: string;
   /** Base file name created for this object (without extension). */
   fileName: string;
+  hasUi: boolean;
 }
 
 export type LoadedObject = RegularLoadedObject | GlobalLoadedObject;
 
-interface RegularLoadedObject extends ObjectInfo {
+export interface RegularLoadedObject extends ObjectInfo {
   isGlobal: false;
-  hasUi: boolean;
   data: ObjectData;
 }
 interface GlobalLoadedObject extends ObjectInfo {
-  hasUi: boolean;
   isGlobal: true;
+  data: GlobalObjectData;
+}
+
+export type SetLoadedObject = SetRegularLoadedObject | SetGlobalLoadedObject;
+
+type SetRegularLoadedObject = Omit<RegularLoadedObject, "hasUi">;
+
+type SetGlobalLoadedObject = Omit<GlobalLoadedObject, "guid" | "hasUi">;
+
+interface GlobalObjectData {
+  LuaScript: string; // eslint-disable-line @typescript-eslint/naming-convention
+  XmlUI?: string; // eslint-disable-line @typescript-eslint/naming-convention
 }
 
 export interface ObjectFile extends ObjectInfo {

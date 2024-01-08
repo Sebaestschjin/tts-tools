@@ -8,10 +8,11 @@ import ExternalEditorApi, {
   PrintDebugMessage,
   PushingNewObject,
 } from "@matanlurey/tts-editor";
-import { TTSObject as SaveFileObject, unbundleObject } from "@tts-tools/savefile";
-import { Range, window, workspace } from "vscode";
+import { TTSObject as SaveFileObject, bundleObject, unbundleObject } from "@tts-tools/savefile";
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
+import { Range, window, workspace } from "vscode";
 
+import { command } from "./command";
 import configuration from "./configuration";
 import { selectObject } from "./interaction/selectObject";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
@@ -23,7 +24,7 @@ import {
   RequestObjectMessage,
   WriteContentMessag as WriteContentMessage,
 } from "./message";
-import { LoadedObject, ObjectFile, ScriptData } from "./model/objectData";
+import { LoadedObject } from "./model/objectData";
 import { Plugin } from "./plugin";
 
 const defaultPolyFills = ["messageBridge", "object", "write"];
@@ -115,6 +116,53 @@ export class TTSAdapter {
     return this.api.customMessage(object);
   }
 
+  public async updateObject(object: LoadedObject) {
+    const readObjectFile = async (extension: string) => {
+      try {
+        return await this.plugin.fileHandler.readOutputFile(object, extension);
+      } catch (e) {
+        return undefined;
+      }
+    };
+
+    const dataFile = await readObjectFile("data.json");
+    if (!dataFile) {
+      window.showErrorMessage(`Can not find data file for object ${object.guid}`);
+      return;
+    }
+
+    const data = JSON.parse(dataFile) as SaveFileObject;
+    data.LuaScript = await readObjectFile("lua");
+    data.XmlUI = await readObjectFile("xml");
+
+    const state = await readObjectFile("state.txt");
+    if (state) {
+      data.LuaScriptState = state;
+    }
+
+    const bundled = bundleObject(data, {
+      includePath: configuration.xmlIncludePath(),
+    });
+
+    let newData = JSON.stringify(bundled);
+    newData = newData.replace(/\]\]/g, ']] .. "]]" .. [[');
+
+    const script = `
+local obj = getObjectFromGUID("${object.guid}")
+obj.destruct()
+
+spawnObjectJSON({
+  json = [[${newData}]]
+})
+`;
+
+    await this.executeCode(script, []);
+
+    await this.readObject(bundled.GUID);
+
+    command.refreshView();
+  }
+
   private initExternalEditorApi = () => {
     this.api.on("loadingANewGame", this.onLoadGame.bind(this));
     this.api.on("pushingNewObject", this.onPushObject.bind(this));
@@ -134,7 +182,7 @@ export class TTSAdapter {
 
   private onPushObject = async (message: PushingNewObject) => {
     this.plugin.debug(`recieved onPushObject ${message.messageID}`);
-    this.readFilesFromTTS(message.scriptStates, true);
+    this.readFilesFromTTS(message.scriptStates);
   };
 
   private onObjectCreated = async (message: ObjectCreated) => {
@@ -242,62 +290,75 @@ export class TTSAdapter {
     await workspace.fs.delete(outputPath, { recursive: true });
   };
 
-  private getObjectData = async (guid: string) => {
+  private getObjectData = async (guid: string): Promise<SaveFileObject> => {
     const command = `
 local obj = getObjectFromGUID("${guid}")
 if obj and not obj.isDestroyed() then
   return obj.getJSON()
 end
 
-return {}
+return "{}"
 `;
 
     const data = await this.executeCode<string>(command);
-    const parsed = JSON.parse(data) as SaveFileObject;
-    const unbundled = unbundleObject(parsed);
-    return unbundled;
+    return JSON.parse(data) as SaveFileObject;
   };
 
-  private readFilesFromTTS = async (scriptStates: IncomingJsonObject[], openFiles?: boolean) => {
-    this.plugin.setStatus(`Recieved ${scriptStates.length} scripts`);
+  private readFilesFromTTS = async (incomingObjects: IncomingJsonObject[]) => {
+    this.plugin.setStatus(`Recieved ${incomingObjects.length} scripts`);
 
-    const writeScriptFiles = async (file: ObjectFile, script: ScriptData, extension: string) => {
-      const fileName = `${file.fileName}.${extension}`;
-      const baseFile = await writeOutputFile(fileName, script.content);
-      const writtenFile = writeOutputFile(fileName, script.bundled, true);
-      if (openFiles) {
-        writtenFile.then(() => window.showTextDocument(baseFile));
-      }
-    };
+    for (const object of incomingObjects) {
+      if (object.guid === "-1") {
+        const fileName = "Global";
+        if (object.script !== undefined) {
+          writeOutputFile(`${fileName}.lua`, getUnbundledLua(object.script));
+          writeOutputFile(`${fileName}.lua`, object.script, true);
+        }
+        if (object.ui !== undefined) {
+          writeOutputFile(`${fileName}.xml`, unbundleXml(object.ui));
+          writeOutputFile(`${fileName}.xml`, object.ui, true);
+        }
 
-    for (const file of scriptStates.map(toFileInfo)) {
-      writeScriptFiles(file, file.script, "lua");
-
-      if (file.ui) {
-        writeScriptFiles(file, file.ui, "xml");
-      }
-
-      if (file.guid === "-1") {
         this.plugin.setLoadedObject({
+          name: "Global",
+          fileName: fileName,
           isGlobal: true,
-          guid: file.guid,
-          name: file.name,
-          fileName: file.fileName,
-          hasUi: file.ui !== undefined,
+          data: {
+            LuaScript: object.script, // eslint-disable-line @typescript-eslint/naming-convention
+            XmlUI: object.ui, // eslint-disable-line @typescript-eslint/naming-convention
+          },
         });
       } else {
-        const data = await this.getObjectData(file.guid);
-        this.plugin.setLoadedObject({
-          isGlobal: false,
-          guid: file.guid,
-          name: file.name,
-          fileName: file.fileName,
-          hasUi: file.ui !== undefined,
-          data: data,
-        });
-        writeOutputFile(`${file.fileName}.data.json`, JSON.stringify(data, null, 2));
+        await this.readObject(object.guid);
       }
     }
+  };
+
+  private readObject = async (guid: string) => {
+    const bundledData = await this.getObjectData(guid);
+    const unbundledData = unbundleObject(bundledData);
+
+    const objectName = bundledData.Nickname.length === 0 ? bundledData.Name : bundledData.Nickname;
+    const baseName = objectName.replace(/([":<>/\\|?*])/g, "");
+    const fileName = `${baseName}.${guid}`;
+
+    writeOutputFile(`${fileName}.data.json`, JSON.stringify(unbundledData, null, 2));
+    if (bundledData.LuaScript !== undefined) {
+      writeOutputFile(`${fileName}.lua`, unbundledData.LuaScript);
+      writeOutputFile(`${fileName}.lua`, bundledData.LuaScript, true);
+    }
+    if (bundledData.XmlUI !== undefined) {
+      writeOutputFile(`${fileName}.xml`, unbundledData.XmlUI);
+      writeOutputFile(`${fileName}.xml`, bundledData.XmlUI, true);
+    }
+
+    this.plugin.setLoadedObject({
+      isGlobal: false,
+      name: bundledData.Nickname,
+      guid: guid,
+      fileName: fileName,
+      data: unbundledData,
+    });
   };
 
   private createScripts = async (bundled: boolean) => {
@@ -328,11 +389,9 @@ return {}
         let lua: string = luaFile ?? "";
         let xml: string = xmlFile ?? "";
         if (luaFile && !bundled) {
-          this.plugin.debug(`Found lua for ${object.guid}`);
           lua = await bundleLua(luaFile, includePathsLua);
         }
         if (xmlFile && !bundled) {
-          this.plugin.debug(`Found xml for ${object.guid}`);
           xml = await bundleXml(xmlFile, includePathXml);
         }
 
@@ -396,28 +455,6 @@ return {}
     return !hasErrors;
   };
 }
-const toFileInfo = (object: IncomingJsonObject): ObjectFile => {
-  const baseName = object.name.replace(/([":<>/\\|?*])/g, "");
-  const fileName = `${baseName}.${object.guid}`;
-
-  const ui = object.ui
-    ? {
-        bundled: object.ui,
-        content: unbundleXml(object.ui),
-      }
-    : undefined;
-
-  return {
-    guid: object.guid,
-    name: object.name,
-    fileName: fileName,
-    script: {
-      bundled: object.script,
-      content: getUnbundledLua(object.script),
-    },
-    ui: ui,
-  };
-};
 
 const getUnbundledLua = (script: string) => {
   try {

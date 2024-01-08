@@ -1,10 +1,10 @@
 import { Uri, workspace } from "vscode";
 
-const Config = {
-  Name: "ttsEditor",
-  IncludePath: "includePath",
-  UseTSTL: "tstl.enable",
-  TSTLPath: "tstl.path",
+const configValue = {
+  name: "ttsEditor",
+  includePath: "includePath",
+  useTSTL: "tstl.enable",
+  tstlPath: "tstl.path",
 };
 
 const includePatterns = () => {
@@ -13,7 +13,7 @@ const includePatterns = () => {
 
 const includePaths = (): Uri[] => {
   const paths = workspace.workspaceFolders ?? [];
-  const relative = getConfig<string>(Config.IncludePath);
+  const relative = getConfig<string>(configValue.includePath);
   return paths.map((w) => Uri.joinPath(w.uri, `/${relative}`));
 };
 
@@ -34,12 +34,12 @@ const xmlIncludePath = (): string => {
   return includePaths().map((u) => u.fsPath)[0];
 };
 
-const tstlEnalbed = (): boolean => getConfig(Config.UseTSTL);
+const tstlEnalbed = (): boolean => getConfig(configValue.useTSTL);
 
-const tstlPath = (): string => getConfig(Config.TSTLPath);
+const tstlPath = (): string => getConfig(configValue.tstlPath);
 
 const getConfig = <T>(name: string) => {
-  const config = workspace.getConfiguration(Config.Name);
+  const config = workspace.getConfiguration(configValue.name);
   return config.get(name) as T;
 };
 
