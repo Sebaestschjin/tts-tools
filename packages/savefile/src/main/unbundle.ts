@@ -10,11 +10,11 @@ import { SaveFile, TTSObject } from "./model/tts";
  * @param saveFile The save to unbundle
  * @returns A copy of the given save file where all Lua and XML scripts are unbundled.
  */
-export const unbundleSave = (saveFile: SaveFile) => {
+export const unbundleSave = (saveFile: SaveFile): SaveFile => {
   return cloneDeepWith(saveFile, unbundler);
 };
 
-export const unbundleObject = (object: TTSObject) => {
+export const unbundleObject = (object: TTSObject): TTSObject => {
   return cloneDeepWith(object, unbundler);
 };
 
