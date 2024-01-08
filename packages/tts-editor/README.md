@@ -10,6 +10,13 @@ Checkout [the documentation](https://sebaestschjin.github.io/tts-tools/editor/la
 - Execute scripts
 - Pre-Run Typescript to Lua
 
-## Attribution
+## Attributions
 
-- <a href="https://www.flaticon.com/free-icons/board-game" title="board game icons">Board game icons created by Good Ware - Flaticon</a>
+Icons taken from flaticon.com created by:
+
+- <a href="https://www.flaticon.com/authors/amazona-adorada">Amazona Adorada</a>
+- <a href="https://www.flaticon.com/authors/freepik">Freepik</a>
+- <a href="https://www.flaticon.com/authors/good-ware">Good Ware</a>
+- <a href="https://www.flaticon.com/authors/kiranshastry">Kiranshastry</a>
+- <a href="https://www.flaticon.com/authors/mike-zuidgeest">Mike Zuidgeest</a>
+- <a href="https://www.flaticon.com/authors/riajulislam">riajulislam</a>

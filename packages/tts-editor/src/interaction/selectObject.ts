@@ -35,6 +35,7 @@ export const selectObject = async (plugin: Plugin, options: Options = {}) => {
 
   const selection = await window.showQuickPick(objects, {
     title: options.title,
+    matchOnDescription: true,
   });
   return selection ? selection.object : undefined;
 };

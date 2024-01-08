@@ -8,9 +8,10 @@ import {
   TreeItemCollapsibleState,
   window,
 } from "vscode";
-import { getOutputFileUri } from "../io/files";
+import { getOutputFileUri, iconPath } from "../io/files";
 import { LoadedObject } from "../model/objectData";
 import { Plugin } from "../plugin";
+import { ObjectType, getObjectType } from "../tts/objectType";
 
 export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
   private plugin: Plugin;
@@ -98,7 +99,7 @@ export class TTSObjectItem extends TreeItem {
     super(object.name, TreeItemCollapsibleState.Collapsed);
 
     this.object = object;
-    this.iconPath = ThemeIcon.Folder;
+    this.iconPath = this.getIcon();
     if (object.isGlobal) {
       this.contextValue = "global";
     } else {
@@ -110,6 +111,19 @@ export class TTSObjectItem extends TreeItem {
       this.contextValue += ".ui";
     }
   }
+
+  private getIcon = () => {
+    if (this.object.isGlobal) {
+      return new ThemeIcon("globe");
+    }
+
+    const objectType = getObjectType(this.object.data);
+    if (objectType === ObjectType.other) {
+      return ThemeIcon.File;
+    }
+
+    return iconPath(objectType);
+  };
 }
 
 export class TTSScriptItem extends TreeItem {

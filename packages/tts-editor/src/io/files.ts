@@ -54,6 +54,13 @@ export class FileHandler {
   }
 }
 
+export const iconPath = (name: string) => {
+  return {
+    light: path.join(__filename, "..", "..", "..", "media", "icon", `${name}.png`),
+    dark: path.join(__filename, "..", "..", "..", "media", "icon", `${name}-dark.png`),
+  };
+};
+
 /**
  * Returns the path where all data files will be written to.
  *
