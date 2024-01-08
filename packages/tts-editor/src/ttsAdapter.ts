@@ -8,16 +8,14 @@ import ExternalEditorApi, {
   PrintDebugMessage,
   PushingNewObject,
 } from "@matanlurey/tts-editor";
+import { TTSObject as SaveFileObject, unbundleObject } from "@tts-tools/savefile";
 import { Range, window, workspace } from "vscode";
-import { unbundleObject, TTSObject as SaveFileObject } from "@tts-tools/savefile";
-
 import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
+
 import configuration from "./configuration";
+import { selectObject } from "./interaction/selectObject";
 import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
 import { getOutputFileUri, getOutputPath, getTstlPath, readOutputFile, writeOutputFile } from "./io/files";
-import { LoadedObject, ObjectFile, ScriptData } from "./model/objectData";
-import { Plugin } from "./plugin";
-import { TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
 import {
   EditorMessage,
   MessageFormat,
@@ -25,19 +23,18 @@ import {
   RequestObjectMessage,
   WriteContentMessag as WriteContentMessage,
 } from "./message";
-import { selectObject } from "./interaction/selectObject";
+import { LoadedObject, ObjectFile, ScriptData } from "./model/objectData";
+import { Plugin } from "./plugin";
 
 const defaultPolyFills = ["messageBridge", "object", "write"];
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
   private plugin: Plugin;
-  private view: TTSObjectTreeProvider;
 
-  public constructor(plugin: Plugin, view: TTSObjectTreeProvider) {
+  public constructor(plugin: Plugin) {
     this.api = new ExternalEditorApi();
     this.plugin = plugin;
-    this.view = view;
 
     this.initExternalEditorApi();
   }
@@ -301,8 +298,6 @@ return {}
         writeOutputFile(`${file.fileName}.data.json`, JSON.stringify(data, null, 2));
       }
     }
-
-    this.view.refresh();
   };
 
   private createScripts = async (bundled: boolean) => {

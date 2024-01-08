@@ -1,6 +1,8 @@
 import { OutputChannel, StatusBarAlignment, StatusBarItem, window } from "vscode";
+
 import { LoadedObject } from "./model/objectData";
 import { FileHandler, hasOutputFile, writeOutputFile } from "./io/files";
+import { command } from "./command";
 
 export class Plugin {
   public readonly fileHandler: FileHandler;
@@ -23,6 +25,8 @@ export class Plugin {
   resetLoadedObjects = () => {
     this.loadedObjects.clear();
     this.endProgress();
+
+    command.refreshView();
   };
 
   createObjectFile = async (object: LoadedObject, extension: string, content: string) => {
@@ -33,10 +37,20 @@ export class Plugin {
       writeOutputFile(file, content);
       this.loadedObjects.get(object.guid)!.hasUi = true;
     }
+
+    command.refreshView();
   };
 
   setLoadedObject = (loaded: LoadedObject) => {
     this.loadedObjects.set(loaded.guid, loaded);
+
+    command.refreshView();
+  };
+
+  removeLoadedObject = (guid: string) => {
+    this.loadedObjects.delete(guid);
+
+    command.refreshView();
   };
 
   getLoadedObject = (guid: string): LoadedObject | undefined => {

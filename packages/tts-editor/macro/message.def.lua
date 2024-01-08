@@ -10,8 +10,16 @@
 ---@alias RequestEditorMessage RequestObjectMessage | WriteContentMessage
 
 --- Request to select an object from the currently loaded ones.
----@class RequestObjectMessage : __object__Options
+---@class RequestObjectMessage
 ---@field type "object"
+---@field title? string The title to show for the selection
+---@field withGlobal? boolean When true, Global can also be selected as an object
 
----@class WriteContentMessage : __write__Options
+---@class WriteContentMessage
 ---@field type "write"
+---@field name? string
+---@field object? string
+---@field content string
+---@field format? MessageFormat
+
+---@alias MessageFormat "auto" | "none"

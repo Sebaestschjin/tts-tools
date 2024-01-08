@@ -1,3 +1,5 @@
+---@meta foo
+
 ---@class (exact) __object__Options
 ---@field title? string The title to show for the selection
 ---@field withGlobal? boolean When true, Global can also be selected as an object
@@ -8,7 +10,7 @@ function __object__(options, handler) end
 
 ---@class (exact) __write__Options
 ---@field name? string
----@field object? string
+---@field object? tts__Object
 ---@field content string
 ---@field format? "auto" | "none"
 

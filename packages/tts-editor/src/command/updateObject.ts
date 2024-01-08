@@ -1,4 +1,5 @@
 import { TTSObject, bundleObject } from "@tts-tools/savefile";
+
 import { selectObject } from "../interaction/selectObject";
 import { LoadedObject } from "../model/objectData";
 import { Plugin } from "../plugin";
@@ -6,6 +7,7 @@ import { TTSAdapter } from "../ttsAdapter";
 import { TTSObjectItem } from "../view/ttsObjectTreeProvider";
 import configuration from "../configuration";
 import { window } from "vscode";
+import { command } from ".";
 
 export default (plugin: Plugin, adapter: TTSAdapter) => async (arg?: TTSObjectItem) => {
   let object: LoadedObject;
@@ -34,7 +36,6 @@ export default (plugin: Plugin, adapter: TTSAdapter) => async (arg?: TTSObjectIt
   }
 
   const data = JSON.parse(dataFile) as TTSObject;
-
   data.LuaScript = await readObjectFile("lua");
   data.XmlUI = await readObjectFile("xml");
 
@@ -48,11 +49,9 @@ export default (plugin: Plugin, adapter: TTSAdapter) => async (arg?: TTSObjectIt
   });
 
   let newData = JSON.stringify(bundled);
-
   newData = newData.replace(/\]\]/g, ']] .. "]]" .. [[');
-  console.log(newData);
 
-  const command = `
+  const script = `
 local obj = getObjectFromGUID("${object.guid}")
 obj.destruct()
 
@@ -60,5 +59,8 @@ spawnObjectJSON({
   json = [[${newData}]]
 })
 `;
-  adapter.executeCode(command);
+
+  adapter.executeCode(script);
+
+  command.refreshView();
 };

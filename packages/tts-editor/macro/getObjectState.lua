@@ -1,19 +1,16 @@
 __object__({
   withGlobal = true
-}, function(o)
+}, function(obj)
   local state = ""
-  local guid = ""
-  if o == Global then
+  if obj == Global then
     state = Global.call("onSave")
-    guid = "-1"
   else
-    state = o.script_state
-    guid = o.getGUID()
+    state = obj.script_state
   end
 
   __write__({
     name = "state.txt",
-    object = guid,
+    object = obj,
     content = state
   })
 end)

@@ -23,7 +23,7 @@ export function activate(context: ExtensionContext) {
   const view = window.createTreeView("ttsEditor.objectView", {
     treeDataProvider: viewProvider,
   });
-  const adapter: TTSAdapter = new TTSAdapter(plugin, viewProvider);
+  const adapter: TTSAdapter = new TTSAdapter(plugin);
 
   const registerCommand = (name: string, handler: Parameters<typeof commands.registerCommand>[1]) => {
     context.subscriptions.push(commands.registerCommand(`${extensionName}.${name}`, handler));
@@ -39,10 +39,12 @@ export function activate(context: ExtensionContext) {
   registerCommand("executeCode", executeScript(adapter));
   registerCommand("showOutput", showOutput(plugin));
   registerCommand("showView", showView(view));
+  registerCommand("updateView", () => viewProvider.refresh());
   registerCommand("openBundledScript", openBundledScript);
   registerCommand("createUi", createUi(plugin));
   registerCommand("updateObject", updateObject(plugin, adapter));
   registerCommand("updateObjectState", updateObjectState(plugin, adapter));
+
   registerMacro("getObjectState");
   registerMacro("getRuntimeUi");
   registerMacro("locateObject");

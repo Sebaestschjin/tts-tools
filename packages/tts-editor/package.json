@@ -65,7 +65,7 @@
         "command": "ttsEditor.getRuntimeUi",
         "title": "Get Runtime UI",
         "category": "TTS Editor",
-        "icon": "$(editor-layout)"
+        "icon": "$(window)"
       },
       {
         "command": "ttsEditor.getObjectState",
