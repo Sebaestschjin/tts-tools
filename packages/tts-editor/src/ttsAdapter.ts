@@ -22,7 +22,7 @@ import {
   MessageFormat,
   RequestEditorMessage,
   RequestObjectMessage,
-  WriteContentMessag as WriteContentMessage,
+  WriteContentMessage as WriteContentMessage,
 } from "./message";
 import { LoadedObject } from "./model/objectData";
 import { Plugin } from "./plugin";
@@ -246,6 +246,7 @@ spawnObjectJSON({
   private handleObjectMessage = async (message: RequestObjectMessage) => {
     const object = await selectObject(this.plugin, {
       title: message.title,
+      placeholder: message.placeholder,
       includeGlobal: message.withGlobal,
     });
     if (object) {

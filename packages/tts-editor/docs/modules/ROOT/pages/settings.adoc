@@ -1,0 +1,20 @@
+= Settings
+
+The extension uses the following settings:
+
+[cols="1m,1m,1m,2"]
+|===
+| Name | Type | Default | Usage
+
+| ttsEditor.includePath | string | src
+| Relative path inside the workspace directory that is used to resolve modules and xml files (see xref:bundling.adoc[]).
+
+[[messages]]| ttsEditor.enableMessages | boolean | true
+| When set, custom messages sent from TTS are handled. Otherwise, they are ignored (see xref:messages.adoc[]).
+
+| ttsEditor.tstl.enable | boolean | false
+| When enabled, Typescript to Lua is run before bundling the scripts using the path below (see xref:typescript.adoc[]).
+
+| ttsEditor.tstl.path | string | .
+| Relative path inside the workspace directory to a Typescript to Lua project that should be transpiled before bundling the scripts (see xref:typescript.adoc[]).
+|===

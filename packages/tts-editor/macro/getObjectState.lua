@@ -1,5 +1,6 @@
 __object__({
-  withGlobal = true
+  withGlobal = true,
+  placeholder = "Select an object to get its state",
 }, function(obj)
   local state = ""
   if obj == Global then

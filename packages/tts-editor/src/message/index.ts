@@ -8,16 +8,17 @@ export interface ObjectMessage {
 }
 
 /** Messages send from TTS to the extension as custom messages. */
-export type RequestEditorMessage = RequestObjectMessage | WriteContentMessag;
+export type RequestEditorMessage = RequestObjectMessage | WriteContentMessage;
 
 /** Request to select an object from the currently loaded ones. */
 export interface RequestObjectMessage {
   type: "object";
   title?: string;
+  placeholder?: string;
   withGlobal?: boolean;
 }
 
-export interface WriteContentMessag {
+export interface WriteContentMessage {
   type: "write";
   name?: string;
   object?: string;

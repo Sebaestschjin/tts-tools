@@ -56,12 +56,6 @@
         "category": "TTS Editor"
       },
       {
-        "command": "ttsEditor.openBundledScript",
-        "title": "Open Bundled Script",
-        "category": "TTS Editor",
-        "icon": "$(go-to-file)"
-      },
-      {
         "command": "ttsEditor.getRuntimeUi",
         "title": "Get Runtime UI",
         "category": "TTS Editor",
@@ -79,11 +73,6 @@
         "category": "TTS Editor",
         "icon": "$(link-external)",
         "enablement": "resourceFilename =~ /\\.state\\.txt$/"
-      },
-      {
-        "command": "ttsEditor.createUi",
-        "title": "Create UI",
-        "category": "TTS Editor"
       },
       {
         "command": "ttsEditor.updateObject",

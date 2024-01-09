@@ -1,0 +1,64 @@
+= Commands
+
+[#object-selection]
+== Object selection
+
+Commands that are used for objects can also be executed without an object context, e.g. from the command palette in VS Code.
+In this case, before executing the command a selection dialog will show up, where one of the currently loaded objects can be selected.
+The command will then be executed as if the object was selected from the xref:view.adoc[] directly.
+
+.Example object selection dialog
+image::select-object.png[]
+
+An object context is available, when using the context menus and buttons in the xref:view.adoc[].
+In this case the selection dialog is skipped and the object from the view is used directly.
+
+
+== Available commands
+
+[cols="1,2"]
+|===
+| Name | Usage
+
+| Get Objects
+| Get the scripts of all objects currently on the table (including `Global`).
+Scripts are unbundled while doing so, but a bundled reference is kept as well (see xref:bundling.adoc[]).
+This command is also automatically executed whenever you load a new game in TTS.
+
+| Save and Play
+| (see xref:bundling.adoc[]).
+
+| Save and Play (Bundled)
+| Like "Save and Play" but instead of using the scripts from the output directory, the scripts from the bundled output directory will be used.
+No extra bundling step is performed and the scripts are taken as is.
+This can be useful when working on mods where the source files are not available to proper bundle them.
+
+| Execute Code
+| Executes the current editor content as a Lua script in TTS.
+See xref:execute.adoc[] for details.
+
+| Get Runtime UI
+| Read the current XML UI of the selected object from TTS, write it to a file and open it.
+The current XML UI is determined by calling `UI.getXml()` on the selected object.
+Also shows up as an action button in the xref:view.adoc[].
+
+| Get Object State
+[[get-state]]|
+Read the current script state of the selected object from TTS, write it to a file and open it.
+The current script state is read from the `script_state` field of the selected object.
+For `Global`, the `onSave` method is called instead.
+Also shows up as an action button in the xref:view.adoc[].
+
+| Update Object State
+| Only shows up, when a file created from <<get-state,Get Object State>> is opened.
+It will send this file to TTS, update the corresponding object script state and reload the object.
+
+| Update Object
+| Destroys the selected object in TTS and spawns a new instance based on the current object data in the xref:terms.adoc[output directory].
+Before doing so, the scripts inside the object data are bundled.
+This includes nested object of the selected object is a container.
+
+| Locate Object
+| Highlights the selected object in TTS by randomly applying a different color over a certain time period.
+Will also trigger a player ping on the object.
+|===

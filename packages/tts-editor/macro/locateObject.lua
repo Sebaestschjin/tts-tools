@@ -1,4 +1,5 @@
 __object__({
+  placeholder = "Select an object to locate it",
 }, function(object)
   local interval = 0.1
   local totalTime = 5

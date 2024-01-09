@@ -2,6 +2,7 @@
 
 ---@class (exact) __object__Options
 ---@field title? string The title to show for the selection
+---@field placeholder? string
 ---@field withGlobal? boolean When true, Global can also be selected as an object
 
 ---@param options __object__Options

@@ -8,6 +8,7 @@ interface ObjectPickItem extends QuickPickItem {
 
 interface Options {
   includeGlobal?: boolean;
+  placeholder?: string;
   title?: string;
 }
 
@@ -35,6 +36,7 @@ export const selectObject = async (plugin: Plugin, options: Options = {}) => {
 
   const selection = await window.showQuickPick(objects, {
     title: options.title,
+    placeHolder: options.placeholder,
     matchOnDescription: true,
   });
   return selection ? selection.object : undefined;

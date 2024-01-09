@@ -1,0 +1,8 @@
+= Terms
+
+[#workspace]
+Workspace directory:: X
+
+[#output]
+Output directory:: X
+

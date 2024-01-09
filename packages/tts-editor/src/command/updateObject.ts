@@ -7,7 +7,7 @@ export default (plugin: Plugin, adapter: TTSAdapter) => async (arg?: TTSObjectIt
   if (arg) {
     adapter.updateObject(arg.object);
   } else {
-    const selection = await selectObject(plugin);
+    const selection = await selectObject(plugin, { placeholder: "Select to object to update" });
     if (!selection) {
       return;
     }

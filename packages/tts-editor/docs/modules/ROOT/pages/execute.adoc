@@ -1,0 +1,104 @@
+= Execute Scripts
+
+You can use the "Execute Code" command when an editor window is open to run its content as a Lua script in TTS.
+It will send to current editor content to TTS and execute it as a script.
+The script will be executed in the context of `Global`.
+
+
+[#macro]
+== Macro functions
+
+Macro functions are a feature to interact between the Lua code you want to execute and the VS Code instance where the extension is running at.
+E.g. you can trigger a selection dialog in VS Code where you select an object from the currently available objects on the table.
+Or open some text directly as an editor in VS Code instead of printing it into the output channel.
+
+This allows to write helper template files that can be more easily re-used without adjusting the template itself (e.g. by replacing the GUID of the object your want to with).
+
+In fact, many of the extension features are implemented using macro functions, e.g. https://github.com/Sebaestschjin/tts-tools/blob/main/packages/tts-editor/macro/locateObject.lua[locating an object] or https://github.com/Sebaestschjin/tts-tools/blob/main/packages/tts-editor/macro/getRuntimeUi.lua[getting the runtime UI].
+
+More macros will also be added in the future.
+If you have an idea of a macro that might benefit you, let me know.
+
+NOTE: Macros functions are only enabled when xref:settings.adoc#messages[this setting] is enabled (which it is by default).
+However, this setting can be disabled when working with unknown or untrusted mods to prevent accidentally triggering.
+
+=== `\\__object__`
+
+This macro lets you trigger a selection dialog inside VS Code that shows all currently loaded objects.
+It takes two arguments:
+
+* An option table to configure the shown selection (see <<object-options,below>>).
+* A callback function that is executed once the selection was done in VS Code.
+The callback receives the object reference of the selected object as it's only parameter.
+The object reference can also be `Global`, when configured through the options.
+
+.Example
+[source,lua]
+----
+__object__({
+  placeholder = "Select an object to locate it"
+}, function(obj)
+  -- executed after the selection was done in TTS
+  -- obj is now the object reference of the selected object
+  print(obj.getName())
+end)
+----
+
+This example will trigger a selection dialog like this in VS Code.
+
+image::select-object.png[]
+
+Selecting one of the objects will trigger the provided callback function in TTS with the object reference of the selected object.
+When the object is already destroyed after selecting it, an error message is thrown instead.
+When the selection is cancelled in VS Code, the callback isn't called.
+
+The following fields can be set in the `options` table to adjust which objects are selectable and ho how the prompt will look like:
+
+[#object-options]
+.Fields
+[cols="1m,1m,3"]
+|===
+| Name | Type | Usage
+
+| title? | string | An optional tile text that will be added to the top of the quick pick.
+| placeholder? | string | An optional text that will be added to the text box of the quick pick (see screenshot above).
+| withGlobal? | boolean | If `true`, `Global` will also be selectable in the quick pick, otherwise it will be removed.
+Defaults to `false`.
+|===
+
+=== `\\__write__`
+
+This macro lets you sent text from TTS to VS Code that will either be written to a file or shown as a temporary file.
+It takes exactly one argument that is described <<write-options,below>>.
+
+.Example
+[source,lua]
+----
+__write__({
+  name = "runtime.xml",
+  object = Global,
+  content = Global.UI.getXml()
+})
+----
+
+This example will write a file called `Global.runtime.xml` into the xref:terms.adoc#output[output directory] that contains the current XML of `Global`.
+
+[#write-options]
+.Fields
+[cols="1m,1m,3"]
+|===
+| Name | Type | Usage
+
+| content | string | The content to write to a file/to show in the editor.
+| name? | string | The name of the file to write.
+When not set, no file will be written.
+Instead, the content will be shown in a temporary editor in VS Code.
+The file will be written to the xref:terms.adoc#workspace[workspace directory].
+| object? | object reference | The object the content belongs to.
+When set, the file will be written to the xref:terms.adoc#output[output directory] for this object and `name` will be used as an extension instead of the complete file name.
+| format? | "auto" \| "none" | Determines how the `content` should be formatted before writing/showing it.
+When set to `"none"`, no formatting will take place.
+When set ti `"auto"`, the extension will try to parse the `content` to JSON.
+If it succeeds, it will pretty print it, otherwise it will leave it as is.
+Defaults to `"auto"`.
+|===

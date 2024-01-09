@@ -1,0 +1,176 @@
+= Custom Messages
+
+The extension supports sending and receiving custom messages through the https://api.tabletopsimulator.com/base/#sendexternalmessage[sendExternalMessage] and https://api.tabletopsimulator.com/events/#onexternalmessage[onExternalMessage] API.
+Some extension features (like xref:execute.adoc#macro[macro functions]) are implemented through this, but they could also be used on their own.
+
+This section describes the supported messages and their format.
+In the tables describing the fields of a message a `?` denotes and optional field.
+E.g. `title?` means there's a field called `title` but it is optional and can be `nil`.
+
+== Messages from TTS to the extension
+
+Those messages can be sent to the extension with the `sendExternalMessage` function inside TTS.
+Each message has `type` field to distinguish them and fields specific to the message.
+
+.Example
+[source,lua]
+----
+sendExternalMessage({
+  type = "object"
+})
+----
+
+NOTE: Messages sent from TTS are only handled when the xref:settings.adoc#messages[respective setting] is enabled.
+Otherwise, they are ignored.
+The setting is enabled by default, but it might make sense to disable it when working with unknown or untrusted mods as the messages can result in files to be written to the user's filesystem.
+
+[#request-object]
+=== Request object message
+
+This message can be sent from TTS to the extension to trigger an object selection inside VS Code.
+The selection will show a quick pick of currently loaded objects.
+Picking a selection sends the <<object-message>> to TTS.
+Cancelling the selection doesn't send any messages back.
+
+.Example quick pick dialog
+image::select-object.png[]
+
+.Fields
+[cols="1m,1m,3"]
+|===
+| Name | Type | Usage
+
+| type | "object" | Used to distinguish different messages.
+| title? | string | An optional tile text that will be added to the top of the quick pick.
+| placeholder? | string | An optional text that will be added to the text box of the quick pick (see screenshot above).
+| withGlobal? | boolean | If `true`, `Global` will also be selectable in the quick pick, otherwise it will be removed.
+Defaults to `false`.
+|===
+
+.Example
+[source,lua]
+----
+sendExternalMessage({
+  type = "object",
+  withGlobal = true,
+  placeholder = "Select an object to proceed",
+})
+----
+
+=== Write content message
+
+This message can be sent from TTS to request that text is shown in an editor in VS Code.
+Additionally, the text can also be written to a file.
+The content/file will also be opened in VS Code after receiving this message.
+
+.Fields
+[cols="1m,1m,3"]
+|===
+| Name | Type | Usage
+
+| type | "write" | Used to distinguish different messages.
+| content | string | The content to write to a file/to show in the editor.
+| name? | string | The name of the file to write.
+When not set, no file will be written.
+Instead, the content will be shown in a temporary editor in VS Code.
+The file will be written to the xref:terms.adoc#workspace[workspace directory].
+| object? | string | The guid of the object the content belongs to. Use `-1` for `Global`.
+When set, the file will be written to the xref:terms.adoc#output[output directory] for this object and `name` will be used as an extension instead of the complete file name.
+| format? | "auto" \| "none" | Determines how the `content` should be formatted before writing/showing it.
+When set to `"none"`, no formatting will take place.
+When set ti `"auto"`, the extension will try to parse the `content` to JSON.
+If it succeeds, it will pretty print it, otherwise it will leave it as is.
+Defaults to `"auto"`.
+|===
+
+.Example
+[source,lua]
+----
+sendExternalMessage({
+  type = "write",
+  content = "Hello World",
+  name = "Test.txt",
+})
+----
+
+This will write a file called `Test.txt` with this content:
+
+[source]
+----
+Hello World
+----
+
+.Example
+[source,lua]
+----
+sendExternalMessage({
+  type = "write",
+  content = '{ "this": { "is": "json" } }',
+  object = "-1",
+  name = "test.txt"
+})
+----
+
+This will write a file called `Global.test.txt` inside the output directory with the content formatted as:
+
+[source,json]
+----
+{
+  "this": {
+    "is": "json"
+  }
+}
+----
+
+.Example
+
+NOTE: Files can not be written outside the xref:terms.adoc#workspace[workspace directory] (e.g. by using a `name` like `../../test.txt`).
+Writing a file will be ignored, if the resolved file path is not inside the workspace directory.
+
+== Messages from the extension to TTS
+
+Those messages can be handled with the `onExternalMessage` event inside TTS.
+Each message has `type` field to distinguish them and fields specific to the message.
+
+.Example
+[source,lua]
+----
+function onExternalMessage(message)
+  if message.type == "object" then
+    -- do things with the message
+  end
+end
+----
+
+[#object-message]
+=== Object message
+
+This message is sent as a response to the <<request-object>> after a selection in VS Code was made.
+If the selection was cancelled, no message is sent.
+
+.Fields
+[cols="1m,1m,3"]
+|===
+| Name | Type | Usage
+
+| type | "object" | Used to distinguish different messages.
+| guid | string | The GUID of the object that was requested.
+Will be `-1` for `Global`.
+|===
+
+.Example
+[source,lua]
+----
+function onExternalMessage(message)
+  if message.type == "object" then
+    local object
+    if message.guid == "-1" then
+      object = Global
+    else
+      object = getObjectFromGUID(message.guid)
+    end
+
+    print(object.UI.getXML())
+  end
+end
+----

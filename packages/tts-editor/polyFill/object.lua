@@ -20,6 +20,7 @@ function __object__(options, handler)
     type = "object",
     withGlobal = options.withGlobal,
     title = options.title,
+    placeholder = options.placeholder
   }
   sendEditorMessage(message)
 end

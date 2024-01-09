@@ -13,6 +13,7 @@
 ---@class RequestObjectMessage
 ---@field type "object"
 ---@field title? string The title to show for the selection
+---@field placeholder? string
 ---@field withGlobal? boolean When true, Global can also be selected as an object
 
 ---@class WriteContentMessage
