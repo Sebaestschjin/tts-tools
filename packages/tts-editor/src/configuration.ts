@@ -1,10 +1,11 @@
 import { Uri, workspace } from "vscode";
 
-const configValue = {
+const configName = {
   name: "ttsEditor",
   includePath: "includePath",
   useTSTL: "tstl.enable",
   tstlPath: "tstl.path",
+  useMessages: "enableMessages",
 };
 
 const includePatterns = () => {
@@ -13,7 +14,7 @@ const includePatterns = () => {
 
 const includePaths = (): Uri[] => {
   const paths = workspace.workspaceFolders ?? [];
-  const relative = getConfig<string>(configValue.includePath);
+  const relative = getConfig<string>(configName.includePath);
   return paths.map((w) => Uri.joinPath(w.uri, `/${relative}`));
 };
 
@@ -34,12 +35,14 @@ const xmlIncludePath = (): string => {
   return includePaths().map((u) => u.fsPath)[0];
 };
 
-const tstlEnalbed = (): boolean => getConfig(configValue.useTSTL);
+const tstlEnalbed = (): boolean => getConfig(configName.useTSTL);
 
-const tstlPath = (): string => getConfig(configValue.tstlPath);
+const tstlPath = (): string => getConfig(configName.tstlPath);
+
+const messagesEnabled = (): boolean => getConfig(configName.useMessages);
 
 const getConfig = <T>(name: string) => {
-  const config = workspace.getConfiguration(configValue.name);
+  const config = workspace.getConfiguration(configName.name);
   return config.get(name) as T;
 };
 
@@ -48,4 +51,5 @@ export default {
   xmlIncludePath,
   tstlEnalbed,
   tstlPath,
+  messagesEnabled,
 };

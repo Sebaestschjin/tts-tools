@@ -225,6 +225,10 @@ spawnObjectJSON({
   };
 
   private onCustomMessage = async (customMessage: CustomMessage) => {
+    if (!configuration.messagesEnabled()) {
+      return;
+    }
+
     const message = customMessage.customMessage as RequestEditorMessage;
 
     this.plugin.debug(`recieved onCustomMessage ${JSON.stringify(message, null, 2)}`);

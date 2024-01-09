@@ -121,6 +121,12 @@
           "type": "string",
           "default": "src"
         },
+        "ttsEditor.enableMessages": {
+          "title": "Enable custom message from TTS",
+          "markdownDescription": "When set, custom messages sent from TTS are handled. Otherwise, they are ignored.",
+          "type": "boolean",
+          "default": true
+        },
         "ttsEditor.tstl.enable": {
           "title": "Enable TSTL",
           "markdownDescription": "When set, Typescript to Lua is run before bundling the scripts using the path below.",
