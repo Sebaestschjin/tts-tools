@@ -1,6 +1,6 @@
 name: editor
 title: TTS Editor
-version: 0
+version: 1.0
 start_page: ROOT:index.adoc
 nav:
   - modules/ROOT/nav.adoc

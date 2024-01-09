@@ -1,1 +1,12 @@
-* xref:index.adoc[Introduction]
+* xref:index.adoc[Getting Started]
+* xerf:usage.adoc[]
+** xref:view.adoc[]
+** xref:execute.adoc[]
+** xref:bundling.adoc[]
+** xref:typescript.adoc[]
+* Additional Topics
+** xref::autocompletion.adoc[]
+* Reference
+** xref:commands.adoc[]
+** xref:settings.adoc[]
+** xref:messages.adoc[]

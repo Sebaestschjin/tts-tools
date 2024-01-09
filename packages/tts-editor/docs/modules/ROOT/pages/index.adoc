@@ -1,15 +1,31 @@
 = TTS Editor
 
-A VS Code extension that implements the External Editor API for Tabletop Simulator to simplify editing and managing scripts.
+A VS Code extension that implements the External Editor API for Tabletop Simulator to simplify editing and managing scripts and objects.
 
+== Getting started
+
+* Start TTS and load a game.
+* Open VS Code with this extension.
+* Open a directory or workspace in VS Code.
+* Execute the command "Get Objects" to get the scripts of all objects currently on the table.
+* Edit a script inside the `.tts` directory of your opened directory/workspace for any object.
+* Execute the command "Save and Play" to send the updated scripts back to TTS and reload the game.
+* The game will reload and your scripts are updated in the game.
+* Success 🎉
+
+To learn about details and more features, checkout the xref:usage.adoc[] section.
 
 == Features
 
-- Bundle Lua
-- Bundle XML
-- Execute scripts
-- Pre-Run https://typescripttolua.github.io/[Typescript to Lua]
+* Get scripts and XML UI from TTS
+* Send scripts and XML UI back to TTS (while also xref:bundling.adoc[bundling] them)
+* xref:execute.adoc[Execute scripts] from opened text files
+* Get the current UI of an object as a file in VS Code
+* Get and update the current script state of an object
+* Update an individual object without reloading the whole game (including bundling its scripts and scripts of nested object for containers)
+* Locate an object on the table
+* Run xref:typescript.adoc[TypeScript to Lua] before sending scripts
 
-This extension doesn't offer support for auto-completion of the TTS API.
+NOTE: This extension doesn't offer support for auto-completion of the TTS API on its own.
 However, this can be easily achieved by using a dedicated Lua extension for VS Code.
 Checkout xref:autocompletion.adoc[] for more details.

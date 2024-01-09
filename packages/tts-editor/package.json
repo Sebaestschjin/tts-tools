@@ -3,8 +3,8 @@
   "displayName": "Tabletop Simulator Editor",
   "author": "Sebastian Stern",
   "publisher": "sebaestschjin",
-  "description": "Implementation of the external editor API for Tabletop Simulator (TTS)",
-  "version": "0.3.0",
+  "description": "Editor support for Tabletop Simulator (TTS)",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.82.0"
   },
@@ -84,6 +84,17 @@
         "title": "Locate Object",
         "category": "TTS Editor",
         "icon": "$(location)"
+      },
+      {
+        "command": "ttsEditor.openBundledScript",
+        "title": "Open Bundled Script",
+        "category": "TTS Editor",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "ttsEditor.createUi",
+        "title": "Create UI",
+        "category": "TTS Editor"
       }
     ],
     "keybindings": [
@@ -189,7 +200,7 @@
         },
         {
           "command": "ttsEditor.openBundledScript",
-          "when": "view == ttsEditor.objectView && viewItem == file",
+          "when": "view == ttsEditor.objectView && viewItem == script",
           "group": "inline"
         }
       ]
@@ -200,17 +211,6 @@
         "title": "Get Started with TTS Editor",
         "description": "Get an overview of the most essential features",
         "steps": [
-          {
-            "id": "openWorkspace",
-            "title": "Open a workspace folder",
-            "description": "You first need to open a folder or a workspace in VS Code.",
-            "media": {
-              "markdown": "media/tour/openWorkspace.md"
-            },
-            "completionEvents": [
-              "onContext:workbenchState != empty"
-            ]
-          },
           {
             "id": "startTts",
             "title": "Start TTS",
@@ -223,8 +223,19 @@
             ]
           },
           {
+            "id": "openWorkspace",
+            "title": "Open a workspace folder",
+            "description": "First open a folder or workspace in VS Code.",
+            "media": {
+              "markdown": "media/tour/openWorkspace.md"
+            },
+            "completionEvents": [
+              "onContext:workbenchState != empty"
+            ]
+          },
+          {
             "id": "getObjects",
-            "title": "Get Objects",
+            "title": "Get objects",
             "description": "Get the objects from TTS to work with them. \n[Get Objects](command:ttsEditor.getObjects)",
             "media": {
               "markdown": "media/tour/getObjects.md"
@@ -257,10 +268,10 @@
           },
           {
             "id": "openOutput",
-            "title": "Open the Console output",
+            "title": "Open the console output",
             "description": "Want to see the print and log messages TTS sends? Open the TTS output channel.\n[Show Output](command:ttsEditor.showOutput)",
             "media": {
-              "markdown": "media/tour/openView.md"
+              "markdown": "media/tour/openOutput.md"
             },
             "completionEvents": [
               "onCommand:ttsEditor.showOutput"

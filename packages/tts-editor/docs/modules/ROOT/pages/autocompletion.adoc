@@ -2,11 +2,12 @@
 
 The extension doesn't add any auto-completion on its own for the TTS API.
 However, it's possible to add that via the https://marketplace.visualstudio.com/items?itemName=sumneko.lua[Lua extension] for VS Code.
-Since this a dedicated extension for handling Lua, it is far superior to whatever auto-completion this extension could provide, and it has also active support.
+Since this is a dedicated extension for handling Lua, it is far superior to whatever auto-completion this extension could provide, and it has also active support.
 
 == Setup
 * Install the https://marketplace.visualstudio.com/items?itemName=sumneko.lua[Lua extension] in VS Code.
 * Download the file `language-server.zip` from the latest https://github.com/Sebaestschjin/typed-tabletop-simulator/releases[release] and extract it somewhere at your local file system.
+** Alternatively you could also clone linked git repository, so it's easier to get updates on those files, if you are familiar with git.
 * Open the settings in VS Code and search for `lua library`.
 Add a new item for this setting and add the path in your local file system where your extracted the file from before.
 +
@@ -34,3 +35,7 @@ image::vs-code-lua-autocomplete-params.png[]
 
 The extension offers many more features to help you improve your code and coding experience, e.g. by offering diagnostics or a formatter.
 Checkout its https://luals.github.io/[documentation] for more details.
+
+NOTE: The specification is possibly not complete and missed a few TTS APIs.
+If you want anything missing that should be added, please say so.
+It's easy enough to extend.

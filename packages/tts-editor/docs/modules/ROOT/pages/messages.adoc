@@ -73,9 +73,9 @@ The content/file will also be opened in VS Code after receiving this message.
 | name? | string | The name of the file to write.
 When not set, no file will be written.
 Instead, the content will be shown in a temporary editor in VS Code.
-The file will be written to the xref:terms.adoc#workspace[workspace directory].
+The file will be written to the xref:usage.adoc#workspace[workspace directory].
 | object? | string | The guid of the object the content belongs to. Use `-1` for `Global`.
-When set, the file will be written to the xref:terms.adoc#output[output directory] for this object and `name` will be used as an extension instead of the complete file name.
+When set, the file will be written to the xref:usage.adoc#output[output directory] for this object and `name` will be used as an extension instead of the complete file name.
 | format? | "auto" \| "none" | Determines how the `content` should be formatted before writing/showing it.
 When set to `"none"`, no formatting will take place.
 When set ti `"auto"`, the extension will try to parse the `content` to JSON.
@@ -124,7 +124,7 @@ This will write a file called `Global.test.txt` inside the output directory with
 
 .Example
 
-NOTE: Files can not be written outside the xref:terms.adoc#workspace[workspace directory] (e.g. by using a `name` like `../../test.txt`).
+NOTE: Files can not be written outside the xref:usage.adoc#workspace[workspace directory] (e.g. by using a `name` like `../../test.txt`).
 Writing a file will be ignored, if the resolved file path is not inside the workspace directory.
 
 == Messages from the extension to TTS

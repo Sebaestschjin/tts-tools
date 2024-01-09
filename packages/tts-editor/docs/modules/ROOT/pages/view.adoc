@@ -1,1 +1,20 @@
 = TTS Objects View
+
+The TTS objects view gives an overview of all loaded objects from the game.
+Each object (and `Global`) has their own entry.
+`Global` will always be at the top and other objects will follow alphabetically by their name.
+Each entry also has an icon that indicates what type of object it is.
+
+image::view.png[]
+
+Expanding an entry will show all the file that are available for this object.
+Clicking a file entry will open it in VS Code as it would open files from the regular explorer view.
+
+Hovering over an entry will show additional actions that can be performed on the object or file.
+Right-clicking an object shows even more actions.
+
+image::view-context.png[]
+
+The buttons in the top bar of the view also offer some of the commands (e.g. "Save and Play") of the extension as menus.
+
+A reference for what each command does is documented xref:commands.adoc#available[here].

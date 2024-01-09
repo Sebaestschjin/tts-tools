@@ -81,7 +81,7 @@ __write__({
 })
 ----
 
-This example will write a file called `Global.runtime.xml` into the xref:terms.adoc#output[output directory] that contains the current XML of `Global`.
+This example will write a file called `Global.runtime.xml` into the xref:usage.adoc#output[output directory] that contains the current XML of `Global`.
 
 [#write-options]
 .Fields
@@ -93,9 +93,9 @@ This example will write a file called `Global.runtime.xml` into the xref:terms.a
 | name? | string | The name of the file to write.
 When not set, no file will be written.
 Instead, the content will be shown in a temporary editor in VS Code.
-The file will be written to the xref:terms.adoc#workspace[workspace directory].
+The file will be written to the xref:usage.adoc#workspace[workspace directory].
 | object? | object reference | The object the content belongs to.
-When set, the file will be written to the xref:terms.adoc#output[output directory] for this object and `name` will be used as an extension instead of the complete file name.
+When set, the file will be written to the xref:usage.adoc#output[output directory] for this object and `name` will be used as an extension instead of the complete file name.
 | format? | "auto" \| "none" | Determines how the `content` should be formatted before writing/showing it.
 When set to `"none"`, no formatting will take place.
 When set ti `"auto"`, the extension will try to parse the `content` to JSON.

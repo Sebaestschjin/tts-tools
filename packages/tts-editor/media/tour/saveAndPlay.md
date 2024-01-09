@@ -7,4 +7,4 @@ Learn more about bundling scripts [here](https://sebaestschjin.github.io/tts-too
 
 Want to edit a mod that uses bundling, but you don't have the original files?
 You can also edit the bundled version of the scripts and use Save and Play with those version.
-Checkout [this documentation](https://sebaestschjin.github.io/tts-tools/editor/latest/bundling.html#saveAndPlay) for details.
+Checkout [this documentation](https://sebaestschjin.github.io/tts-tools/editor/latest/bundling.html#save-and-play) for details.

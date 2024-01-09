@@ -79,7 +79,7 @@ export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
     const elements = [];
 
     if (!element.object.isGlobal) {
-      elements.push(new TTSScriptItem(element.object, "Data", "data.json"));
+      elements.push(new TTSFiletItem(element.object, "Data", "data.json"));
     }
 
     elements.push(new TTSScriptItem(element.object, "Script", "lua"));
@@ -91,7 +91,7 @@ export class TTSObjectTreeProvider implements TreeDataProvider<TTSItem> {
   }
 }
 
-export type TTSItem = TTSObjectItem | TTSScriptItem;
+export type TTSItem = TTSObjectItem | TTSScriptItem | TTSFiletItem;
 
 export class TTSObjectItem extends TreeItem {
   public readonly object: LoadedObject;
@@ -127,7 +127,7 @@ export class TTSObjectItem extends TreeItem {
   };
 }
 
-export class TTSScriptItem extends TreeItem {
+export class TTSFiletItem extends TreeItem {
   public readonly object: LoadedObject;
   private extension: string;
 
@@ -140,15 +140,22 @@ export class TTSScriptItem extends TreeItem {
     this.resourceUri = getOutputFileUri(this.fileName());
 
     this.command = {
-      title: "Open script file",
+      title: "Open file",
       command: "vscode.open",
       arguments: [getOutputFileUri(this.fileName())],
     };
   }
 
+  protected fileName = () => `${this.object.fileName}.${this.extension}`;
+}
+
+export class TTSScriptItem extends TTSFiletItem {
+  constructor(object: LoadedObject, name: string, extension: string) {
+    super(object, name, extension);
+    this.contextValue = "script";
+  }
+
   openBundledScript = () => {
     window.showTextDocument(getOutputFileUri(this.fileName(), true));
   };
-
-  private fileName = () => `${this.object.fileName}.${this.extension}`;
 }

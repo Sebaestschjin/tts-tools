@@ -1,1 +1,249 @@
 = Bundling
+
+Working on the scripts directly on the files in the output directory is fine for smaller mods.
+However, once a script gets bigger it also gets harder to manage and keep track of.
+Also, when multiple objects use the same or very similar scripts, it's get harder to update all of them the more objects are involved or the bigger the scripts get.
+
+This is where bundling of scripts is helpful as it allows to split scripts into multiple files that can be re-used by multiple objects or even by different scripts files on the same object.
+
+Splitting scripts into different individual components is a very basic and important part of software development.
+It allows to split a codebase into different functional components where each component (aka module) has its own responsibility that is separated from other responsibilities.
+E.g. a library to work with tables, another one to work with strings, one module that does the game setup and another one that keeps track of the game state or similar.
+When those are separated it's easier to reason about them individually, define clear contracts between each part (aka interfaces) and thus makes it easier to develop each part further individually.
+
+E.g. consider you have a utility function somewhere, that allows to filter out elements of a table that you use often in your scripts.
+Something like this:
+[source,lua]
+----
+local function filter(tab, predicate)
+  local newTable = {}
+
+  for _, v in ipairs(tab) do
+   if predicate(v) then
+    table.insert(newTable, v)
+   end
+  end
+
+  return newTable
+end
+----
+
+Without bundling, whenever you want to use this function on one of your objects, you'd have to copy it over to use it.
+If you want to add new features to it, or fix a nasty bug, you'd have to do that for _every_ copy for function on all objects.
+This gets annoying, time-consuming and error-prone very fast.
+
+Instead, you can split this function (and probably other functions related to working with tables), into a separate file.
+For this example the file will be called `TableUtil.lua` and is in a directory called `lib` in the workspace directory.
+
+The script from the example needs a small adjustment, so it's easier to work with it later on.
+[source, lua]
+----
+local TableUtil = {}
+
+function TableUtil.filter(tab, predicate)
+  -- the code from the example before
+end
+
+return TableUtil
+----
+
+Now you can include it in your script by writing `require("path.to.file")` where `path.to.file` is the path to the `.lua` file inside the workspace directory, so in this example it would be `"lib.TableUtil"`.
+Each directory is separated by a dot and the `.lua` extension *must* be left out.
+
+A usage could look like this:
+
+.Some object script
+[source,lua]
+----
+local TableUtil = require("lib.TableUtil")
+
+TableUtil.filter({ "a", "b", "a" }, function(v) return v == "a" end)
+----
+
+Instead of copying the script, it's now instead read from the `"lib.TableUtil.lua"` file.
+The `return` value from this file is returned by the `require` call and can then be bound to the `local` `TableUtil` parameter that is used.
+
+Accessing the function is then done by accessing the `TableUtil` variable, to call it.
+
+You can `require` as many files as you need or want.
+And files that are ``require``d can also `require` other files as well.
+
+By using `require` you can make it clear what dependencies a file has.
+Once you update a ``require``d files it's updated in all the places where it's used without manually editing all those places.
+
+[NOTE]
+====
+It isn't technically required to use a `return` value in your ``require``d files.
+You can also use global variables to achieve the same effect, e.g. like this:
+
+[source,lua]
+----
+-- The lib.TableUtil file
+TableUtil = {}
+
+TableUtil.filter = function(tab, predicate)
+  -- the code from the example before
+end
+
+-- another file
+require("lib.TableUtil")
+
+TableUtil.filter({ "a", "b", "a" }, function(v) return v == "a" end)
+----
+
+However, this isn't advised and typically considered bad practice.
+It's better to keep variables as `local` as possible and avoid global variables as much as possible in order to prevent accidentally using or overriding variables from other files.
+====
+
+== Setting the correct lookup path
+
+When you use `require` with this extension the files you `require` are searched for in the xref:usage.adoc#workspace[workspace directory].
+So when you opened a directory and want to `require` a file `lib.TableUtil`, you'd need this kind of directory structure:
+
+----
+workspace directory
+└── lib
+    └── TableUtil.lua
+----
+
+When you workspace directory doesn't contain the files you want to `require` directly, but in a subdirectory, you can adjust the xref:settings.adoc#include[include path setting].
+This defines a relative path from the workspace directory that is used as the root directory to find files.
+E.g. setting it to `src` would change you directory structure to:
+
+----
+workspace directory
+└── src
+    └── lib
+        └── TableUtil.lua
+----
+
+The files can alternatively also have the ending `.ttslua` instead of `.lua` if you prefer that.
+
+
+== Bundling XML UI
+
+Splitting and bundling XML UI files is also possible.
+This can be done by using a special element called `Include`.
+It has one attribute called `src` that defines the path to the file you want to include in the XML.
+Unlike `require` for Lua files, you need to use a `/` to separate directories.
+
+E.g. the following XML would look for a file called `TurnUi.xml` inside the `game` directory from your workspace directory:
+[source,xml]
+----
+<panel>
+  <Include src="game/TurnUi" />
+</panel>
+----
+
+Bundling XML files also takes into account the setting mentioned in the previous section, to define to root path to look for.
+
+However, there's one big difference compared to Lua when using `<Include>` in files that are included from another file.
+In `require` you always have to define the complete path to a file from the root path.
+In XML however, `<Include>` is resolved from the path where the file is located at.
+
+E.g. consider this directory structure:
+
+----
+workspace directory
+├── lib
+│   ├── CoolPanel.xml
+│   └── TableUtil.lua
+└── game
+    ├── GameController.lua
+    ├── PlayerController.lua
+    ├── TurnButton.xml
+    └── TurnUi.xml
+----
+
+In Lua, you'd have to use the complete path to each file:
+[source,lua]
+----
+-- Global
+require("game.GameController")
+
+-- game.GameController
+require("lib.TableUtil")
+require("game.PlayerController")
+----
+
+In XML, after resolving the `game/TurnUi.xml` from the root path, the `<Include>` inside `TurnUi.xml` are resolved from its own path:
+[source,xml]
+----
+<!-- Global -->
+<Include src="game/TurnUi" />
+
+<!-- TurnUi -->
+<Include src="../lib/CoolPanel" />
+<Include src="TurnButton" />
+----
+So `TurnButton.xml` can be included with simply `src="TurnButton"` (as it's in the same directory.
+But since `CoolPanel.xml` is in a sibling directory, you'd first have to "navigate" there.
+You can use `..` to navigate up in the directory tree.
+
+
+[#save-and-play]
+== Working with bundled scripts
+
+When the extension reads the scripts from TTS it reverses the bundling step and only writes the reduced script to the script file of an object.
+When using "Save and Play" the bundling is performed again und the scripts are updated from the files on your local filesystem.
+
+This is great when working on mods where you are the author or have access to the original source files.
+However, when looking at the script of other mods (e.g. to find out how things are done, add a feature for yourself, etc.), this isn't helpful as you wouldn't be easily able to use "Save and Play" again since you don't have the files that are used to `require` (or `<Include>`).
+
+This is why the extension also keeps a copy of the bundled script in a separate `bundled` directory in the xref:usage.adoc[output directory].
+This is the "raw" version of the script as it is in TTS itself, left untouched.
+You can look at the script and even edit it.
+Then instead of using the regular "Save and Play" command, there's also a "Save and Play (Bundled)" command.
+This will send the scripts that are in the `bundled` directory instead of the regular ones.
+No further bundling or processing will happen, the scripts will be sent as is.
+
+This allows to work with mods where the original sources are not available.
+It's not as comfortable as using bundling though, e.g. if there's a bug in some ``require``d file that is used on multiple objects, you'd have to again fix that on every object instead of only one file.
+
+== How does it work exactly?
+
+TTS itself only supports one script file per object.
+It doesn't offer any support for loading scripts from different files.
+So what the extension does is to combine all the split files into one script file again and sent the combined file to TTS.
+It also transforms the script a bit to mimic the behavior of the actual `require` function from Lua.
+This also ensures that each required file is only loaded once, even if multiple instance of `require` for the same are used.
+
+To get an idea of what happens during bundling, this is a simplified version of the result.
+
+[source,lua]
+----
+local bundles = {}
+local loadedBundles = {}
+
+local require = function(name)
+  if not loadedBundles[name] then
+    loadedBundles[name] = bundles[name]()
+  end
+
+  return loadedBundles[name]
+end
+
+bundles["lib.TableUtil"] = function()
+  local TableUtil = {}
+
+  function TableUtil.filter(tab, predicate)
+    -- the code from the example before
+  end
+
+  return TableUtil
+end
+
+bundles["root"] = function()
+    local TableUtil = require("lib.TableUtil")
+
+    TableUtil.filter({ "a", "b", "a" }, function(v) return v == "a" end)
+end
+
+require("root")
+----
+
+Each file that is `require` is put into a table and wrapped around a function.
+The first time `require` is called for a file, this function is executed and the result will be put into another table.
+Now, every subsequent `require` for the same file will simply load this result instead of executing the function again.
+
+The actual result adds some more code, e.g. for error handling and special cases, but this simple example should give a good idea of what is happening.

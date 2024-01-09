@@ -13,7 +13,7 @@ image::select-object.png[]
 An object context is available, when using the context menus and buttons in the xref:view.adoc[].
 In this case the selection dialog is skipped and the object from the view is used directly.
 
-
+[#available]
 == Available commands
 
 [cols="1,2"]
@@ -54,7 +54,7 @@ Also shows up as an action button in the xref:view.adoc[].
 It will send this file to TTS, update the corresponding object script state and reload the object.
 
 | Update Object
-| Destroys the selected object in TTS and spawns a new instance based on the current object data in the xref:terms.adoc[output directory].
+| Destroys the selected object in TTS and spawns a new instance based on the current object data in the xref:usage.adoc[output directory].
 Before doing so, the scripts inside the object data are bundled.
 This includes nested object of the selected object is a container.
 

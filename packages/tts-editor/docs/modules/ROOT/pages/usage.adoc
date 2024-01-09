@@ -1,0 +1,16 @@
+= Usage
+
+
+[#workspace]
+Workspace directory:: In order for the extension to work, you need to open at least one folder in VS Code.
+This is called the workspace directory in this documentation.
+If you are using a multi-directory workspace (by opening multiple root directories at once in VS Code), currently only the very first directory will be considered as the workspace directory.
+
+[#output]
+Output directory:: The output directory is a special directory inside the workspace directory.
+This is where the extension will keep the files it read from TTS to work with.
+The output directory is a directory called `.tts` inside the workspace directory.
+The extension will write the script files from TTS to this directory for each object.
+You can edit the file from there and send them back to TTS via "Save and Play".
+You can also view the output directory through the xref:view.adoc[] in the explorer window.
+This will give you a cleaner view on the script files in this directory with even some additional functionality.

@@ -1,4 +1,4 @@
-This will also automatically happen, once you load a new game in TTS.
+This will also automatically happen, once you load a new game in TTS when the extension is running.
 
 You will notice a new directory called `.tts` inside the directory you opened.
 This is where the extension keeps the scripts it got from TTS.

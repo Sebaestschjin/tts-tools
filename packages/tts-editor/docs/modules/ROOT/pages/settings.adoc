@@ -6,7 +6,7 @@ The extension uses the following settings:
 |===
 | Name | Type | Default | Usage
 
-| ttsEditor.includePath | string | src
+[[include]]| ttsEditor.includePath | string | src
 | Relative path inside the workspace directory that is used to resolve modules and xml files (see xref:bundling.adoc[]).
 
 [[messages]]| ttsEditor.enableMessages | boolean | true
