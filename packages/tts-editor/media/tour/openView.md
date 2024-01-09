@@ -5,3 +5,5 @@ You can also see the data file for each object.
 
 Hovering over an object will show you additional command you can perform on the object.
 Right-clicking an object adds even more commands.
+
+![Object view](image/view.png)

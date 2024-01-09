@@ -1,7 +1,7 @@
 # TTS Editor
 
 This extension implements the External Editor API for Tabletop Simulator.
-Checkout [the documentation](https://sebaestschjin.github.io/tts-tools/editor/latest/index.html) for details.
+Checkout [the documentation](https://sebaestschjin.github.io/tts-tools/editor/latest) for details.
 
 ## Features
 

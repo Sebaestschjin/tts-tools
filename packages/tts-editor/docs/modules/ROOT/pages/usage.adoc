@@ -1,6 +1,5 @@
 = Usage
 
-
 [#workspace]
 Workspace directory:: In order for the extension to work, you need to open at least one folder in VS Code.
 This is called the workspace directory in this documentation.
