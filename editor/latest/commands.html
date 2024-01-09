@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Commands :: TTS Tools</title>
+    <meta name="generator" content="Antora 3.0.1">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">TTS Tools</a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="editor" data-version="0">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="index.html">TTS Editor</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">TTS Editor</span>
+    <span class="version">0</span>
+  </div>
+  <ul class="components">
+    <li class="component">
+      <a class="title" href="../../savefile/latest/index.html">savefile</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../savefile/latest/index.html">2</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component is-current">
+      <a class="title" href="index.html">TTS Editor</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">TTS Editor</a></li>
+    <li><a href="commands.html">Commands</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/tts-editor/docs/modules/ROOT/pages/commands.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Commands</h1>
+<div class="sect1">
+<h2 id="object-selection"><a class="anchor" href="#object-selection"></a>Object selection</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Commands that are used for objects can also be executed without an object context, e.g. from the command palette in VS Code.
+In this case, before executing the command a selection dialog will show up, where one of the currently loaded objects can be selected.
+The command will then be executed as if the object was selected from the <a href="view.html" class="xref page">TTS Objects View</a> directly.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/select-object.png" alt="select object">
+</div>
+<div class="title">Figure 1. Example object selection dialog</div>
+</div>
+<div class="paragraph">
+<p>An object context is available, when using the context menus and buttons in the <a href="view.html" class="xref page">TTS Objects View</a>.
+In this case the selection dialog is skipped and the object from the view is used directly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_available_commands"><a class="anchor" href="#_available_commands"></a>Available commands</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Get Objects</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Get the scripts of all objects currently on the table (including <code>Global</code>).
+Scripts are unbundled while doing so, but a bundled reference is kept as well (see <a href="bundling.html" class="xref page">Bundling</a>).
+This command is also automatically executed whenever you load a new game in TTS.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Save and Play</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(see <a href="bundling.html" class="xref page">Bundling</a>).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Save and Play (Bundled)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Like "Save and Play" but instead of using the scripts from the output directory, the scripts from the bundled output directory will be used.
+No extra bundling step is performed and the scripts are taken as is.
+This can be useful when working on mods where the source files are not available to proper bundle them.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execute Code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Executes the current editor content as a Lua script in TTS.
+See <a href="execute.html" class="xref page">Execute Scripts</a> for details.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Get Runtime UI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Read the current XML UI of the selected object from TTS, write it to a file and open it.
+The current XML UI is determined by calling <code>UI.getXml()</code> on the selected object.
+Also shows up as an action button in the <a href="view.html" class="xref page">TTS Objects View</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Get Object State
+<a id="get-state"></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Read the current script state of the selected object from TTS, write it to a file and open it.
+The current script state is read from the <code>script_state</code> field of the selected object.
+For <code>Global</code>, the <code>onSave</code> method is called instead.
+Also shows up as an action button in the <a href="view.html" class="xref page">TTS Objects View</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Update Object State</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only shows up, when a file created from <a href="#get-state">Get Object State</a> is opened.
+It will send this file to TTS, update the corresponding object script state and reload the object.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Update Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Destroys the selected object in TTS and spawns a new instance based on the current object data in the <a href="terms.html" class="xref page">output directory</a>.
+Before doing so, the scripts inside the object data are bundled.
+This includes nested object of the selected object is a container.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Locate Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Highlights the selected object in TTS by randomly applying a different color over a certain time period.
+Will also trigger a player ping on the object.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="200" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

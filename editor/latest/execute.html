@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Execute Scripts :: TTS Tools</title>
+    <meta name="generator" content="Antora 3.0.1">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">TTS Tools</a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="editor" data-version="0">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="index.html">TTS Editor</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">TTS Editor</span>
+    <span class="version">0</span>
+  </div>
+  <ul class="components">
+    <li class="component">
+      <a class="title" href="../../savefile/latest/index.html">savefile</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../savefile/latest/index.html">2</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component is-current">
+      <a class="title" href="index.html">TTS Editor</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">TTS Editor</a></li>
+    <li><a href="execute.html">Execute Scripts</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/tts-editor/docs/modules/ROOT/pages/execute.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Execute Scripts</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can use the "Execute Code" command when an editor window is open to run its content as a Lua script in TTS.
+It will send to current editor content to TTS and execute it as a script.
+The script will be executed in the context of <code>Global</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="macro"><a class="anchor" href="#macro"></a>Macro functions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Macro functions are a feature to interact between the Lua code you want to execute and the VS Code instance where the extension is running at.
+E.g. you can trigger a selection dialog in VS Code where you select an object from the currently available objects on the table.
+Or open some text directly as an editor in VS Code instead of printing it into the output channel.</p>
+</div>
+<div class="paragraph">
+<p>This allows to write helper template files that can be more easily re-used without adjusting the template itself (e.g. by replacing the GUID of the object your want to with).</p>
+</div>
+<div class="paragraph">
+<p>In fact, many of the extension features are implemented using macro functions, e.g. <a href="https://github.com/Sebaestschjin/tts-tools/blob/main/packages/tts-editor/macro/locateObject.lua">locating an object</a> or <a href="https://github.com/Sebaestschjin/tts-tools/blob/main/packages/tts-editor/macro/getRuntimeUi.lua">getting the runtime UI</a>.</p>
+</div>
+<div class="paragraph">
+<p>More macros will also be added in the future.
+If you have an idea of a macro that might benefit you, let me know.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Macros functions are only enabled when <a href="settings.html#messages" class="xref page">this setting</a> is enabled (which it is by default).
+However, this setting can be disabled when working with unknown or untrusted mods to prevent accidentally triggering.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_object"><a class="anchor" href="#_object"></a><code>__object__</code></h3>
+<div class="paragraph">
+<p>This macro lets you trigger a selection dialog inside VS Code that shows all currently loaded objects.
+It takes two arguments:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An option table to configure the shown selection (see <a href="#object-options">below</a>).</p>
+</li>
+<li>
+<p>A callback function that is executed once the selection was done in VS Code.
+The callback receives the object reference of the selected object as it&#8217;s only parameter.
+The object reference can also be <code>Global</code>, when configured through the options.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">__object__({
+  placeholder = "Select an object to locate it"
+}, function(obj)
+  -- executed after the selection was done in TTS
+  -- obj is now the object reference of the selected object
+  print(obj.getName())
+end)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example will trigger a selection dialog like this in VS Code.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/select-object.png" alt="select object">
+</div>
+</div>
+<div class="paragraph">
+<p>Selecting one of the objects will trigger the provided callback function in TTS with the object reference of the selected object.
+When the object is already destroyed after selecting it, an error message is thrown instead.
+When the selection is cancelled in VS Code, the callback isn&#8217;t called.</p>
+</div>
+<div class="paragraph">
+<p>The following fields can be set in the <code>options</code> table to adjust which objects are selectable and ho how the prompt will look like:</p>
+</div>
+<table id="object-options" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Fields</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title?</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>string</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An optional tile text that will be added to the top of the quick pick.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>placeholder?</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>string</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An optional text that will be added to the text box of the quick pick (see screenshot above).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>withGlobal?</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>true</code>, <code>Global</code> will also be selectable in the quick pick, otherwise it will be removed.
+Defaults to <code>false</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_write"><a class="anchor" href="#_write"></a><code>__write__</code></h3>
+<div class="paragraph">
+<p>This macro lets you sent text from TTS to VS Code that will either be written to a file or shown as a temporary file.
+It takes exactly one argument that is described <a href="#write-options">below</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">__write__({
+  name = "runtime.xml",
+  object = Global,
+  content = Global.UI.getXml()
+})</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example will write a file called <code>Global.runtime.xml</code> into the <a href="terms.html#output" class="xref page">output directory</a> that contains the current XML of <code>Global</code>.</p>
+</div>
+<table id="write-options" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Fields</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>string</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The content to write to a file/to show in the editor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name?</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>string</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the file to write.
+When not set, no file will be written.
+Instead, the content will be shown in a temporary editor in VS Code.
+The file will be written to the <a href="terms.html#workspace" class="xref page">workspace directory</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>object?</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>object reference</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The object the content belongs to.
+When set, the file will be written to the <a href="terms.html#output" class="xref page">output directory</a> for this object and <code>name</code> will be used as an extension instead of the complete file name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>format?</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"auto" | "none"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Determines how the <code>content</code> should be formatted before writing/showing it.
+When set to <code>"none"</code>, no formatting will take place.
+When set ti <code>"auto"</code>, the extension will try to parse the <code>content</code> to JSON.
+If it succeeds, it will pretty print it, otherwise it will leave it as is.
+Defaults to <code>"auto"</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="200" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>
