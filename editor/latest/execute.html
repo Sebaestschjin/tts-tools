@@ -26,7 +26,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="editor" data-version="0">
+<div class="nav-container" data-component="editor" data-version="1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -37,7 +37,49 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="index.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">xerf:usage.adoc[]</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="view.html">TTS Objects View</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="execute.html">Execute Scripts</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="bundling.html">Bundling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="typescript.html">TypeScript</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Additional Topics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="autocompletion.html">Auto-completion</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="commands.html">Commands</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="settings.html">Settings</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="messages.html">Custom Messages</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -47,7 +89,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">TTS Editor</span>
-    <span class="version">0</span>
+    <span class="version">1</span>
   </div>
   <ul class="components">
     <li class="component">
@@ -62,7 +104,7 @@
       <a class="title" href="index.html">TTS Editor</a>
       <ul class="versions">
         <li class="version is-current is-latest">
-          <a href="index.html">0</a>
+          <a href="index.html">1</a>
         </li>
       </ul>
     </li>
@@ -77,6 +119,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">TTS Editor</a></li>
+    <li>xerf:usage.adoc[]</li>
     <li><a href="execute.html">Execute Scripts</a></li>
   </ul>
 </nav>
@@ -225,7 +268,7 @@ It takes exactly one argument that is described <a href="#write-options">below</
 </div>
 </div>
 <div class="paragraph">
-<p>This example will write a file called <code>Global.runtime.xml</code> into the <a href="terms.html#output" class="xref page">output directory</a> that contains the current XML of <code>Global</code>.</p>
+<p>This example will write a file called <code>Global.runtime.xml</code> into the <a href="usage.html#output" class="xref page">output directory</a> that contains the current XML of <code>Global</code>.</p>
 </div>
 <table id="write-options" class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 2. Fields</caption>
@@ -253,13 +296,13 @@ It takes exactly one argument that is described <a href="#write-options">below</
 <td class="tableblock halign-left valign-top"><p class="tableblock">The name of the file to write.
 When not set, no file will be written.
 Instead, the content will be shown in a temporary editor in VS Code.
-The file will be written to the <a href="terms.html#workspace" class="xref page">workspace directory</a>.</p></td>
+The file will be written to the <a href="usage.html#workspace" class="xref page">workspace directory</a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>object?</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>object reference</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The object the content belongs to.
-When set, the file will be written to the <a href="terms.html#output" class="xref page">output directory</a> for this object and <code>name</code> will be used as an extension instead of the complete file name.</p></td>
+When set, the file will be written to the <a href="usage.html#output" class="xref page">output directory</a> for this object and <code>name</code> will be used as an extension instead of the complete file name.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>format?</code></p></td>

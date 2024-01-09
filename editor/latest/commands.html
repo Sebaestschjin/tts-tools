@@ -26,7 +26,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="editor" data-version="0">
+<div class="nav-container" data-component="editor" data-version="1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -37,7 +37,49 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="index.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">xerf:usage.adoc[]</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="view.html">TTS Objects View</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="execute.html">Execute Scripts</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="bundling.html">Bundling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="typescript.html">TypeScript</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Additional Topics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="autocompletion.html">Auto-completion</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="commands.html">Commands</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="settings.html">Settings</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="messages.html">Custom Messages</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -47,7 +89,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">TTS Editor</span>
-    <span class="version">0</span>
+    <span class="version">1</span>
   </div>
   <ul class="components">
     <li class="component">
@@ -62,7 +104,7 @@
       <a class="title" href="index.html">TTS Editor</a>
       <ul class="versions">
         <li class="version is-current is-latest">
-          <a href="index.html">0</a>
+          <a href="index.html">1</a>
         </li>
       </ul>
     </li>
@@ -77,6 +119,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">TTS Editor</a></li>
+    <li>Reference</li>
     <li><a href="commands.html">Commands</a></li>
   </ul>
 </nav>
@@ -109,7 +152,7 @@ In this case the selection dialog is skipped and the object from the view is use
 </div>
 </div>
 <div class="sect1">
-<h2 id="_available_commands"><a class="anchor" href="#_available_commands"></a>Available commands</h2>
+<h2 id="available"><a class="anchor" href="#available"></a>Available commands</h2>
 <div class="sectionbody">
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -165,7 +208,7 @@ It will send this file to TTS, update the corresponding object script state and 
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Update Object</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Destroys the selected object in TTS and spawns a new instance based on the current object data in the <a href="terms.html" class="xref page">output directory</a>.
+<td class="tableblock halign-left valign-top"><p class="tableblock">Destroys the selected object in TTS and spawns a new instance based on the current object data in the <a href="usage.html" class="xref page">output directory</a>.
 Before doing so, the scripts inside the object data are bundled.
 This includes nested object of the selected object is a container.</p></td>
 </tr>

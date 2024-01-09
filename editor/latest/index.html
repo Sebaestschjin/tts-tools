@@ -26,7 +26,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="editor" data-version="0">
+<div class="nav-container" data-component="editor" data-version="1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -37,7 +37,49 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item is-current-page" data-depth="1">
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="index.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">xerf:usage.adoc[]</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="view.html">TTS Objects View</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="execute.html">Execute Scripts</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="bundling.html">Bundling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="typescript.html">TypeScript</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Additional Topics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="autocompletion.html">Auto-completion</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="commands.html">Commands</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="settings.html">Settings</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="messages.html">Custom Messages</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -47,7 +89,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">TTS Editor</span>
-    <span class="version">0</span>
+    <span class="version">1</span>
   </div>
   <ul class="components">
     <li class="component">
@@ -62,7 +104,7 @@
       <a class="title" href="index.html">TTS Editor</a>
       <ul class="versions">
         <li class="version is-current is-latest">
-          <a href="index.html">0</a>
+          <a href="index.html">1</a>
         </li>
       </ul>
     </li>
@@ -77,7 +119,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">TTS Editor</a></li>
-    <li><a href="index.html">Introduction</a></li>
+    <li><a href="index.html">Getting Started</a></li>
   </ul>
 </nav>
 <div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/tts-editor/docs/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
@@ -91,7 +133,43 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>A VS Code extension that implements the External Editor API for Tabletop Simulator to simplify editing and managing scripts.</p>
+<p>A VS Code extension that implements the External Editor API for Tabletop Simulator to simplify editing and managing scripts and objects.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_getting_started"><a class="anchor" href="#_getting_started"></a>Getting started</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Start TTS and load a game.</p>
+</li>
+<li>
+<p>Open VS Code with this extension.</p>
+</li>
+<li>
+<p>Open a directory or workspace in VS Code.</p>
+</li>
+<li>
+<p>Execute the command "Get Objects" to get the scripts of all objects currently on the table.</p>
+</li>
+<li>
+<p>Edit a script inside the <code>.tts</code> directory of your opened directory/workspace for any object.</p>
+</li>
+<li>
+<p>Execute the command "Save and Play" to send the updated scripts back to TTS and reload the game.</p>
+</li>
+<li>
+<p>The game will reload and your scripts are updated in the game.</p>
+</li>
+<li>
+<p>Success 🎉</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To learn about details and more features, checkout the <a href="usage.html" class="xref page">Usage</a> section.</p>
 </div>
 </div>
 </div>
@@ -101,23 +179,44 @@
 <div class="ulist">
 <ul>
 <li>
-<p>Bundle Lua</p>
+<p>Get scripts and XML UI from TTS</p>
 </li>
 <li>
-<p>Bundle XML</p>
+<p>Send scripts and XML UI back to TTS (while also <a href="bundling.html" class="xref page">bundling</a> them)</p>
 </li>
 <li>
-<p>Execute scripts</p>
+<p><a href="execute.html" class="xref page">Execute scripts</a> from opened text files</p>
 </li>
 <li>
-<p>Pre-Run <a href="https://typescripttolua.github.io/">Typescript to Lua</a></p>
+<p>Get the current UI of an object as a file in VS Code</p>
+</li>
+<li>
+<p>Get and update the current script state of an object</p>
+</li>
+<li>
+<p>Update an individual object without reloading the whole game (including bundling its scripts and scripts of nested object for containers)</p>
+</li>
+<li>
+<p>Locate an object on the table</p>
+</li>
+<li>
+<p>Run <a href="typescript.html" class="xref page">TypeScript to Lua</a> before sending scripts</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>This extension doesn&#8217;t offer support for auto-completion of the TTS API.
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This extension doesn&#8217;t offer support for auto-completion of the TTS API on its own.
 However, this can be easily achieved by using a dedicated Lua extension for VS Code.
-Checkout <a href="autocompletion.html" class="xref page">Auto-completion</a> for more details.</p>
+Checkout <a href="autocompletion.html" class="xref page">Auto-completion</a> for more details.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Terms :: TTS Tools</title>
+    <title>Usage :: TTS Tools</title>
     <meta name="generator" content="Antora 3.0.1">
     <link rel="stylesheet" href="../../_/css/site.css">
   </head>
@@ -26,7 +26,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="editor" data-version="0">
+<div class="nav-container" data-component="editor" data-version="1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -37,7 +37,49 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="index.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">xerf:usage.adoc[]</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="view.html">TTS Objects View</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="execute.html">Execute Scripts</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="bundling.html">Bundling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="typescript.html">TypeScript</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Additional Topics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="autocompletion.html">Auto-completion</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="commands.html">Commands</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="settings.html">Settings</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="messages.html">Custom Messages</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -47,7 +89,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">TTS Editor</span>
-    <span class="version">0</span>
+    <span class="version">1</span>
   </div>
   <ul class="components">
     <li class="component">
@@ -62,7 +104,7 @@
       <a class="title" href="index.html">TTS Editor</a>
       <ul class="versions">
         <li class="version is-current is-latest">
-          <a href="index.html">0</a>
+          <a href="index.html">1</a>
         </li>
       </ul>
     </li>
@@ -77,22 +119,24 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">TTS Editor</a></li>
-    <li><a href="terms.html">Terms</a></li>
+    <li><a href="usage.html">Usage</a></li>
   </ul>
 </nav>
-<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/tts-editor/docs/modules/ROOT/pages/terms.adoc">Edit this Page</a></div>
+<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/tts-editor/docs/modules/ROOT/pages/usage.adoc">Edit this Page</a></div>
 </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Terms</h1>
+<h1 class="page">Usage</h1>
 <div id="workspace" class="dlist">
 <dl>
 <dt class="hdlist1">Workspace directory</dt>
 <dd>
-<p>X</p>
+<p>In order for the extension to work, you need to open at least one folder in VS Code.
+This is called the workspace directory in this documentation.
+If you are using a multi-directory workspace (by opening multiple root directories at once in VS Code), currently only the very first directory will be considered as the workspace directory.</p>
 </dd>
 </dl>
 </div>
@@ -100,7 +144,13 @@
 <dl>
 <dt class="hdlist1">Output directory</dt>
 <dd>
-<p>X</p>
+<p>The output directory is a special directory inside the workspace directory.
+This is where the extension will keep the files it read from TTS to work with.
+The output directory is a directory called <code>.tts</code> inside the workspace directory.
+The extension will write the script files from TTS to this directory for each object.
+You can edit the file from there and send them back to TTS via "Save and Play".
+You can also view the output directory through the <a href="view.html" class="xref page">TTS Objects View</a> in the explorer window.
+This will give you a cleaner view on the script files in this directory with even some additional functionality.</p>
 </dd>
 </dl>
 </div>

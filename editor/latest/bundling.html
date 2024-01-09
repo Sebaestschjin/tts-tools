@@ -26,7 +26,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="editor" data-version="0">
+<div class="nav-container" data-component="editor" data-version="1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -37,7 +37,49 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="index.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">xerf:usage.adoc[]</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="view.html">TTS Objects View</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="execute.html">Execute Scripts</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="bundling.html">Bundling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="typescript.html">TypeScript</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Additional Topics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="autocompletion.html">Auto-completion</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="commands.html">Commands</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="settings.html">Settings</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="messages.html">Custom Messages</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -47,7 +89,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">TTS Editor</span>
-    <span class="version">0</span>
+    <span class="version">1</span>
   </div>
   <ul class="components">
     <li class="component">
@@ -62,7 +104,7 @@
       <a class="title" href="index.html">TTS Editor</a>
       <ul class="versions">
         <li class="version is-current is-latest">
-          <a href="index.html">0</a>
+          <a href="index.html">1</a>
         </li>
       </ul>
     </li>
@@ -77,6 +119,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">TTS Editor</a></li>
+    <li>xerf:usage.adoc[]</li>
     <li><a href="bundling.html">Bundling</a></li>
   </ul>
 </nav>
@@ -88,7 +131,318 @@
 </aside>
 <article class="doc">
 <h1 class="page">Bundling</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Working on the scripts directly on the files in the output directory is fine for smaller mods.
+However, once a script gets bigger it also gets harder to manage and keep track of.
+Also, when multiple objects use the same or very similar scripts, it&#8217;s get harder to update all of them the more objects are involved or the bigger the scripts get.</p>
+</div>
+<div class="paragraph">
+<p>This is where bundling of scripts is helpful as it allows to split scripts into multiple files that can be re-used by multiple objects or even by different scripts files on the same object.</p>
+</div>
+<div class="paragraph">
+<p>Splitting scripts into different individual components is a very basic and important part of software development.
+It allows to split a codebase into different functional components where each component (aka module) has its own responsibility that is separated from other responsibilities.
+E.g. a library to work with tables, another one to work with strings, one module that does the game setup and another one that keeps track of the game state or similar.
+When those are separated it&#8217;s easier to reason about them individually, define clear contracts between each part (aka interfaces) and thus makes it easier to develop each part further individually.</p>
+</div>
+<div class="paragraph">
+<p>E.g. consider you have a utility function somewhere, that allows to filter out elements of a table that you use often in your scripts.
+Something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">local function filter(tab, predicate)
+  local newTable = {}
 
+  for _, v in ipairs(tab) do
+   if predicate(v) then
+    table.insert(newTable, v)
+   end
+  end
+
+  return newTable
+end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Without bundling, whenever you want to use this function on one of your objects, you&#8217;d have to copy it over to use it.
+If you want to add new features to it, or fix a nasty bug, you&#8217;d have to do that for <em>every</em> copy for function on all objects.
+This gets annoying, time-consuming and error-prone very fast.</p>
+</div>
+<div class="paragraph">
+<p>Instead, you can split this function (and probably other functions related to working with tables), into a separate file.
+For this example the file will be called <code>TableUtil.lua</code> and is in a directory called <code>lib</code> in the workspace directory.</p>
+</div>
+<div class="paragraph">
+<p>The script from the example needs a small adjustment, so it&#8217;s easier to work with it later on.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">local TableUtil = {}
+
+function TableUtil.filter(tab, predicate)
+  -- the code from the example before
+end
+
+return TableUtil</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can include it in your script by writing <code>require("path.to.file")</code> where <code>path.to.file</code> is the path to the <code>.lua</code> file inside the workspace directory, so in this example it would be <code>"lib.TableUtil"</code>.
+Each directory is separated by a dot and the <code>.lua</code> extension <strong>must</strong> be left out.</p>
+</div>
+<div class="paragraph">
+<p>A usage could look like this:</p>
+</div>
+<div class="listingblock">
+<div class="title">Some object script</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">local TableUtil = require("lib.TableUtil")
+
+TableUtil.filter({ "a", "b", "a" }, function(v) return v == "a" end)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Instead of copying the script, it&#8217;s now instead read from the <code>"lib.TableUtil.lua"</code> file.
+The <code>return</code> value from this file is returned by the <code>require</code> call and can then be bound to the <code>local</code> <code>TableUtil</code> parameter that is used.</p>
+</div>
+<div class="paragraph">
+<p>Accessing the function is then done by accessing the <code>TableUtil</code> variable, to call it.</p>
+</div>
+<div class="paragraph">
+<p>You can <code>require</code> as many files as you need or want.
+And files that are <code>require</code>d can also <code>require</code> other files as well.</p>
+</div>
+<div class="paragraph">
+<p>By using <code>require</code> you can make it clear what dependencies a file has.
+Once you update a <code>require</code>d files it&#8217;s updated in all the places where it&#8217;s used without manually editing all those places.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>It isn&#8217;t technically required to use a <code>return</code> value in your <code>require</code>d files.
+You can also use global variables to achieve the same effect, e.g. like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- The lib.TableUtil file
+TableUtil = {}
+
+TableUtil.filter = function(tab, predicate)
+  -- the code from the example before
+end
+
+-- another file
+require("lib.TableUtil")
+
+TableUtil.filter({ "a", "b", "a" }, function(v) return v == "a" end)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, this isn&#8217;t advised and typically considered bad practice.
+It&#8217;s better to keep variables as <code>local</code> as possible and avoid global variables as much as possible in order to prevent accidentally using or overriding variables from other files.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_setting_the_correct_lookup_path"><a class="anchor" href="#_setting_the_correct_lookup_path"></a>Setting the correct lookup path</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you use <code>require</code> with this extension the files you <code>require</code> are searched for in the <a href="usage.html#workspace" class="xref page">workspace directory</a>.
+So when you opened a directory and want to <code>require</code> a file <code>lib.TableUtil</code>, you&#8217;d need this kind of directory structure:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>workspace directory
+└── lib
+    └── TableUtil.lua</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you workspace directory doesn&#8217;t contain the files you want to <code>require</code> directly, but in a subdirectory, you can adjust the <a href="settings.html#include" class="xref page">include path setting</a>.
+This defines a relative path from the workspace directory that is used as the root directory to find files.
+E.g. setting it to <code>src</code> would change you directory structure to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>workspace directory
+└── src
+    └── lib
+        └── TableUtil.lua</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The files can alternatively also have the ending <code>.ttslua</code> instead of <code>.lua</code> if you prefer that.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_bundling_xml_ui"><a class="anchor" href="#_bundling_xml_ui"></a>Bundling XML UI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Splitting and bundling XML UI files is also possible.
+This can be done by using a special element called <code>Include</code>.
+It has one attribute called <code>src</code> that defines the path to the file you want to include in the XML.
+Unlike <code>require</code> for Lua files, you need to use a <code>/</code> to separate directories.</p>
+</div>
+<div class="paragraph">
+<p>E.g. the following XML would look for a file called <code>TurnUi.xml</code> inside the <code>game</code> directory from your workspace directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;panel&gt;
+  &lt;Include src="game/TurnUi" /&gt;
+&lt;/panel&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Bundling XML files also takes into account the setting mentioned in the previous section, to define to root path to look for.</p>
+</div>
+<div class="paragraph">
+<p>However, there&#8217;s one big difference compared to Lua when using <code>&lt;Include&gt;</code> in files that are included from another file.
+In <code>require</code> you always have to define the complete path to a file from the root path.
+In XML however, <code>&lt;Include&gt;</code> is resolved from the path where the file is located at.</p>
+</div>
+<div class="paragraph">
+<p>E.g. consider this directory structure:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>workspace directory
+├── lib
+│   ├── CoolPanel.xml
+│   └── TableUtil.lua
+└── game
+    ├── GameController.lua
+    ├── PlayerController.lua
+    ├── TurnButton.xml
+    └── TurnUi.xml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In Lua, you&#8217;d have to use the complete path to each file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- Global
+require("game.GameController")
+
+-- game.GameController
+require("lib.TableUtil")
+require("game.PlayerController")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In XML, after resolving the <code>game/TurnUi.xml</code> from the root path, the <code>&lt;Include&gt;</code> inside <code>TurnUi.xml</code> are resolved from its own path:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;!-- Global --&gt;
+&lt;Include src="game/TurnUi" /&gt;
+
+&lt;!-- TurnUi --&gt;
+&lt;Include src="../lib/CoolPanel" /&gt;
+&lt;Include src="TurnButton" /&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So <code>TurnButton.xml</code> can be included with simply <code>src="TurnButton"</code> (as it&#8217;s in the same directory.
+But since <code>CoolPanel.xml</code> is in a sibling directory, you&#8217;d first have to "navigate" there.
+You can use <code>..</code> to navigate up in the directory tree.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="save-and-play"><a class="anchor" href="#save-and-play"></a>Working with bundled scripts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When the extension reads the scripts from TTS it reverses the bundling step and only writes the reduced script to the script file of an object.
+When using "Save and Play" the bundling is performed again und the scripts are updated from the files on your local filesystem.</p>
+</div>
+<div class="paragraph">
+<p>This is great when working on mods where you are the author or have access to the original source files.
+However, when looking at the script of other mods (e.g. to find out how things are done, add a feature for yourself, etc.), this isn&#8217;t helpful as you wouldn&#8217;t be easily able to use "Save and Play" again since you don&#8217;t have the files that are used to <code>require</code> (or <code>&lt;Include&gt;</code>).</p>
+</div>
+<div class="paragraph">
+<p>This is why the extension also keeps a copy of the bundled script in a separate <code>bundled</code> directory in the <a href="usage.html" class="xref page">output directory</a>.
+This is the "raw" version of the script as it is in TTS itself, left untouched.
+You can look at the script and even edit it.
+Then instead of using the regular "Save and Play" command, there&#8217;s also a "Save and Play (Bundled)" command.
+This will send the scripts that are in the <code>bundled</code> directory instead of the regular ones.
+No further bundling or processing will happen, the scripts will be sent as is.</p>
+</div>
+<div class="paragraph">
+<p>This allows to work with mods where the original sources are not available.
+It&#8217;s not as comfortable as using bundling though, e.g. if there&#8217;s a bug in some <code>require</code>d file that is used on multiple objects, you&#8217;d have to again fix that on every object instead of only one file.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_does_it_work_exactly"><a class="anchor" href="#_how_does_it_work_exactly"></a>How does it work exactly?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>TTS itself only supports one script file per object.
+It doesn&#8217;t offer any support for loading scripts from different files.
+So what the extension does is to combine all the split files into one script file again and sent the combined file to TTS.
+It also transforms the script a bit to mimic the behavior of the actual <code>require</code> function from Lua.
+This also ensures that each required file is only loaded once, even if multiple instance of <code>require</code> for the same are used.</p>
+</div>
+<div class="paragraph">
+<p>To get an idea of what happens during bundling, this is a simplified version of the result.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">local bundles = {}
+local loadedBundles = {}
+
+local require = function(name)
+  if not loadedBundles[name] then
+    loadedBundles[name] = bundles[name]()
+  end
+
+  return loadedBundles[name]
+end
+
+bundles["lib.TableUtil"] = function()
+  local TableUtil = {}
+
+  function TableUtil.filter(tab, predicate)
+    -- the code from the example before
+  end
+
+  return TableUtil
+end
+
+bundles["root"] = function()
+    local TableUtil = require("lib.TableUtil")
+
+    TableUtil.filter({ "a", "b", "a" }, function(v) return v == "a" end)
+end
+
+require("root")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each file that is <code>require</code> is put into a table and wrapped around a function.
+The first time <code>require</code> is called for a file, this function is executed and the result will be put into another table.
+Now, every subsequent <code>require</code> for the same file will simply load this result instead of executing the function again.</p>
+</div>
+<div class="paragraph">
+<p>The actual result adds some more code, e.g. for error handling and special cases, but this simple example should give a good idea of what is happening.</p>
+</div>
+</div>
+</div>
 </article>
   </div>
 </main>

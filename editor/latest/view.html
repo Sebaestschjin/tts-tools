@@ -26,7 +26,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="editor" data-version="0">
+<div class="nav-container" data-component="editor" data-version="1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -37,7 +37,49 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="index.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">xerf:usage.adoc[]</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="view.html">TTS Objects View</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="execute.html">Execute Scripts</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="bundling.html">Bundling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="typescript.html">TypeScript</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Additional Topics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="autocompletion.html">Auto-completion</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="commands.html">Commands</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="settings.html">Settings</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="messages.html">Custom Messages</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -47,7 +89,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">TTS Editor</span>
-    <span class="version">0</span>
+    <span class="version">1</span>
   </div>
   <ul class="components">
     <li class="component">
@@ -62,7 +104,7 @@
       <a class="title" href="index.html">TTS Editor</a>
       <ul class="versions">
         <li class="version is-current is-latest">
-          <a href="index.html">0</a>
+          <a href="index.html">1</a>
         </li>
       </ul>
     </li>
@@ -77,6 +119,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">TTS Editor</a></li>
+    <li>xerf:usage.adoc[]</li>
     <li><a href="view.html">TTS Objects View</a></li>
   </ul>
 </nav>
@@ -88,7 +131,36 @@
 </aside>
 <article class="doc">
 <h1 class="page">TTS Objects View</h1>
-
+<div class="paragraph">
+<p>The TTS objects view gives an overview of all loaded objects from the game.
+Each object (and <code>Global</code>) has their own entry.
+<code>Global</code> will always be at the top and other objects will follow alphabetically by their name.
+Each entry also has an icon that indicates what type of object it is.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/view.png" alt="view">
+</div>
+</div>
+<div class="paragraph">
+<p>Expanding an entry will show all the file that are available for this object.
+Clicking a file entry will open it in VS Code as it would open files from the regular explorer view.</p>
+</div>
+<div class="paragraph">
+<p>Hovering over an entry will show additional actions that can be performed on the object or file.
+Right-clicking an object shows even more actions.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/view-context.png" alt="view context">
+</div>
+</div>
+<div class="paragraph">
+<p>The buttons in the top bar of the view also offer some of the commands (e.g. "Save and Play") of the extension as menus.</p>
+</div>
+<div class="paragraph">
+<p>A reference for what each command does is documented <a href="commands.html#available" class="xref page">here</a>.</p>
+</div>
 </article>
   </div>
 </main>
