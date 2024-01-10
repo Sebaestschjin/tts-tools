@@ -168,8 +168,6 @@ const writeFile = async (base: Uri, fileName: string, content: string) => {
   const fileUri = Uri.joinPath(base, `/${fileName}`);
   return workspace.fs
     .createDirectory(base)
-    .then(() => {
-      workspace.fs.writeFile(fileUri, Buffer.from(content, "utf-8"));
-    })
+    .then(() => workspace.fs.writeFile(fileUri, Buffer.from(content, "utf-8")))
     .then(() => fileUri);
 };

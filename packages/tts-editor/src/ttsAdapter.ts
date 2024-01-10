@@ -184,7 +184,7 @@ spawnObjectJSON({
 
   private onPushObject = async (message: PushingNewObject) => {
     this.plugin.debug(`recieved onPushObject ${message.messageID}`);
-    this.readFilesFromTTS(message.scriptStates);
+    this.readFilesFromTTS(message.scriptStates, true);
   };
 
   private onObjectCreated = async (message: ObjectCreated) => {
@@ -316,7 +316,7 @@ return nil
     return JSON.parse(data) as SaveFileObject;
   };
 
-  private readFilesFromTTS = async (incomingObjects: IncomingJsonObject[]) => {
+  private readFilesFromTTS = async (incomingObjects: IncomingJsonObject[], openFiles: boolean = false) => {
     this.plugin.setStatus(`Recieved ${incomingObjects.length} scripts`);
 
     for (const object of incomingObjects) {
@@ -341,12 +341,12 @@ return nil
           },
         });
       } else {
-        await this.readObject(object.guid);
+        await this.readObject(object.guid, openFiles);
       }
     }
   };
 
-  private readObject = async (guid: string) => {
+  private readObject = async (guid: string, openFiles: boolean = false) => {
     const bundledData = await this.getObjectData(guid);
     if (!bundledData) {
       // The object doesn't exist anymore
@@ -360,7 +360,10 @@ return nil
 
     writeOutputFile(`${fileName}.data.json`, JSON.stringify(unbundledData, null, 2));
     if (bundledData.LuaScript !== undefined) {
-      writeOutputFile(`${fileName}.lua`, unbundledData.LuaScript);
+      const scriptFile = await writeOutputFile(`${fileName}.lua`, unbundledData.LuaScript);
+      if (openFiles) {
+        window.showTextDocument(scriptFile);
+      }
       writeOutputFile(`${fileName}.lua`, bundledData.LuaScript, true);
     }
     if (bundledData.XmlUI !== undefined) {
