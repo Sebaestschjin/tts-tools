@@ -47,7 +47,7 @@
     <a class="nav-link" href="view.html">TTS Objects View</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="execute.html">Execute Scripts</a>
+    <a class="nav-link" href="execute.html">Execute Code</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="bundling.html">Bundling</a>
@@ -130,29 +130,74 @@
 </aside>
 <article class="doc">
 <h1 class="page">Usage</h1>
-<div id="workspace" class="dlist">
-<dl>
-<dt class="hdlist1">Workspace directory</dt>
-<dd>
+<div id="workspace" class="paragraph">
 <p>In order for the extension to work, you need to open at least one folder in VS Code.
 This is called the workspace directory in this documentation.
-If you are using a multi-directory workspace (by opening multiple root directories at once in VS Code), currently only the very first directory will be considered as the workspace directory.</p>
-</dd>
-</dl>
+If you are using a multi-directory workspace (by opening multiple root directories at once in VS Code), only the very first directory will be considered as the workspace directory.</p>
 </div>
-<div id="output" class="dlist">
-<dl>
-<dt class="hdlist1">Output directory</dt>
-<dd>
-<p>The output directory is a special directory inside the workspace directory.
+<div id="output" class="paragraph">
+<p>The so-called output directory is a special directory inside the workspace directory.
 This is where the extension will keep the files it read from TTS to work with.
 The output directory is a directory called <code>.tts</code> inside the workspace directory.
 The extension will write the script files from TTS to this directory for each object.
-You can edit the file from there and send them back to TTS via "Save and Play".
-You can also view the output directory through the <a href="view.html" class="xref page">TTS Objects View</a> in the explorer window.
-This will give you a cleaner view on the script files in this directory with even some additional functionality.</p>
-</dd>
-</dl>
+You can navigate this directory directly, or use the <a href="view.html" class="xref page">TTS Objects View</a> in the explorer window to get a cleaner view of the objects with more functionalities.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/view.png" alt="view">
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the scripts for the objects you want (either by opening from the output directory or the object view) and save the files.
+Then execute the command "Save and Play".
+The default keybinding for this command is kbd:ctrl[alt+s].
+You can bind it to any other keys you like, through the settings in VS Code.
+Alternatively, there&#8217;s also a three dot menu button in the object view, where you can execute the command from.</p>
+</div>
+<div class="paragraph">
+<p>Using "Save and Play" will send all script files that are currently in your output directory back to TTS to update them on their respective objects.
+When a file was deleted in the output directory, the script will be removed from the object.
+When a file was added (e.g. adding an XML UI file), it will also be added to the object in TTS.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>"Save and Play" will load the save you loaded in TTS before applying scripts.
+This means, every change you performed after loading the save in TTS will be reverted, like adding new objects, moving objects, deleting objects, etc.</p>
+</div>
+<div class="paragraph">
+<p>So whenever you make physical changes in your loaded save file, first save it and load it right again, before using "Save and Play".
+Otherwise, you will lose the changes.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>While using "Save and Play" scripts on objects that use <code>require</code> and XML UI that uses <code>&lt;Include/ &gt;</code> will be updated by reading the latest version of those scripts from the file system.
+Checkout the <a href="bundling.html" class="xref page">bundling documentation</a> for details about that process.</p>
+</div>
+<div class="paragraph">
+<p>Using the right-click context menu <span class="menuseq"><b class="menu">Scripting</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Scripting Edtior</b></span> on an object in TTS, will create a Lua script in the output directory of the extension and open the newly created file.</p>
+</div>
+<div class="paragraph">
+<p>You can execute Lua scripts that you have opened in VS Code via the "Execute Code" command.
+Checkout the <a href="execute.html" class="xref page">documentation</a> for details.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="settings.html" class="xref page">Settings</a></p>
+</li>
+<li>
+<p><a href="commands.html" class="xref page">Commands</a></p>
+</li>
+</ul>
 </div>
 </article>
   </div>
