@@ -5,10 +5,18 @@ Checkout [the documentation](https://sebaestschjin.github.io/tts-tools/editor/la
 
 ## Features
 
-- Bundle Lua
-- Bundle XML
-- Execute scripts
-- Pre-Run Typescript to Lua
+- Get scripts and XML UI from TTS
+- Send scripts and XML UI back to TTS (while also bundling them)
+- Execute scripts from opened text files
+- Get the current UI of an object as a file in VS Code
+- Get and update the current script state of an object
+- Update an individual object without reloading the whole game (including bundling its scripts and scripts of nested object for containers)
+- Locate an object on the table
+- Run TypeScript to Lua before sending scripts
+
+## Preview
+
+![Preview](media/update-state.gif)
 
 ## Attributions
 

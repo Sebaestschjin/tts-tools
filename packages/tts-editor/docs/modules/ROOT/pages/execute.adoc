@@ -1,4 +1,4 @@
-= Execute Scripts
+= Execute Code
 
 You can use the "Execute Code" command when an editor window is open to run its content as a Lua script in TTS.
 It will send to current editor content to TTS and execute it as a script.

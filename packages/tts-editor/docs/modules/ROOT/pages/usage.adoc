@@ -1,15 +1,45 @@
 = Usage
 
 [#workspace]
-Workspace directory:: In order for the extension to work, you need to open at least one folder in VS Code.
+In order for the extension to work, you need to open at least one folder in VS Code.
 This is called the workspace directory in this documentation.
-If you are using a multi-directory workspace (by opening multiple root directories at once in VS Code), currently only the very first directory will be considered as the workspace directory.
+If you are using a multi-directory workspace (by opening multiple root directories at once in VS Code), only the very first directory will be considered as the workspace directory.
 
 [#output]
-Output directory:: The output directory is a special directory inside the workspace directory.
+The so-called output directory is a special directory inside the workspace directory.
 This is where the extension will keep the files it read from TTS to work with.
 The output directory is a directory called `.tts` inside the workspace directory.
 The extension will write the script files from TTS to this directory for each object.
-You can edit the file from there and send them back to TTS via "Save and Play".
-You can also view the output directory through the xref:view.adoc[] in the explorer window.
-This will give you a cleaner view on the script files in this directory with even some additional functionality.
+You can navigate this directory directly, or use the xref:view.adoc[] in the explorer window to get a cleaner view of the objects with more functionalities.
+
+image::view.png[]
+
+Edit the scripts for the objects you want (either by opening from the output directory or the object view) and save the files.
+Then execute the command "Save and Play".
+The default keybinding for this command is kbd:ctrl[alt+s].
+You can bind it to any other keys you like, through the settings in VS Code.
+Alternatively, there's also a three dot menu button in the object view, where you can execute the command from.
+
+Using "Save and Play" will send all script files that are currently in your output directory back to TTS to update them on their respective objects.
+When a file was deleted in the output directory, the script will be removed from the object.
+When a file was added (e.g. adding an XML UI file), it will also be added to the object in TTS.
+
+[IMPORTANT]
+====
+"Save and Play" will load the save you loaded in TTS before applying scripts.
+This means, every change you performed after loading the save in TTS will be reverted, like adding new objects, moving objects, deleting objects, etc.
+
+So whenever you make physical changes in your loaded save file, first save it and load it right again, before using "Save and Play".
+Otherwise, you will lose the changes.
+====
+
+While using "Save and Play" scripts on objects that use `require` and XML UI that uses `<Include/ >` will be updated by reading the latest version of those scripts from the file system.
+Checkout the xref:bundling.adoc[bundling documentation] for details about that process.
+
+Using the right-click context menu menu:Scripting[Scripting Edtior] on an object in TTS, will create a Lua script in the output directory of the extension and open the newly created file.
+
+You can execute Lua scripts that you have opened in VS Code via the "Execute Code" command.
+Checkout the xref:execute.adoc[documentation] for details.
+
+* xref:settings.adoc[]
+* xref:commands.adoc[]

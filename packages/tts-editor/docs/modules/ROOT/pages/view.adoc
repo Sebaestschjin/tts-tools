@@ -18,3 +18,8 @@ image::view-context.png[]
 The buttons in the top bar of the view also offer some of the commands (e.g. "Save and Play") of the extension as menus.
 
 A reference for what each command does is documented xref:commands.adoc#available[here].
+
+This is how the view would look in action.
+It shows the command to update the current script state of an object.
+
+image::update-state.gif[]
