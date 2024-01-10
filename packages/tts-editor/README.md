@@ -16,7 +16,7 @@ Checkout [the documentation](https://sebaestschjin.github.io/tts-tools/editor/la
 
 ## Preview
 
-![Preview](media/update-state.gif)
+![Preview](./media/update-state.gif)
 
 ## Attributions
 
