@@ -17,7 +17,8 @@ Checkout [the documentation](https://sebaestschjin.github.io/tts-tools/editor/la
 ## Preview
 
 - Updating the script of state of an object
-  <img src="https://raw.githubusercontent.com/Sebaestschjin/tts-tools/master/packages/tts-editor/media/update-state.gif" alt="Preview"/>
+
+<img src="https://raw.githubusercontent.com/Sebaestschjin/tts-tools/master/packages/tts-editor/media/update-state.gif" alt="Preview"/>
 
 ## Attributions
 
