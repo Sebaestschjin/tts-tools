@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The execute code command can take a parameter so that it's usable from other extension
+
+## [1.0.1] - 2024-01-11
+
+### Fixed
+
+- Default base path to look for imports is the workspace directory instead of `src`
+- Fixes the preview image in the marketplace
+
 ## [1.0.0] - 2024-01-10
 
 ### Added

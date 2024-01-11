@@ -119,7 +119,7 @@
           "title": "Include Directory",
           "markdownDescription": "Relative path inside the workspace directory that is used to resolve modules.",
           "type": "string",
-          "default": "src"
+          "default": "."
         },
         "ttsEditor.enableMessages": {
           "title": "Enable custom message from TTS",
