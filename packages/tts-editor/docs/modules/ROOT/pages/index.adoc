@@ -2,6 +2,8 @@
 
 A VS Code extension that implements the External Editor API for Tabletop Simulator to simplify editing and managing scripts and objects.
 
+You can find and install the extension from the https://marketplace.visualstudio.com/items?itemName=sebaestschjin.tts-editor[VS Code marketplace].
+
 == Getting started
 
 * Start TTS and load a game.
