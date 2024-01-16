@@ -4,6 +4,11 @@ You can use the "Execute Code" command when an editor window is open to run its 
 It will send to current editor content to TTS and execute it as a script.
 The script will be executed in the context of `Global`.
 
+When you select text inside the open text editor, only the selection will be executed.
+With no selection, the complete content of the editor will be used.
+
+When a multi-selection is used in VS Code, the selected parts will be concatenated to form the final script.
+The concatenation is done by the order of selections, _not_ by the order of the text in the text document.
 
 [#macro]
 == Macro functions

@@ -27,7 +27,7 @@ import {
 import { LoadedObject } from "./model/objectData";
 import { Plugin } from "./plugin";
 
-const defaultPolyFills = ["messageBridge", "object", "write"];
+const polyFills = ["object", "write"];
 
 export class TTSAdapter {
   private api: ExternalEditorApi;
@@ -70,38 +70,41 @@ export class TTSAdapter {
    *
    * @param script the Lua script to execute
    */
-  public executeCode = async <T = void>(
-    script: string,
-    polyFills: string[] = defaultPolyFills,
-    parameters: Record<string, string> = {}
-  ) => {
+  public executeCode = async <T = void>(script: string, parameters: Record<string, string> = {}) => {
     let completeScript = "";
+    let hasPolyFill = false;
+
+    const getPolyFill = async (name: string) => this.plugin.fileHandler.readExtensionFile(`polyFill/${name}.lua`);
 
     for (const polyFill of polyFills) {
-      let content = await this.plugin.fileHandler.readExtensionFile(`polyFill/${polyFill}.lua`);
-      for (const [name, value] of Object.entries(parameters)) {
-        content = content.replace(`$\{${name}\}`, value);
+      if (script.includes(`__${polyFill}__`)) {
+        hasPolyFill = true;
+        let content = await getPolyFill(polyFill);
+        for (const [name, value] of Object.entries(parameters)) {
+          content = content.replace(`$\{${name}\}`, value);
+        }
+        completeScript += content + "\n\n";
       }
-      completeScript += content + "\n\n";
     }
+
+    if (hasPolyFill) {
+      completeScript = (await getPolyFill("messageBridge")) + "\n\n" + completeScript;
+    }
+
     completeScript += script;
 
     return this.api.executeLuaCodeAndReturn(completeScript) as T;
   };
 
   public executeMacro = async (name: string, object?: LoadedObject) => {
-    const command = await this.plugin.fileHandler.readExtensionFile(`macro/${name}.lua`);
+    let command = await this.plugin.fileHandler.readExtensionFile(`macro/${name}.lua`);
     const parameters: Record<string, string> = {};
 
-    const polyFills = ["messageBridge", "write"];
-    if (!object) {
-      polyFills.push("object");
-    } else {
-      polyFills.push("objectResolved");
+    if (object) {
       parameters.guid = object.guid;
     }
 
-    this.executeCode(command, polyFills, parameters);
+    this.executeCode(command, parameters);
   };
 
   /**
@@ -158,7 +161,7 @@ spawnObjectJSON({
 })
 `;
 
-    await this.executeCode(script, []);
+    await this.executeCode(script);
 
     await this.readObject(bundled.GUID);
 
