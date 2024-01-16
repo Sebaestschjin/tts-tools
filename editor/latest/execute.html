@@ -138,6 +138,14 @@
 It will send to current editor content to TTS and execute it as a script.
 The script will be executed in the context of <code>Global</code>.</p>
 </div>
+<div class="paragraph">
+<p>When you select text inside the open text editor, only the selection will be executed.
+With no selection, the complete content of the editor will be used.</p>
+</div>
+<div class="paragraph">
+<p>When a multi-selection is used in VS Code, the selected parts will be concatenated to form the final script.
+The concatenation is done by the order of selections, <em>not</em> by the order of the text in the text document.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
