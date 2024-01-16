@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2024-01-16
+
 ### Added
 
 - The execute code command can take a parameter so that it's usable from other extension
+
+### Changed
+
+- Using the "Execute code" command while having a selection in the active editor now only executes the selected text instead of the whole file
 
 ## [1.0.1] - 2024-01-11
 
