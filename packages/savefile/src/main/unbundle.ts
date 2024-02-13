@@ -40,7 +40,7 @@ const unbundleLuaScript = (object: TTSObject) => {
         script = script.replace(/(-- Bundled by luabundle {[^}]+})\s*\n/, "$1\n");
 
         const unbundled = unbundleString(script, { rootOnly: true });
-        return unbundled.modules.__root.content;
+        return unbundled.modules[unbundled.metadata.rootModuleName].content;
       }
 
       return script;
