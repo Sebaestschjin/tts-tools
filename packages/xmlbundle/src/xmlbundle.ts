@@ -1,12 +1,6 @@
 import { existsSync, readFileSync } from "fs";
 import { isAbsolute as pathIsAbsolute, join as pathJoin } from "path";
 
-enum FileState {
-  Unresolved,
-  Resolving,
-  Resolved,
-}
-
 const INCLUDE_REGEX = /^([\t ]*)<Include src=(["'])(.+)\2\s*\/>/im;
 const BORDER_REGEX = /(<!-- include (.*?) -->)(.*?)\1/gs;
 const wrapBorder = (label: string, content: string) => `<!-- include ${label} -->\n${content}\n<!-- include ${label} -->`;
@@ -19,7 +13,7 @@ class Solver {
   constructor(private readonly includePaths: string[]) {}
 
   // Use a record to keep track of file states and avoid pass-by-reference issues with arrays / sets
-  public bundle(input: string, fileRecords: Record<string, FileState> = {}): string {
+  public bundle(input: string, resolvingFiles: Set<string> = new Set()): string {
     let match = input.match(INCLUDE_REGEX);
     while (match) {
       // Array destructuring to get the match groups
@@ -27,16 +21,16 @@ class Solver {
       const resolvedPath = this.resolvePath(file);
       if (resolvedPath === undefined)
         throw new Error(`File not found: ${file}`);
-      if (resolvedPath in fileRecords && fileRecords[resolvedPath] === FileState.Resolving)
+      if (resolvingFiles.has(resolvedPath))
         throw new Error(`Cycle detected! File was already included before: ${resolvedPath}`);
 
       // Read the file content and add it to the records
       const includeContent = readFileSync(resolvedPath, { encoding: "utf-8" });
-      fileRecords[resolvedPath] = FileState.Resolving;
+      resolvingFiles.add(resolvedPath);
       // Recursively call the bundle method to resolve nested includes, preserving indentation
-      const bundledInclude = this.bundle(includeContent, fileRecords)
+      const bundledInclude = this.bundle(includeContent, resolvingFiles)
         .replace(/^(?=.)/gm, indent);
-      fileRecords[resolvedPath] = FileState.Resolved;
+      resolvingFiles.delete(resolvedPath);
       // Replace the include tag with the bundled content
       const start = match.index!;
       const end = start + matchContent.length;
