@@ -8,14 +8,18 @@ import { SaveFile, TTSObject } from "./model/tts";
  */
 export interface Options {
   /** The path where the scripts and XML files will be included from. */
-  includePath: string;
+  includePaths: string[];
   metadataField?: string;
+
+  /** File extension for scripts */
+  scriptExtension?: "ttslua" | "lua";
+  luaPatterns?: string[];
 }
 
 export const readExtractedSave = (path: string, options: Options) => {
   const saveFile = readData(path, options) as SaveFile;
 
-  saveFile.LuaScript = readScript(path);
+  saveFile.LuaScript = readScript(path, options);
   saveFile.LuaScriptState = readScriptState(path);
   saveFile.XmlUI = readUi(path);
   saveFile.ObjectStates = readContents(path, options) ?? [];
@@ -41,7 +45,7 @@ const readData = (path: string, options: Options) => {
 
 const readObject = (path: string, options: Options): TTSObject => {
   const data = readData(path, options) as TTSObject;
-  data.LuaScript = readScript(path);
+  data.LuaScript = readScript(path, options);
   data.LuaScriptState = readScriptState(path);
   data.XmlUI = readUi(path);
 
@@ -91,8 +95,9 @@ const readChildObjects = (path: string, options: Options): TTSObject[] | undefin
   return children.map((e) => readObject(`${path}/${e.path}`, options));
 };
 
-const readScript = (path: string): string => {
-  return readFile(path, "Script.ttslua");
+const readScript = (path: string, options: Options): string => {
+  const ext = options.scriptExtension || "ttslua";
+  return readFile(path, `Script.${ext}`);
 };
 
 const readScriptState = (path: string): string => {
