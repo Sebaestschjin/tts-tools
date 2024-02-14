@@ -219,8 +219,8 @@ const keyOrderer = (a: Element, b: Element, keyOrder: string[]) => {
 };
 
 const getDirectoryName = (object: TTSObject): string => {
-  let objectPath = (object.Nickname || object.Name) + "." + object.GUID;
-  return objectPath.replace(/[/\\?%*:|"<>]/g, "-");
+  return `${object.Nickname.length > 0 ? object.Nickname : object.Name}.${object.GUID}`
+    .replace(/[^\w \^&'@{}\[\],$=!\-#()%\.+~_]/g, "-");
 };
 
 const getFreeDirectoryName = (object: TTSObject, path: string): string => {
