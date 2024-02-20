@@ -35,6 +35,9 @@ export interface Options {
   statesPath?: string;
   childrenPath?: string;
   keyOrder?: string[];
+
+  /** File extension for scripts */
+  scriptExtension?: "ttslua" | "lua";
 }
 
 const state = {
@@ -101,7 +104,8 @@ const extractObject = (object: TTSObject, path: string, options: Options) => {
 
 const extractScripts = (object: TTSObject | SaveFile, path: string, options: Options) => {
   if (object.LuaScript) {
-    writeFile(`${path}/Script.ttslua`, object.LuaScript);
+    const ext = options.scriptExtension || "ttslua";
+    writeFile(`${path}/Script.${ext}`, object.LuaScript);
   }
 
   if (object.LuaScriptState && options.withState) {
