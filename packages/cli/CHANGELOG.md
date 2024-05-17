@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.3]
 
+### Change
+
+- Bump version of @tts-tools/savefile to 2.2.3
+
+## [2.2.3]
+
 ### Fixed
 
-- Use rootModuleName from metadata while unbundling (https://github.com/Sebaestschjin/tts-tools/pull/2)
+- Update version to match savefile package version
