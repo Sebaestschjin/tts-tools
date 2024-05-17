@@ -7,7 +7,6 @@
     "lib": ["ESNext"],
     "target": "esnext",
     "moduleResolution": "node",
-    "typeRoots": ["./node_modules/@types"],
     "strict": true
   }
 }

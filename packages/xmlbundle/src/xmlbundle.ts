@@ -3,10 +3,16 @@ import { readFileSync } from "fs";
 const INCLUDE_REGEX = /^([\t ]*)<Include src=(["'])(.+)\2\s*\/>/im;
 const BORDER_REGEX = /(<!-- include (.*?) -->)(.*?)\1/gs;
 
+/**
+ * Bundles the given XML by resolving `Include` nodes with a `src` attribute.
+ */
 export const bundle = (xmlUi: string, includePath: string): string => {
   return resolve(xmlUi, includePath, [], true);
 };
 
+/**
+ * Unbundles the given XML by replacing comments generated from `bundle` with their respective `Include` node and `src` attribute.
+ */
 export const unbundle = (xmlUi: string): string => {
   const replacement = '<Include src="$2" />';
 

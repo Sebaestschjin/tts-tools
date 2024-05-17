@@ -3,6 +3,5 @@
   "include": ["src/**/*", "test/**/*"],
   "compilerOptions": {
     "outDir": "build",
-    "types": ["node", "mocha", "chai"]
   }
 }

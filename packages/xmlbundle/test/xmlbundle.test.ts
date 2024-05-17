@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 import { readFileSync } from "fs";
 import { bundle, unbundle } from "../src/xmlbundle";
 
@@ -6,7 +6,7 @@ const includeDir = `${__dirname}/include`;
 const resolvedDir = `${__dirname}/resolved`;
 
 describe("bundle", () => {
-  context("when no Include is given", () => {
+  describe("when no Include is given", () => {
     it("should return the same value", () => {
       const input = "<Panel />\n";
 
@@ -16,7 +16,7 @@ describe("bundle", () => {
     });
   });
 
-  context("when a single Include is given ", () => {
+  describe("when a single Include is given ", () => {
     it("should resolve the Include", () => {
       const input = '<Include src="main" />';
       const expected = borderedFile("main", "main");
@@ -27,20 +27,18 @@ describe("bundle", () => {
     });
   });
 
-  context("when using an Include", () => {
-    [
+  describe("when using an Include", () => {
+    it.each([
       ["with Extension", '<Include src="main.xml" />', "main.xml"],
       ["with different case", '<include Src="MaIn.XmL" />', "MaIn.XmL"],
       ["with single quotes", "<Include src='main' />", "main"],
       ["without space", '<Include src="main"/>', "main"],
-    ].forEach(([name, input, border]) => {
-      it(name, () => {
-        const expected = borderedFile(border, "main");
+    ])("%s it resolves the include", (name, input, border) => {
+      const expected = borderedFile(border, "main");
 
-        const result = bundle(input, includeDir);
+      const result = bundle(input, includeDir);
 
-        expect(result).to.be.equal(expected);
-      });
+      expect(result).to.be.equal(expected);
     });
   });
 
@@ -112,6 +110,7 @@ describe("unbundle", () => {
 
     expect(result).to.be.equal(input);
   });
+
   it("should unbundle a single Include", () => {
     const input = readResolved("withInclude");
     const expected = readInclude("withInclude");
@@ -120,6 +119,7 @@ describe("unbundle", () => {
 
     expect(result).to.be.equal(expected);
   });
+
   it("should keep the name of the Include", () => {
     const input = "<!-- include MaIN.XmL -->\n<!-- include MaIN.XmL -->";
     const expected = '<Include src="MaIN.XmL" />';
@@ -128,6 +128,7 @@ describe("unbundle", () => {
 
     expect(result).to.be.equal(expected);
   });
+
   it("should unbundle multiple Includes", () => {
     const input = readResolved("withMultiple");
     const expected = readInclude("withMultiple");
@@ -136,6 +137,7 @@ describe("unbundle", () => {
 
     expect(result).to.be.equal(expected);
   });
+
   it("should unbundle nested Includes", () => {
     const input = readResolved("withNested");
     const expected = readInclude("withNested");
@@ -144,6 +146,7 @@ describe("unbundle", () => {
 
     expect(result).to.be.equal(expected);
   });
+
   it("should keep indentation", () => {
     const input = readResolved("withIndent");
     const expected = readInclude("withIndent");
@@ -152,6 +155,7 @@ describe("unbundle", () => {
 
     expect(result).to.be.equal(expected);
   });
+
   it("should ignore unmatched borders", () => {
     const input = "<!-- include main -->";
     const expected = "<!-- include main -->";
