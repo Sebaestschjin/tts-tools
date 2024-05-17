@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
 import { setupCommand as setupEmbed } from "./commands/embed";

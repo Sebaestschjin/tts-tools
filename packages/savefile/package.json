@@ -21,20 +21,20 @@
   "dependencies": {
     "@tts-tools/xmlbundle": "workspace:^",
     "big.js": "^6.2.1",
-    "json-stable-stringify": "^1.0.2",
+    "json-stable-stringify": "^1.1.1",
     "lodash": "^4.17.21",
     "luabundle": "^1.6.0"
   },
   "devDependencies": {
-    "@typed-tabletop-simulator/declaration": "^2.0.0",
-    "@types/big.js": "^6.1.6",
-    "@types/json-stable-stringify": "^1.0.34",
-    "@types/lodash": "^4.14.182",
-    "@types/node": "^18.0.0",
+    "@typed-tabletop-simulator/declaration": "^2.0.3",
+    "@types/big.js": "^6.2.2",
+    "@types/json-stable-stringify": "^1.0.36",
+    "@types/lodash": "^4.17.4",
+    "@types/node": "^20.12.12",
     "common-path-prefix": "^3.0.0",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.4.3",
-    "vitest": "^1.1.1"
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
   },
   "files": [
     "/dist",
