@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 
 const INCLUDE_REGEX = /^([\t ]*)<Include src=(["'])(.+)\2\s*\/>/im;
 const BORDER_REGEX = /(<!-- include (.*?) -->)(.*?)\1/gs;
@@ -6,7 +6,11 @@ const BORDER_REGEX = /(<!-- include (.*?) -->)(.*?)\1/gs;
 /**
  * Bundles the given XML by resolving `Include` nodes with a `src` attribute.
  */
-export const bundle = (xmlUi: string, includePath: string): string => {
+export const bundle = (xmlUi: string, includePath: string | string[]): string => {
+  if (typeof includePath === "string") {
+    includePath = [includePath];
+  }
+
   return resolve(xmlUi, includePath, [], true);
 };
 
@@ -19,12 +23,12 @@ export const unbundle = (xmlUi: string): string => {
   return xmlUi.replaceAll(BORDER_REGEX, replacement);
 };
 
-const resolve = (xmlUi: string, path: string, alreadyResolved: string[], topLevel: boolean) => {
+const resolve = (xmlUi: string, rootPaths: string[], alreadyResolved: string[], topLevel: boolean) => {
   let resolved = xmlUi;
   let match = resolved.match(INCLUDE_REGEX);
 
   while (match) {
-    let resolvedInclude = readInclude(match[3], path, alreadyResolved);
+    let resolvedInclude = readInclude(match[3], rootPaths, alreadyResolved);
     if (topLevel) {
       alreadyResolved = [];
     }
@@ -61,10 +65,10 @@ const getFilePath = (fileName: string): { subPath: string; fileName: string } =>
   return { subPath: filePath, fileName: fileName };
 };
 
-const readInclude = (file: string, currentPath: string, alreadyResolved: string[]) => {
+const readInclude = (file: string, rootPaths: string[], alreadyResolved: string[]) => {
   const { subPath, fileName } = getFilePath(file);
   const border = `<!-- include ${file} -->`;
-  const filePath = `${currentPath}/${fileName}`;
+  const [filePath, root] = findFromRoots(fileName, rootPaths);
 
   if (alreadyResolved.includes(filePath)) {
     throw new Error(`Cycle detected! File "${filePath}" was already included before.`);
@@ -73,7 +77,18 @@ const readInclude = (file: string, currentPath: string, alreadyResolved: string[
   alreadyResolved.push(filePath);
 
   const includeContent = readFileSync(filePath, { encoding: "utf-8" });
-  const resolved = resolve(includeContent, currentPath + subPath, alreadyResolved, false);
+  const resolved = resolve(includeContent, [root + subPath], alreadyResolved, false);
 
   return `${border}\n${resolved}\n${border}`;
+};
+
+const findFromRoots = (file: string, rootPaths: string[]): [string, string] => {
+  for (const root of rootPaths) {
+    const fileName = `${root}/${file}`;
+    if (existsSync(fileName)) {
+      return [fileName, root];
+    }
+  }
+
+  throw new Error(`Can not resolve file '${file}'!`);
 };
