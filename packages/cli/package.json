@@ -1,7 +1,7 @@
 {
   "name": "@tts-tools/cli",
   "description": "Command line interface for different TTS Tools.",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "author": "Sebastian Stern",
   "license": "CC0-1.0MIT",
   "keywords": [
