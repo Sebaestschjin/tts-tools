@@ -4,6 +4,7 @@ import { bundleString } from "luabundle";
 
 import { Options } from "./embed";
 import { SaveFile, TTSObject } from "./model/tts";
+import { join } from "path";
 
 /**
  * Creates a copy of the given save file and bundles all Lua/XML scripts with the given options.
@@ -35,13 +36,19 @@ const bundler = (options: Options) => {
  * Bundles the given Lua `script` by resolving `require()` calls using the given `includePath`.
  *
  * @param script The script content.
- * @param includePath The path to look for additional includes.
+ * @param includePaths The path to look for additional includes.
  * @returns The bundled script.
  */
-const luaBundle = (script: string, includePath: string): string => {
-  const bundled = bundleString(script, {
-    paths: [`${includePath}/?.lua`, `${includePath}/?.ttslua`],
-  });
+const luaBundle = (script: string, includePaths: string | string[]): string => {
+  if (typeof includePaths === "string") {
+    includePaths = [includePaths];
+  }
+
+  const patterns = ["?.lua", "?.ttslua"];
+  const paths = includePaths.flatMap((path) => patterns.map((pattern) => join(path, pattern)));
+  paths.push(...patterns);
+
+  const bundled = bundleString(script, { paths });
 
   return bundled.startsWith("-- Bundled") ? bundled + "\n" : bundled;
 };

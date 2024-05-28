@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 
 import { SaveFile } from "../main";
 import { Options, embedSave } from "../main/embed";
-import { extractedPath, MatcherResult, outputPath, RES_PATH } from "./config";
+import { extractedPath, inlucdePath, inlucdePath2, MatcherResult, outputPath, RES_PATH } from "./config";
 
 describe("embed", () => {
   describe("when extracted save file is used", () => {
@@ -28,16 +28,31 @@ describe("embed", () => {
     it("the metadata is embedded", () => {
       runTestCase("metadata", {
         metadataField: "GMNotes",
+        includePath: "",
+      });
+    });
+  });
+
+  describe("when scripts are included", () => {
+    it("works with a single directory", () => {
+      runTestCase("withScript", {
+        includePath: inlucdePath,
+      });
+    });
+
+    it("works with multiple directories", () => {
+      runTestCase("withScriptMultiple", {
+        includePath: [inlucdePath, inlucdePath2],
       });
     });
   });
 });
 
-const runTestCase = (name: string, options: Omit<Options, "includePath"> = {}) => {
+const runTestCase = (name: string, options: Options = { includePath: "" }) => {
   clearOutput(name);
   const saveFile = readSaveFile(name);
 
-  const result = embedSave(extractedPath(name), { ...options, includePath: "" });
+  const result = embedSave(extractedPath(name), options);
 
   expect(result).toMatchSave(saveFile);
 };
@@ -80,10 +95,17 @@ expect.extend({
             message: () =>
               `Expected "${fullKeyName}" to be equal ${value} (with a tolerance of 0.0001), but was ${recievedValue}`,
           };
+        } else if (valueType === "string" && key === "LuaScript") {
+          const actual = (recievedValue as string).replaceAll(/^\s*/gm, "");
+          const expected = (value as string).replaceAll(/^\s*/gm, "");
+          valueMatch = {
+            pass: actual === expected,
+            message: () => `Expected "${fullKeyName}" to be equal\n${expected}\nbut was\n${actual}`,
+          };
         } else {
           valueMatch = {
             pass: value === recievedValue,
-            message: () => `Expected "${fullKeyName}" to be equal ${value}, but was ${recievedValue}`,
+            message: () => `Expected "${fullKeyName}" to be equal\n${value}\nbut was\n${recievedValue}`,
           };
         }
 

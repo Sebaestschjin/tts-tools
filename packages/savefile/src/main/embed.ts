@@ -8,7 +8,7 @@ import { SaveFile, TTSObject } from "./model/tts";
  */
 export interface Options {
   /** The path where the scripts and XML files will be included from. */
-  includePath: string;
+  includePath: string | string[];
   metadataField?: string;
 }
 
