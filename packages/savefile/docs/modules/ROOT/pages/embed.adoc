@@ -32,5 +32,7 @@ And the same applies for attachments, but uses the children directory and the `C
 |===
 | Name | Type | Required | Description
 
-| includePath | string | Yes | The root path to the Lua and XML UI scripts that will be used to resolve `require()` calls and `<Include src="" />` fields.
+| includePath | string[] | Yes | The root path to the Lua and XML UI scripts that will be used to resolve `require()` calls and `<Include src="" />` fields.
+Can be repeated to add multiple paths.
+The paths will be checked for scripts in the order given.
 |===

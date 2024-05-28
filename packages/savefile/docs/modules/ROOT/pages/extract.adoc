@@ -49,7 +49,7 @@ The Api offers several options
 | normalize | boolean/number | No | If set, floating point values will be rounded to the 4th decimal point.
 When a number is given instead of a boolean, the values will be rounded to that decimal point instead.
 | withState | boolean | No | If set, the script states of objects will also be extracted.
-Otherwise they will be ignored, effectively clearing the state of all objects.
+Otherwise, they will be ignored, effectively clearing the state of all objects.
 // | metadataField | string | No |
 | contentsPath | string | No | Name of the directory for a container object or the global table where each contained object will be written to.
 Defaults to no name, meaning objects are extracted directly into their container directory.

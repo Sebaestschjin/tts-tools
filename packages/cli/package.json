@@ -16,7 +16,8 @@
     "tts-save": "./dist/index.js"
   },
   "scripts": {
-    "build": "rimraf dist && tsc -b"
+    "build": "rimraf dist && tsc -b",
+    "start": "tsx src/index.ts"
   },
   "dependencies": {
     "@tts-tools/savefile": "workspace:^",
@@ -26,6 +27,7 @@
     "@types/node": "^20.12.12",
     "@types/yargs": "^17.0.32",
     "rimraf": "^5.0.7",
+    "tsx": "^4.11.0",
     "typescript": "^5.4.5"
   },
   "files": [

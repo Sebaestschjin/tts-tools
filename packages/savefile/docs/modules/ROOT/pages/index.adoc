@@ -5,6 +5,8 @@ This helps in making a save file shareable with source control.
 A split save file can also be embedded again to create a usable save for TTS.
 While doing so, the embedding save file will update the Lua and XML scripts of all objects on the table and in any container.
 
+It's also available as a separate xref:cli.adoc[command line tool].
+
 == Installation
 
 [source,sh]

@@ -7,11 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.2.3]
+### Added
 
-### Change
-
-- Bump version of @tts-tools/savefile to 2.2.3
+- Multiple include directories can now be given as a parameter
 
 ## [2.2.3]
 

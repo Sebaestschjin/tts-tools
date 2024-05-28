@@ -7,7 +7,7 @@ import { Argv } from "yargs";
 export interface Arguments {
   path: string;
   output: string;
-  include?: string;
+  include?: string[];
 }
 
 export const setupCommand = (yargs: Argv) => {
@@ -30,13 +30,14 @@ const commandOptions = (yargs: Argv) => {
     .option("include", {
       alias: "i",
       type: "string",
-      description: "Path to included Lua/XML files.",
+      array: true,
+      description: "Path to included Lua/XML files. Can be multiple. The paths will be checked in the order given.",
     });
 };
 
 const runCommand = (args: Arguments) => {
   const saveFile = embedSave(args.path, {
-    includePath: args.include ?? "",
+    includePath: args.include ?? [],
   });
 
   console.log("Finished embedding save file");
