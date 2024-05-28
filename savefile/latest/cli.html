@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Command Line Interface :: TTS Tools</title>
+    <meta name="generator" content="Antora 3.1.7">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">TTS Tools</a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="savefile" data-version="2">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="index.html">savefile</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="extract.html">Extract</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="embed.html">Embed</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="cli.html">Command Line Interface</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">savefile</span>
+    <span class="version">2</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="index.html">savefile</a></div>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">2</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <div class="title"><a href="../../editor/latest/index.html">TTS Editor</a></div>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../editor/latest/index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">savefile</a></li>
+    <li><a href="cli.html">Command Line Interface</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Sebaestschjin/tts-tools/edit/main/packages/savefile/docs/modules/ROOT/pages/cli.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Command Line Interface</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is the command line interface for the <code>savefile</code> module to split and embed TTS save files.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation"><a class="anchor" href="#_installation"></a>Installation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Either globally</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">npm install -g @tts-tools/cli</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or as part of another package</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">npm install -D @tts-tools/cli</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage"><a class="anchor" href="#_usage"></a>Usage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Show help information or the current version:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save (--help|--version)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Run on of the commands (see below for details):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save (extract|embed) [options]</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_extract_command"><a class="anchor" href="#_extract_command"></a>Extract command</h3>
+<div class="paragraph">
+<p>Show help information or the current version:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save extract (--help|--version)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Execute the command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save extract [options] &lt;saveFile&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Extracts the given <code>saveFile</code>.
+The ending <code>.json</code> for <code>saveFile</code> is optional.
+The tool will first look for the save file in the current location.
+If it can not be found there, it will attempt to find the file in the TTS save file directory.
+The TTS directory will also be searched recursively, so the file can be at any nesting level.
+This behavior is intended for mods where multiple people work on it and allows the developers to keep the development version of the save at any hierarchy level in the TTS save directory they desire.</p>
+</div>
+<div class="paragraph">
+<p>Which files are generated with <code>extract</code>, is described <a href="extract.html" class="xref page">here</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="_options"><a class="anchor" href="#_options"></a>Options</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>--output &lt;dir&gt;</code>, <code>-o &lt;dir&gt;</code></p>
+<div class="paragraph">
+<p><strong>Required</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Specifies the directory where the extracted files will be written to.
+The directory will be created if it doesn&#8217;t exist yet.</p>
+</div>
+</li>
+<li>
+<p><code>--clean</code>, <code>-c</code></p>
+<div class="paragraph">
+<p>If set, the output directory will be deleted before extracting (if it exists).</p>
+</div>
+</li>
+<li>
+<p><code>--normalize</code>, <code>-n</code></p>
+<div class="paragraph">
+<p>If set, all floating point numbers will be rounded to the nearest 0.0001 value within the data files.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example"><a class="anchor" href="#_example"></a>Example</h4>
+<div class="paragraph">
+<p>Running this command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save embed (--help|--version)
+tts-save embed --clean --normalize --output content GHE_Dev</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With a TTS save file directory like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">&lt;TTS save file Path&gt;
+├─ Games
+|  ├─ TS_Save_2.json
+├─ GHE
+|  ├─ GHE_Dev.json
+|  ├─ TS_Save_3.json
+├─ TS_Save_1.json</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Will extract the file <code>GHE/GHE_Dev.json</code> from the TTS save file folder.
+If the TTS save file folder doesn&#8217;t contain a save file with this name somewhere, it would try to extract the file from the directory the <code>tts-save</code> command is called from.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_embed_command"><a class="anchor" href="#_embed_command"></a>Embed command</h3>
+<div class="paragraph">
+<p>Show help information or the current version:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save embed (--help|--version)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Execute the command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save embed [options] &lt;path&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Embeds a previously extracted save file and creates a new TTS save file.
+While doing so, all scripts that use <code>require</code> or UI that uses <code>&lt;Include /&gt;</code> will be updated to include the latest versions for those scripts (given the correct include path).</p>
+</div>
+<div class="paragraph">
+<p>More details about the process can be found <a href="embed.html" class="xref page">here</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="_options_2"><a class="anchor" href="#_options_2"></a>Options</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>--output &lt;name&gt;</code>, <code>-o &lt;name&gt;</code></p>
+<div class="paragraph">
+<p><strong>Required</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Defines there file name where the embedded save file will be written to.
+The ending <code>.json</code> is optional.
+The tool will first attempt to find a file with this name in the TTS save file directory (at any nesting).
+If it can find such a file, it will be overwritten with the embedded file.
+Otherwise, the file will be written relative to the current path.</p>
+</div>
+</li>
+<li>
+<p><code>--inlcude &lt;dir&gt;</code>, <code>-i &lt;dir&gt;</code></p>
+<div class="paragraph">
+<p>Path to Lua and XML files that are include with <code>require()</code> and <code>&lt;Include src="" /&gt;</code>.
+Can be repeated.
+The directories will be searched for scripts in the given order.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_2"><a class="anchor" href="#_example_2"></a>Example</h4>
+<div class="paragraph">
+<p>Running this command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">tts-save embed --output GHE_Dev --include src content</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With a TTS save file directory like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">&lt;TTS save file Path&gt;
+├─ Games
+|  ├─ TS_Save_2.json
+├─ GHE
+|  ├─ GHE_Dev.json
+|  ├─ TS_Save_3.json
+├─ TS_Save_1.json</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the directory where the command is called from like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">&lt;command directory&gt;
+├─ content
+|  ├─ Contents
+|  |  ├─ ...
+|  ├─ Script.ttslua
+|  ├─ UI.xml
+|  ├─ ...
+├─ src
+|  ├─ Main.ttslua
+|  ├─ Main.xml
+|  ├─ ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Will embed the directory from <code>content</code> and write the new save file to <code>GHE/GHE_Dev.json</code> within the TTS save file folder.
+The <code>src</code> directory is used to resolve <code>require</code> and <code>&lt;Include /&gt;</code>.
+So if <code>content/Script.ttslua</code> would contain <code>require("Main")</code>, the contents of <code>src/Main.ttslua</code> will be bundled in the <code>Global</code> script.
+The same applies for XML files, so if <code>content/UI.xml</code> would contain <code>&lt;Include src="Main" /&gt;</code>, the contents of <code>src/Main.xml</code> will be bundled into the <code>Global</code> UI.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="200" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>
