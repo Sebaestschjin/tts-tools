@@ -8,7 +8,7 @@
     "tabletop-simulator",
     "tabletopsimulator"
   ],
-  "homepage": "https://github.com/Sebaestschjin/tts-tools/tree/main/packages/cli",
+  "homepage": "https://sebaestschjin.github.io/tts-tools/savefile/latest",
   "repository": "Sebaestschjin/tts-tools",
   "bugs": "https://github.com/Sebaestschjin/tts-tools/issues",
   "main": "dist/index.js",
