@@ -26,7 +26,6 @@ To learn about details and more features, checkout the xref:usage.adoc[] section
 * Get and update the current script state of an object
 * Update an individual object without reloading the whole game (including bundling its scripts and scripts of nested object for containers)
 * Locate an object on the table
-* Run xref:typescript.adoc[TypeScript to Lua] before sending scripts
 
 NOTE: This extension doesn't offer support for auto-completion of the TTS API on its own.
 However, this can be easily achieved by using a dedicated Lua extension for VS Code.

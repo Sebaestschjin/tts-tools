@@ -8,6 +8,3 @@ src/**
 **/*.ts
 
 docs/**
-
-# we need to type defintions for TSTL
-!**/*.d.ts

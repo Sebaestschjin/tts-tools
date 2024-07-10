@@ -126,18 +126,6 @@
           "markdownDescription": "When set, custom messages sent from TTS are handled. Otherwise, they are ignored.",
           "type": "boolean",
           "default": true
-        },
-        "ttsEditor.tstl.enable": {
-          "title": "Enable TSTL",
-          "markdownDescription": "When set, Typescript to Lua is run before bundling the scripts using the path below.",
-          "type": "boolean",
-          "default": false
-        },
-        "ttsEditor.tstl.path": {
-          "title": "TSTL Path",
-          "markdownDescription": "Relative path inside the workspace directory to a Typescript to Lua project that should be transpiled before bundling the scripts.",
-          "type": "string",
-          "default": "."
         }
       }
     },
@@ -303,12 +291,11 @@
     "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
     "@tts-tools/savefile": "^2.2.2",
     "@tts-tools/xmlbundle": "^1.0.0",
-    "luabundle": "^1.6.0",
-    "typescript-to-lua": "^1.23.0"
+    "luabundle": "^1.6.0"
   },
   "devDependencies": {
     "@typed-tabletop-simulator/declaration": "^2.0.0",
-    "@types/node": "16.x",
+    "@types/node": "^20.14.10",
     "@types/vscode": "^1.82.0",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",

@@ -102,15 +102,6 @@ export const getOutputFileUri = (fileName: string, bundled: boolean = false) => 
   });
 };
 
-/**
- * Returns the path to the TSTL project to use.
- */
-export const getTstlPath = () => {
-  const root = getWorkspaceRoot();
-  const path = configuration.tstlPath();
-  return Uri.joinPath(root, path).fsPath;
-};
-
 export const hasOutputFile = async (fileName: string, bundled: boolean = false) => {
   return await workspace.fs.stat(getOutputFileUri(fileName, bundled)).then(
     () => true,

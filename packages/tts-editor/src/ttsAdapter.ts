@@ -9,20 +9,19 @@ import ExternalEditorApi, {
   PushingNewObject,
 } from "@matanlurey/tts-editor";
 import { TTSObject as SaveFileObject, bundleObject, unbundleObject } from "@tts-tools/savefile";
-import { DiagnosticCategory, FormatDiagnosticsHost, formatDiagnostics } from "typescript";
 import { Range, window, workspace } from "vscode";
 
 import { command } from "./command";
 import configuration from "./configuration";
 import { selectObject } from "./interaction/selectObject";
-import { bundleLua, bundleXml, runTstl, unbundleLua, unbundleXml } from "./io/bundle";
-import { getOutputFileUri, getOutputPath, getTstlPath, readOutputFile, writeOutputFile } from "./io/files";
+import { bundleLua, bundleXml, unbundleLua, unbundleXml } from "./io/bundle";
+import { getOutputFileUri, getOutputPath, readOutputFile, writeOutputFile } from "./io/files";
 import {
   EditorMessage,
   MessageFormat,
   RequestEditorMessage,
   RequestObjectMessage,
-  WriteContentMessage as WriteContentMessage,
+  WriteContentMessage,
 } from "./message";
 import { LoadedObject } from "./model/objectData";
 import { Plugin } from "./plugin";
@@ -138,11 +137,6 @@ export class TTSAdapter {
     const state = await readObjectFile("state.txt");
     if (state) {
       data.LuaScriptState = state;
-    }
-
-    const tstl = await this.runTstl();
-    if (!tstl) {
-      return;
     }
 
     const bundled = bundleObject(data, {
@@ -362,16 +356,16 @@ return nil
     const fileName = `${baseName}.${guid}`;
 
     writeOutputFile(`${fileName}.data.json`, JSON.stringify(unbundledData, null, 2));
-    if (bundledData.LuaScript !== undefined) {
+    if (unbundledData.LuaScript !== undefined) {
       const scriptFile = await writeOutputFile(`${fileName}.lua`, unbundledData.LuaScript);
       if (openFiles) {
         window.showTextDocument(scriptFile);
       }
-      writeOutputFile(`${fileName}.lua`, bundledData.LuaScript, true);
+      writeOutputFile(`${fileName}.lua`, bundledData.LuaScript!, true);
     }
-    if (bundledData.XmlUI !== undefined) {
+    if (unbundledData.XmlUI !== undefined) {
       writeOutputFile(`${fileName}.xml`, unbundledData.XmlUI);
-      writeOutputFile(`${fileName}.xml`, bundledData.XmlUI, true);
+      writeOutputFile(`${fileName}.xml`, bundledData.XmlUI!, true);
     }
 
     this.plugin.setLoadedObject({
@@ -379,7 +373,7 @@ return nil
       name: objectName,
       guid: guid,
       fileName: fileName,
-      data: unbundledData,
+      data: unbundledData as any,
     });
   };
 
@@ -390,16 +384,6 @@ return nil
     const includePathXml = configuration.xmlIncludePath();
     this.plugin.debug(`Using Lua include paths ${includePathsLua}`);
     this.plugin.debug(`Using XML include path ${includePathXml}`);
-
-    if (!bundled) {
-      const tstl = await this.runTstl();
-      if (!tstl) {
-        return {
-          scripts: [],
-          hasErrors: true,
-        };
-      }
-    }
 
     let hasErrors: boolean = false;
 
@@ -434,52 +418,6 @@ return nil
       scripts: Array.from(scripts.values()),
       hasErrors: hasErrors,
     };
-  };
-
-  private runTstl = async (): Promise<boolean> => {
-    return this.plugin.progress("Running TSTL", async () => {
-      if (!configuration.tstlEnalbed()) {
-        return true;
-      }
-
-      let hasErrors = false;
-      const path = getTstlPath();
-      const result = runTstl(path);
-
-      const errors = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Error);
-      const warnings = result.diagnostics.filter((d) => d.category === DiagnosticCategory.Warning);
-
-      const showLog = (option?: string) => {
-        if (option) {
-          this.plugin.showOutput();
-        }
-      };
-
-      if (errors.length > 0) {
-        hasErrors = true;
-        window
-          .showErrorMessage("There were errors while running TSTL. Check the log for more information", "Show Log")
-          .then(showLog);
-      }
-      if (warnings.length > 0) {
-        window
-          .showWarningMessage("There were warnings while running TSTL. Check the log for more information", "Show Log")
-          .then(showLog);
-      }
-
-      const host: FormatDiagnosticsHost = {
-        getCurrentDirectory: () => getOutputPath().toString(),
-        getCanonicalFileName: (fileName: string) => fileName,
-        getNewLine: () => "\n",
-      };
-
-      const output = formatDiagnostics(result.diagnostics, host);
-      if (output.length > 0) {
-        this.plugin.info(output);
-      }
-
-      return !hasErrors;
-    });
   };
 }
 

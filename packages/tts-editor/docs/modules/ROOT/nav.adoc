@@ -3,7 +3,6 @@
 ** xref:view.adoc[]
 ** xref:execute.adoc[]
 ** xref:bundling.adoc[]
-** xref:typescript.adoc[]
 * Additional Topics
 ** xref::autocompletion.adoc[]
 * Reference

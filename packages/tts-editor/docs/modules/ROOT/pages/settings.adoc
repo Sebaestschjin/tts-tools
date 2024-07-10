@@ -11,10 +11,4 @@ The extension uses the following settings:
 
 [[messages]]| ttsEditor.enableMessages | boolean | true
 | When set, custom messages sent from TTS are handled. Otherwise, they are ignored (see xref:messages.adoc[]).
-
-| ttsEditor.tstl.enable | boolean | false
-| When enabled, Typescript to Lua is run before bundling the scripts using the path below (see xref:typescript.adoc[]).
-
-| ttsEditor.tstl.path | string | .
-| Relative path inside the workspace directory to a Typescript to Lua project that should be transpiled before bundling the scripts (see xref:typescript.adoc[]).
 |===

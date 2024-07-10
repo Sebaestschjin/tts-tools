@@ -1,3 +1,0 @@
-= TypeScript
-
-NOTE: TODO

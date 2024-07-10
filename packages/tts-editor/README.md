@@ -12,7 +12,6 @@ Checkout [the documentation](https://sebaestschjin.github.io/tts-tools/editor/la
 - Get and update the current script state of an object
 - Update an individual object without reloading the whole game (including bundling its scripts and scripts of nested object for containers)
 - Locate an object on the table
-- Run TypeScript to Lua before sending scripts
 
 ## Preview
 
