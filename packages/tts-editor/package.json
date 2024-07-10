@@ -291,7 +291,7 @@
     "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
     "@tts-tools/savefile": "^2.2.2",
     "@tts-tools/xmlbundle": "^1.0.0",
-    "luabundle": "^1.6.0"
+    "luabundle": "^1.7.0"
   },
   "devDependencies": {
     "@typed-tabletop-simulator/declaration": "^2.0.0",
