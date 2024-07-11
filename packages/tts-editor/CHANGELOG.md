@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking
+
+- Removed (undocumented) support for TSTL
+
+### Added
+
+- `require` can resolve `index.lua` files without explicitly including them in the module name.
+
 ## [1.1.0] - 2024-01-16
 
 ### Added
