@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `readExtractedObject` is now exported as well to read single objects
+
 ## [2.3.0] - 2024-05-08
 
 ### Added

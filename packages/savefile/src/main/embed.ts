@@ -23,6 +23,10 @@ export const readExtractedSave = (path: string, options: Options) => {
   return saveFile;
 };
 
+export const readExtractedObject = (path: string, options: Options) => {
+  return readObject(path, options);
+};
+
 /**
  * Embeds the content of an previously extracted save file and returns a new save file.
  *
