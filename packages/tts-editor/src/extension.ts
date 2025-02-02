@@ -3,16 +3,17 @@ import { ExtensionContext, commands, window } from "vscode";
 import createUi from "./command/createUi";
 import executeScript from "./command/executeScript";
 import getScripts from "./command/getScripts";
+import goToLastError from "./command/goToLastError";
 import openBundledScript from "./command/openBundledScript";
 import { saveAndPlay, saveAndPlayBundled } from "./command/saveAndPlay";
 import showOutput from "./command/showOutput";
 import showView from "./command/showView";
+import updateObject from "./command/updateObject";
 import updateObjectState from "./command/updateObjectState";
 import { FileHandler } from "./io/files";
 import { Plugin } from "./plugin";
 import { TTSAdapter } from "./ttsAdapter";
 import { TTSObjectItem, TTSObjectTreeProvider } from "./view/ttsObjectTreeProvider";
-import updateObject from "./command/updateObject";
 
 export const extensionName = "ttsEditor";
 
@@ -38,6 +39,7 @@ export function activate(context: ExtensionContext) {
   registerCommand("saveAndPlayBundled", saveAndPlayBundled(adapter));
   registerCommand("executeCode", executeScript(adapter));
   registerCommand("showOutput", showOutput(plugin));
+  registerCommand("goToLastError", goToLastError(adapter));
   registerCommand("showView", showView(view));
   registerCommand("updateView", () => viewProvider.refresh());
   registerCommand("openBundledScript", openBundledScript);

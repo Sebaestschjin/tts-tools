@@ -31,6 +31,7 @@ const polyFills = ["object", "write"];
 export class TTSAdapter {
   private api: ExternalEditorApi;
   private plugin: Plugin;
+  private lastError: Maybe<ErrorMessage> = undefined;
 
   public constructor(plugin: Plugin) {
     this.api = new ExternalEditorApi();
@@ -162,6 +163,14 @@ spawnObjectJSON({
     command.refreshView();
   }
 
+  public goToLastError = () => {
+    if (this.lastError) {
+      this.goToError(this.lastError);
+    } else {
+      window.showWarningMessage("There was no previous error");
+    }
+  };
+
   private initExternalEditorApi = () => {
     this.api.on("loadingANewGame", this.onLoadGame.bind(this));
     this.api.on("pushingNewObject", this.onPushObject.bind(this));
@@ -174,6 +183,7 @@ spawnObjectJSON({
 
   private onLoadGame = async (message: LoadingANewGame) => {
     this.plugin.debug("recieved onLoadGame");
+    this.lastError = undefined;
     await this.clearOutputPath();
     this.plugin.resetLoadedObjects();
     this.plugin.progress("Reading objects", async () => this.readFilesFromTTS(message.scriptStates));
@@ -193,13 +203,16 @@ spawnObjectJSON({
   };
 
   private onErrorMessage = async (message: ErrorMessage) => {
+    this.lastError = message;
     this.plugin.info(`${message.guid} ${message.errorMessagePrefix}`);
 
     const action = await window.showErrorMessage(`${message.errorMessagePrefix}`, "Go To Error");
-    if (!action) {
-      return;
+    if (action === "Go To Error") {
+      this.goToError(message);
     }
+  };
 
+  private goToError = async (message: ErrorMessage) => {
     const object = this.plugin.getLoadedObject(message.guid);
     if (!object) {
       window.showWarningMessage(

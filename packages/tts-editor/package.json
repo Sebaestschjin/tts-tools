@@ -56,6 +56,11 @@
         "category": "TTS Editor"
       },
       {
+        "command": "ttsEditor.goToLastError",
+        "title": "Go to Last Error",
+        "category": "TTS Editor"
+      },
+      {
         "command": "ttsEditor.getRuntimeUi",
         "title": "Get Runtime UI",
         "category": "TTS Editor",
