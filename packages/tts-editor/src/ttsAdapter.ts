@@ -9,12 +9,12 @@ import ExternalEditorApi, {
   PushingNewObject,
 } from "@matanlurey/tts-editor";
 import { TTSObject as SaveFileObject, bundleObject, unbundleObject } from "@tts-tools/savefile";
-import { Range, window, workspace } from "vscode";
+import { Range, Uri, window, workspace } from "vscode";
 
 import { command } from "./command";
 import configuration from "./configuration";
 import { selectObject } from "./interaction/selectObject";
-import { bundleLua, bundleXml, unbundleLua, unbundleXml } from "./io/bundle";
+import { bundleLua, bundleXml, findNearestBundle, getRootName, isBundled, unbundleLua, unbundleXml } from "./io/bundle";
 import { getOutputFileUri, getOutputPath, readOutputFile, writeOutputFile } from "./io/files";
 import {
   EditorMessage,
@@ -80,7 +80,7 @@ export class TTSAdapter {
         hasPolyFill = true;
         let content = await getPolyFill(polyFill);
         for (const [name, value] of Object.entries(parameters)) {
-          content = content.replace(`$\{${name}\}`, value);
+          content = content.replace(`$\{${name}}`, value);
         }
         completeScript += content + "\n\n";
       }
@@ -96,7 +96,7 @@ export class TTSAdapter {
   };
 
   public executeMacro = async (name: string, object?: LoadedObject) => {
-    let command = await this.plugin.fileHandler.readExtensionFile(`macro/${name}.lua`);
+    const command = await this.plugin.fileHandler.readExtensionFile(`macro/${name}.lua`);
     const parameters: Record<string, string> = {};
 
     if (object) {
@@ -119,7 +119,7 @@ export class TTSAdapter {
     const readObjectFile = async (extension: string) => {
       try {
         return await this.plugin.fileHandler.readOutputFile(object, extension);
-      } catch (e) {
+      } catch (_) {
         return undefined;
       }
     };
@@ -202,23 +202,81 @@ spawnObjectJSON({
 
     const object = this.plugin.getLoadedObject(message.guid);
     if (!object) {
+      window.showWarningMessage(
+        `No scripts are currently loaded for object ${message.guid}. Try using command 'Get Objects' first.`
+      );
       return;
     }
 
-    const fileUri = getOutputFileUri(`${object.fileName}.lua`, true);
-    let selection: Range | undefined = undefined;
-    const rangeExpression = /.*:\((\d+),(\d+)-(\d+)\):/;
-    const range = message.errorMessagePrefix.match(rangeExpression);
-
-    if (range) {
-      const [, line, start, end] = range;
-      const lineNumber = Number(line) - 1;
-      selection = new Range(lineNumber, Number(start), lineNumber, Number(end));
+    const fileName = `${object.fileName}.lua`;
+    const source = await readOutputFile(fileName, true);
+    if (!source) {
+      window.showWarningMessage(`Can not find the script file for object ${object.guid}`);
+      return;
     }
 
-    window.showTextDocument(fileUri, {
-      selection: selection,
+    const range = this.getRange(message.errorMessagePrefix);
+    let fileToShow = getOutputFileUri(fileName);
+
+    if (isBundled(source)) {
+      const bundleInfo = await findNearestBundle(source, range.line);
+      if (bundleInfo) {
+        const { name: bundleName, offset } = bundleInfo;
+        if (getRootName(source) === bundleName) {
+          // the output file is the one we need, but we need to adjust the line number
+          range.line -= offset;
+        } else {
+          const bundleFile = await this.findBundleFile(bundleName);
+          if (bundleFile) {
+            range.line -= offset;
+            fileToShow = bundleFile;
+          } else {
+            window.showWarningMessage(
+              `Tried to find file for ${bundleName} but couldn't locate it. Will open the bundled version instead.`
+            );
+            fileToShow = getOutputFileUri(fileName, true);
+          }
+        }
+      } else {
+        window.showWarningMessage(
+          `Tried to identify the bundle name for ${fileName} but couldn't determine it. Will open the bundled version instead.`
+        );
+        fileToShow = getOutputFileUri(fileName, true);
+      }
+    }
+
+    window.showTextDocument(fileToShow, {
+      selection: new Range(range.line - 1, range.start, range.line - 1, range.end),
     });
+  };
+
+  private getRange = (errorMessage: string): { line: number; start: number; end: number } => {
+    const rangeExpression = /.*:\((\d+),(\d+)-(\d+)\):/;
+    const range = errorMessage.match(rangeExpression);
+    if (range) {
+      const [_, line, start, end] = range;
+      return { line: Number(line), start: Number(start), end: Number(end) };
+    }
+
+    return { line: 0, start: 0, end: 0 };
+  };
+
+  /**
+   * Searches for a Lua scipt for the given bundle name in the current workspace (respecting the inlcude path settings).
+   *
+   * @param name The full name of the bundle
+   * @returns The `Uri` to the bundle file or `undefined` if it can not be found.
+   */
+  private findBundleFile = async (name: string): Promise<Maybe<Uri>> => {
+    for (const path of configuration.luaIncludePaths()) {
+      const fileName = path.replace("?", name);
+      const fileUri = Uri.file(fileName);
+      if (await this.plugin.fileHandler.fileExists(fileUri)) {
+        return fileUri;
+      }
+    }
+
+    return undefined;
   };
 
   private onCustomMessage = async (customMessage: CustomMessage) => {
@@ -257,7 +315,7 @@ spawnObjectJSON({
   private handleWriteMessage = async (message: WriteContentMessage) => {
     const content = this.formatContent(message.content, message.format);
     if (message.name) {
-      let fileName = message.name;
+      const fileName = message.name;
       let file;
       if (message.object) {
         const object = this.plugin.getLoadedObject(message.object);
@@ -284,7 +342,7 @@ spawnObjectJSON({
     try {
       const parsed = JSON.parse(message);
       return JSON.stringify(parsed, null, 2);
-    } catch (e) {
+    } catch (_) {
       return message;
     }
   };
@@ -333,8 +391,8 @@ return nil
           fileName: fileName,
           isGlobal: true,
           data: {
-            LuaScript: object.script, // eslint-disable-line @typescript-eslint/naming-convention
-            XmlUI: object.ui, // eslint-disable-line @typescript-eslint/naming-convention
+            LuaScript: object.script,
+            XmlUI: object.ui,
           },
         });
       } else {
@@ -433,7 +491,7 @@ const getUnbundledLua = (script: string) => {
 const saveAllFiles = async () => {
   try {
     await workspace.saveAll(false);
-  } catch (reason: any) {
+  } catch (reason) {
     throw new Error(`Unable to save opened files.\nDetail: ${reason}`);
   }
 };

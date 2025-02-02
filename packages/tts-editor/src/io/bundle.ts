@@ -5,9 +5,13 @@ import { sep as pathSeparator } from "path";
 
 import { readMetadata } from "luabundle/metadata";
 
+/**
+ * @returns `true` if the given Lua string was bundled by luabundle, `false` otherwise.
+ */
+export const isBundled = (content: string): boolean => readMetadata(content) !== null;
+
 export const unbundleLua = (content: string) => {
-  const isBundled = readMetadata(content) !== null;
-  if (isBundled) {
+  if (isBundled(content)) {
     const unbundled = luabundle.unbundleString(content, { rootOnly: true });
     return unbundled.modules[unbundled.metadata.rootModuleName].content;
   }
@@ -21,6 +25,39 @@ export const bundleLua = async (script: string, includePaths: string[]): Promise
     isolate: true,
     resolveModule,
   });
+};
+
+interface BundleInfo {
+  name: string;
+  offset: number;
+}
+
+/**
+ * @param source The bundled Lua script.
+ * @param lineNumber The line number to start searching.
+ * @returns The nearest bundle name of the Lua source starting from the given `lineNumber`.
+ *          Returns `undefined` if no bundle can be found.
+ */
+export const findNearestBundle = async (source: string, lineNumber: number): Promise<Maybe<BundleInfo>> => {
+  const lines = source.split("\n");
+  for (let i = lineNumber - 1; i >= 0; i--) {
+    const line = lines[i];
+    const match = line.match(/^__bundle_register\("([^"]+)"/);
+    if (match) {
+      return { name: match[1], offset: i + 1 };
+    }
+  }
+
+  return undefined;
+};
+
+/**
+ * @param source A bundled Lua script.
+ * @returns The name of the root bundle for the given bundled Lua.
+ */
+export const getRootName = (source: string): string => {
+  const unbundled = luabundle.unbundleString(source, { rootOnly: true });
+  return unbundled.metadata.rootModuleName;
 };
 
 export const unbundleXml = (content: string) => {

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed (undocumented) support for TSTL
 - Minimum VS Code version bumped to 1.96.0
 
+### Changed
+
+- "Go To Error" now tries to locate and open the actual script file instead of always opening the bundled file.
+
 ### Added
 
 - `require` can resolve `index.lua` files without explicitly including them in the module name.

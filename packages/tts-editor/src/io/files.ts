@@ -1,6 +1,5 @@
 import path, { posix } from "path";
 import { Extension, Uri, window, workspace } from "vscode";
-import configuration from "../configuration";
 import { LoadedObject } from "../model/objectData";
 
 export class FileHandler {
@@ -42,6 +41,13 @@ export class FileHandler {
     return this.writeWorkspaceFile(`.tts/${fileName}`, content);
   };
 
+  fileExists = async (file: Uri) => {
+    return workspace.fs.stat(file).then(
+      () => true,
+      () => false
+    );
+  };
+
   private isInWorkspace(fileName: string): boolean {
     const root = getWorkspaceRoot();
     const filePath = Uri.joinPath(root, fileName);
@@ -72,8 +78,8 @@ export class FileHandler {
 
 export const iconPath = (name: string) => {
   return {
-    light: path.join(__filename, "..", "..", "..", "media", "icon", `${name}.png`),
-    dark: path.join(__filename, "..", "..", "..", "media", "icon", `${name}-dark.png`),
+    light: Uri.joinPath(Uri.file(__filename), "..", "..", "..", "media", "icon", `${name}.png`),
+    dark: Uri.joinPath(Uri.file(__filename), "..", "..", "..", "media", "icon", `${name}-dark.png`),
   };
 };
 
