@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking
 
 - Removed (undocumented) support for TSTL
+- Minimum VS Code version bumped to 1.96.0
 
 ### Added
 
