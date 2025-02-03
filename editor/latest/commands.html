@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Commands :: TTS Tools</title>
-    <meta name="generator" content="Antora 3.1.9">
+    <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../_/css/site.css">
   </head>
   <body class="article">
@@ -45,6 +45,9 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="view.html">TTS Objects View</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="errors.html">Error Handling</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="execute.html">Execute Code</a>
@@ -213,6 +216,18 @@ This includes nested object of the selected object is a container.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Locate Object</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Highlights the selected object in TTS by randomly applying a different color over a certain time period.
 Will also trigger a player ping on the object.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unbundle Library</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Will read all scripts of the currently loaded objects and try to recreate the file structure from modules that are bundled using <code>require</code>.
+E.g. if there&#8217;s a script with <code>require("some.module.name")</code> it will create a file <code>some/module/name.lua</code>.
+This command is intended to get all unbundled files of a mod.
+All files will be written to the <code>library</code> directory inside the <a href="usage.html" class="xref page">output directory</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Go to Last Error</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Opens the file where the last reported error message occured.
+This is useful if the popup with the button is already closed.</p></td>
 </tr>
 </tbody>
 </table>
