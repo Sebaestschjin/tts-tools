@@ -1,6 +1,7 @@
 * xref:index.adoc[Getting Started]
 * xref:usage.adoc[]
 ** xref:view.adoc[]
+** xref:errors.adoc[]
 ** xref:execute.adoc[]
 ** xref:bundling.adoc[]
 * Additional Topics

@@ -61,4 +61,14 @@ This includes nested object of the selected object is a container.
 | Locate Object
 | Highlights the selected object in TTS by randomly applying a different color over a certain time period.
 Will also trigger a player ping on the object.
+
+| Unbundle Library
+| Will read all scripts of the currently loaded objects and try to recreate the file structure from modules that are bundled using `require`.
+E.g. if there's a script with `require("some.module.name")` it will create a file `some/module/name.lua`.
+This command is intended to get all unbundled files of a mod.
+All files will be written to the `library` directory inside the xref:usage.adoc[output directory].
+
+| Go to Last Error
+| Opens the file where the last reported error message occured.
+This is useful if the popup with the button is already closed.
 |===

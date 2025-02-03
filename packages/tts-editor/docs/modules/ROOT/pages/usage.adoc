@@ -16,7 +16,7 @@ image::view.png[]
 
 Edit the scripts for the objects you want (either by opening from the output directory or the object view) and save the files.
 Then execute the command "Save and Play".
-The default keybinding for this command is kbd:ctrl[alt+s].
+The default keybinding for this command is kbd:[ctrl+alt+s].
 You can bind it to any other keys you like, through the settings in VS Code.
 Alternatively, there's also a three dot menu button in the object view, where you can execute the command from.
 
