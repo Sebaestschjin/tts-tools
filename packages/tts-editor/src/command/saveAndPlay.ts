@@ -5,5 +5,5 @@ export const saveAndPlay = (adapter: TTSAdapter) => () => {
 };
 
 export const saveAndPlayBundled = (adapter: TTSAdapter) => () => {
-  adapter.saveAndPlay(true);
+  adapter.saveAndPlay("bundle");
 };

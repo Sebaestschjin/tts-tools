@@ -100,6 +100,11 @@
         "command": "ttsEditor.createUi",
         "title": "Create UI",
         "category": "TTS Editor"
+      },
+      {
+        "command": "ttsEditor.unbundleLibrary",
+        "title": "Unbundle Library",
+        "category": "TTS Editor"
       }
     ],
     "keybindings": [

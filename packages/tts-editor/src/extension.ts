@@ -5,6 +5,7 @@ import executeScript from "./command/executeScript";
 import getScripts from "./command/getScripts";
 import goToLastError from "./command/goToLastError";
 import openBundledScript from "./command/openBundledScript";
+import unbundleLibrary from "./command/unbundleLibrary";
 import { saveAndPlay, saveAndPlayBundled } from "./command/saveAndPlay";
 import showOutput from "./command/showOutput";
 import showView from "./command/showView";
@@ -46,6 +47,7 @@ export function activate(context: ExtensionContext) {
   registerCommand("createUi", createUi(plugin));
   registerCommand("updateObject", updateObject(plugin, adapter));
   registerCommand("updateObjectState", updateObjectState(plugin, adapter));
+  registerCommand("unbundleLibrary", unbundleLibrary(adapter));
 
   registerMacro("getObjectState");
   registerMacro("getRuntimeUi");

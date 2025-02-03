@@ -4,13 +4,18 @@ import * as luabundle from "luabundle";
 import { sep as pathSeparator } from "path";
 
 import { readMetadata } from "luabundle/metadata";
+import { UnbundledData } from "luabundle";
 
 /**
  * @returns `true` if the given Lua string was bundled by luabundle, `false` otherwise.
  */
 export const isBundled = (content: string): boolean => readMetadata(content) !== null;
 
-export const unbundleLua = (content: string) => {
+export const unbundleLua = (content: string): UnbundledData => {
+  return luabundle.unbundleString(content);
+};
+
+export const unbundleRootModule = (content: string) => {
   if (isBundled(content)) {
     const unbundled = luabundle.unbundleString(content, { rootOnly: true });
     return unbundled.modules[unbundled.metadata.rootModuleName].content;

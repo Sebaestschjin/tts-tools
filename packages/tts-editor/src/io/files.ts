@@ -2,6 +2,8 @@ import path, { posix } from "path";
 import { Extension, Uri, window, workspace } from "vscode";
 import { LoadedObject } from "../model/objectData";
 
+export type OutputType = "script" | "bundle" | "library";
+
 export class FileHandler {
   private extension: Extension<any>;
 
@@ -88,11 +90,18 @@ export const iconPath = (name: string) => {
  *
  * @param bundled Determines whether the output is for a regular file or for a bundled file.
  */
-export const getOutputPath = (bundled: boolean = false): Uri => {
+export const getOutputPath = (bundled: OutputType = "script"): Uri => {
   const root = getWorkspaceRoot();
   const basePath = Uri.joinPath(root, "/.tts");
 
-  return bundled ? Uri.joinPath(basePath, "/bundled") : basePath;
+  switch (bundled) {
+    case "script":
+      return basePath;
+    case "bundle":
+      return Uri.joinPath(basePath, "/bundled");
+    case "library":
+      return Uri.joinPath(basePath, "/library");
+  }
 };
 
 /**
@@ -101,14 +110,14 @@ export const getOutputPath = (bundled: boolean = false): Uri => {
  * @param fileName The name of the file to write.
  * @param bundled Determines whether the file is for a regular file or for a bundled file.
  */
-export const getOutputFileUri = (fileName: string, bundled: boolean = false) => {
+export const getOutputFileUri = (fileName: string, bundled: OutputType = "script") => {
   const directory = getOutputPath(bundled);
   return directory.with({
     path: posix.join(directory.path, fileName),
   });
 };
 
-export const hasOutputFile = async (fileName: string, bundled: boolean = false) => {
+export const hasOutputFile = async (fileName: string, bundled: OutputType = "script") => {
   return await workspace.fs.stat(getOutputFileUri(fileName, bundled)).then(
     () => true,
     () => false
@@ -121,7 +130,7 @@ export const hasOutputFile = async (fileName: string, bundled: boolean = false) 
  * @param fileName The name of the file to write.
  * @param bundled Determines whether the file is for a regular file or for a bundled file.
  */
-export const readOutputFile = async (fileName: string, bundled: boolean = false) => {
+export const readOutputFile = async (fileName: string, bundled: OutputType = "script") => {
   return readWorkspaceFile(getOutputPath(bundled), fileName);
 };
 
@@ -132,7 +141,7 @@ export const readOutputFile = async (fileName: string, bundled: boolean = false)
  * @param content The content of the file.
  * @param bundled Determines whether the file is for a regular file or for a bundled file.
  */
-export const writeOutputFile = async (fileName: string, content: string, bundled: boolean = false) => {
+export const writeOutputFile = async (fileName: string, content: string, bundled: OutputType = "script") => {
   return writeFile(getOutputPath(bundled), fileName, content);
 };
 

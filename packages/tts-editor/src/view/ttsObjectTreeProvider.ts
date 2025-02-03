@@ -156,6 +156,6 @@ export class TTSScriptItem extends TTSFiletItem {
   }
 
   openBundledScript = () => {
-    window.showTextDocument(getOutputFileUri(this.fileName(), true));
+    window.showTextDocument(getOutputFileUri(this.fileName(), "bundle"));
   };
 }

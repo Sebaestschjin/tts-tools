@@ -14,8 +14,17 @@ import { Range, Uri, window, workspace } from "vscode";
 import { command } from "./command";
 import configuration from "./configuration";
 import { selectObject } from "./interaction/selectObject";
-import { bundleLua, bundleXml, findNearestBundle, getRootName, isBundled, unbundleLua, unbundleXml } from "./io/bundle";
-import { getOutputFileUri, getOutputPath, readOutputFile, writeOutputFile } from "./io/files";
+import {
+  bundleLua,
+  bundleXml,
+  findNearestBundle,
+  getRootName,
+  isBundled,
+  unbundleLua,
+  unbundleRootModule,
+  unbundleXml,
+} from "./io/bundle";
+import { getOutputFileUri, getOutputPath, OutputType, readOutputFile, writeOutputFile } from "./io/files";
 import {
   EditorMessage,
   MessageFormat,
@@ -50,7 +59,7 @@ export class TTSAdapter {
   /**
    * Sends the bundled scripts to TTS
    */
-  public saveAndPlay = async (bundled: boolean = false) => {
+  public saveAndPlay = async (bundled: OutputType = "script") => {
     try {
       await saveAllFiles();
 
@@ -171,6 +180,22 @@ spawnObjectJSON({
     }
   };
 
+  public unbundleLibrary = async () => {
+    for (const obj of this.plugin.getLoadedObjects()) {
+      const fileName = `${obj.fileName}.lua`;
+      const source = await readOutputFile(fileName, "bundle");
+      if (source && isBundled(source)) {
+        const moduleInfo = unbundleLua(source);
+        for (const [name, module] of Object.entries(moduleInfo.modules)) {
+          if (name !== moduleInfo.metadata.rootModuleName) {
+            const modulePath = module.name.replace(/\./g, "/");
+            writeOutputFile(`${modulePath}.lua`, module.content, "library");
+          }
+        }
+      }
+    }
+  };
+
   private initExternalEditorApi = () => {
     this.api.on("loadingANewGame", this.onLoadGame.bind(this));
     this.api.on("pushingNewObject", this.onPushObject.bind(this));
@@ -222,7 +247,7 @@ spawnObjectJSON({
     }
 
     const fileName = `${object.fileName}.lua`;
-    const source = await readOutputFile(fileName, true);
+    const source = await readOutputFile(fileName, "bundle");
     if (!source) {
       window.showWarningMessage(`Can not find the script file for object ${object.guid}`);
       return;
@@ -247,14 +272,14 @@ spawnObjectJSON({
             window.showWarningMessage(
               `Tried to find file for ${bundleName} but couldn't locate it. Will open the bundled version instead.`
             );
-            fileToShow = getOutputFileUri(fileName, true);
+            fileToShow = getOutputFileUri(fileName, "bundle");
           }
         }
       } else {
         window.showWarningMessage(
           `Tried to identify the bundle name for ${fileName} but couldn't determine it. Will open the bundled version instead.`
         );
-        fileToShow = getOutputFileUri(fileName, true);
+        fileToShow = getOutputFileUri(fileName, "bundle");
       }
     }
 
@@ -392,11 +417,11 @@ return nil
         const fileName = "Global";
         if (object.script !== undefined) {
           writeOutputFile(`${fileName}.lua`, getUnbundledLua(object.script));
-          writeOutputFile(`${fileName}.lua`, object.script, true);
+          writeOutputFile(`${fileName}.lua`, object.script, "bundle");
         }
         if (object.ui !== undefined) {
           writeOutputFile(`${fileName}.xml`, unbundleXml(object.ui));
-          writeOutputFile(`${fileName}.xml`, object.ui, true);
+          writeOutputFile(`${fileName}.xml`, object.ui, "bundle");
         }
 
         this.plugin.setLoadedObject({
@@ -432,11 +457,11 @@ return nil
       if (openFiles) {
         window.showTextDocument(scriptFile);
       }
-      writeOutputFile(`${fileName}.lua`, bundledData.LuaScript!, true);
+      writeOutputFile(`${fileName}.lua`, bundledData.LuaScript!, "bundle");
     }
     if (unbundledData.XmlUI !== undefined) {
       writeOutputFile(`${fileName}.xml`, unbundledData.XmlUI);
-      writeOutputFile(`${fileName}.xml`, bundledData.XmlUI!, true);
+      writeOutputFile(`${fileName}.xml`, bundledData.XmlUI!, "bundle");
     }
 
     this.plugin.setLoadedObject({
@@ -448,7 +473,7 @@ return nil
     });
   };
 
-  private createScripts = async (bundled: boolean) => {
+  private createScripts = async (bundled: OutputType) => {
     const scripts = new Map<string, OutgoingJsonObject>();
 
     const includePathsLua = configuration.luaIncludePaths();
@@ -466,10 +491,10 @@ return nil
 
         let lua: string = luaFile ?? "";
         let xml: string = xmlFile ?? "";
-        if (luaFile && !bundled) {
+        if (luaFile && bundled === "script") {
           lua = await bundleLua(luaFile, includePathsLua);
         }
-        if (xmlFile && !bundled) {
+        if (xmlFile && bundled === "script") {
           xml = await bundleXml(xmlFile, includePathXml);
         }
 
@@ -494,7 +519,7 @@ return nil
 
 const getUnbundledLua = (script: string) => {
   try {
-    return unbundleLua(script);
+    return unbundleRootModule(script);
   } catch (e) {
     console.error(e);
     return script;

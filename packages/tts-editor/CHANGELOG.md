@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `require` can resolve `index.lua` files without explicitly including them in the module name.
 - Command "Go to Last Error" added which opens the error line of the last reported error message.
+- Command "Unbundle Library" added to reconstruct the file structure from `require`d modules.
 
 ## [1.1.0] - 2024-01-16
 
