@@ -270,7 +270,7 @@ So when you opened a directory and want to <code>require</code> a file <code>lib
 </div>
 </div>
 <div class="paragraph">
-<p>When you workspace directory doesn&#8217;t contain the files you want to <code>require</code> directly, but in a subdirectory, you can adjust the <a href="settings.html#include" class="xref page">include path setting</a>.
+<p>When your workspace directory doesn&#8217;t contain the files you want to <code>require</code> directly, but in a subdirectory, you can adjust the <a href="settings.html#include" class="xref page">include path setting</a>.
 This defines a relative path from the workspace directory that is used as the root directory to find files.
 E.g. setting it to <code>src</code> would change you directory structure to:</p>
 </div>
@@ -368,7 +368,7 @@ You can use <code>..</code> to navigate up in the directory tree.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>When the extension reads the scripts from TTS it reverses the bundling step and only writes the reduced script to the script file of an object.
-When using "Save and Play" the bundling is performed again und the scripts are updated from the files on your local filesystem.</p>
+When using "Save and Play" the bundling is performed again and the scripts are updated from the files on your local filesystem.</p>
 </div>
 <div class="paragraph">
 <p>This is great when working on mods where you are the author or have access to the original source files.
@@ -394,7 +394,7 @@ It&#8217;s not as comfortable as using bundling though, e.g. if there&#8217;s a 
 <div class="paragraph">
 <p>TTS itself only supports one script file per object.
 It doesn&#8217;t offer any support for loading scripts from different files.
-So what the extension does is to combine all the split files into one script file again and sent the combined file to TTS.
+So what the extension does is combines all the split files into one script file again and sends the combined file to TTS.
 It also transforms the script a bit to mimic the behavior of the actual <code>require</code> function from Lua.
 This also ensures that each required file is only loaded once, even if multiple instance of <code>require</code> for the same are used.</p>
 </div>
