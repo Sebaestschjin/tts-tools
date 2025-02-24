@@ -3,6 +3,7 @@
   "displayName": "Tabletop Simulator Editor",
   "author": "Sebastian Stern",
   "publisher": "sebaestschjin",
+  "email": "sebastian.stern.42@gmail.com",
   "description": "Editor support for Tabletop Simulator (TTS)",
   "version": "2.0.0",
   "engines": {
