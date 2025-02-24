@@ -106,7 +106,7 @@ workspace directory
     └── TableUtil.lua
 ----
 
-When you workspace directory doesn't contain the files you want to `require` directly, but in a subdirectory, you can adjust the xref:settings.adoc#include[include path setting].
+When your workspace directory doesn't contain the files you want to `require` directly, but in a subdirectory, you can adjust the xref:settings.adoc#include[include path setting].
 This defines a relative path from the workspace directory that is used as the root directory to find files.
 E.g. setting it to `src` would change you directory structure to:
 
@@ -185,7 +185,7 @@ You can use `..` to navigate up in the directory tree.
 == Working with bundled scripts
 
 When the extension reads the scripts from TTS it reverses the bundling step and only writes the reduced script to the script file of an object.
-When using "Save and Play" the bundling is performed again und the scripts are updated from the files on your local filesystem.
+When using "Save and Play" the bundling is performed again and the scripts are updated from the files on your local filesystem.
 
 This is great when working on mods where you are the author or have access to the original source files.
 However, when looking at the script of other mods (e.g. to find out how things are done, add a feature for yourself, etc.), this isn't helpful as you wouldn't be easily able to use "Save and Play" again since you don't have the files that are used to `require` (or `<Include>`).
@@ -204,7 +204,7 @@ It's not as comfortable as using bundling though, e.g. if there's a bug in some 
 
 TTS itself only supports one script file per object.
 It doesn't offer any support for loading scripts from different files.
-So what the extension does is to combine all the split files into one script file again and sent the combined file to TTS.
+So what the extension does is combines all the split files into one script file again and sends the combined file to TTS.
 It also transforms the script a bit to mimic the behavior of the actual `require` function from Lua.
 This also ensures that each required file is only loaded once, even if multiple instance of `require` for the same are used.
 
