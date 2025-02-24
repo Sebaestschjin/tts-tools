@@ -1,6 +1,6 @@
 name: savefile
 title: savefile
-version: 2.0
+version: "2.0"
 start_page: ROOT:index.adoc
 nav:
   - modules/ROOT/nav.adoc

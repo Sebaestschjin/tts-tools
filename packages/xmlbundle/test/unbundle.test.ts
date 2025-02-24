@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { unbundle } from "../src/xmlbundle";
 import { readInclude, readResolved } from "./util";
 
@@ -6,7 +7,7 @@ describe("unbundle", () => {
   it("should return the same value without an Include", () => {
     const input = "<Panel />";
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(input);
   });
@@ -15,7 +16,7 @@ describe("unbundle", () => {
     const input = readResolved("withInclude");
     const expected = readInclude("withInclude");
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(expected);
   });
@@ -24,7 +25,7 @@ describe("unbundle", () => {
     const input = "<!-- include MaIN.XmL -->\n<!-- include MaIN.XmL -->";
     const expected = '<Include src="MaIN.XmL" />';
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(expected);
   });
@@ -33,7 +34,7 @@ describe("unbundle", () => {
     const input = readResolved("withMultiple");
     const expected = readInclude("withMultiple");
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(expected);
   });
@@ -42,7 +43,7 @@ describe("unbundle", () => {
     const input = readResolved("withNested");
     const expected = readInclude("withNested");
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(expected);
   });
@@ -51,7 +52,7 @@ describe("unbundle", () => {
     const input = readResolved("withIndent");
     const expected = readInclude("withIndent");
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(expected);
   });
@@ -60,7 +61,7 @@ describe("unbundle", () => {
     const input = "<!-- include main -->";
     const expected = "<!-- include main -->";
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(expected);
   });
@@ -69,8 +70,26 @@ describe("unbundle", () => {
     const input = "<!-- include some -->\r\n<!-- include some -->";
     const expected = '<Include src="some" />';
 
-    const result = unbundle(input);
+    const result = unbundleRoot(input);
 
     expect(result).to.be.equal(expected);
   });
+
+  it("should unbundle all", () => {
+    const input = readResolved("multiBundle");
+
+    const result = unbundle(input);
+
+    expect(result.bundles).toHaveProperty("main");
+    expect(result.bundles).toHaveProperty("main/nested");
+    expect(result.bundles).toHaveProperty("main/nested/more");
+    expect(result.bundles).toHaveProperty("main/other/nested");
+    expect(result.bundles).toHaveProperty("something");
+  });
 });
+
+const unbundleRoot = (input: string) => {
+  const result = unbundle(input);
+
+  return result.root;
+};

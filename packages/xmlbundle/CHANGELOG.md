@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-02-24
+
+### Breaking
+
+- Changed `unbundle` to return more information instead of just the unbundled file.
+  It includes all bundled files instead of just the main file.
+  The previous behavior can be achieved with accessing `unbundle(xmlUi).root`.
+
 ## [1.1.0] - 2024-05-08
 
 ### Added

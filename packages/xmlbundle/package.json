@@ -1,7 +1,7 @@
 {
   "name": "@tts-tools/xmlbundle",
   "description": "Module to bundle/unbundle the XML UI files for Tabletop Simulator.",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "author": "Sebastian Stern",
   "license": "CC0-1.0",
   "keywords": [
@@ -19,10 +19,10 @@
     "release": "pnpm test && pnpm build && pnpm publish --access public"
   },
   "devDependencies": {
-    "@types/node": "^20.12.12",
-    "rimraf": "^5.0.7",
-    "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "@types/node": "^20.17.19",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
   },
   "files": [
     "/dist",

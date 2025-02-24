@@ -3,6 +3,22 @@ import { existsSync, readFileSync } from "fs";
 const INCLUDE_REGEX = /^([\t ]*)<Include src=(["'])(.+)\2\s*\/>/im;
 const BORDER_REGEX = /(<!-- include (.*?) -->)(.*?)\1/gs;
 
+export interface BundleInformation {
+  /** All bundles found in an unbundled module mappyed by their name. */
+  bundles: Bundles;
+  /** The root bundle content. */
+  root: string;
+}
+
+type Bundles = Record<string, Bundle>;
+
+export interface Bundle {
+  /** The name of the bundle. Does not include the `.xml` extension. */
+  name: string;
+  /** The content of the bundle. */
+  content: string;
+}
+
 /**
  * Bundles the given XML by resolving `Include` nodes with a `src` attribute.
  */
@@ -15,12 +31,39 @@ export const bundle = (xmlUi: string, includePath: string | string[]): string =>
 };
 
 /**
- * Unbundles the given XML by replacing comments generated from `bundle` with their respective `Include` node and `src` attribute.
+ * Unbundles the given XML by replacing comments generated from `bundle` with their respective `Include` node and `src`
+ * attribute.
  */
-export const unbundle = (xmlUi: string): string => {
-  const replacement = '<Include src="$2" />';
+export const unbundle = (xmlUi: string): BundleInformation => {
+  const result: BundleInformation = {
+    bundles: {},
+    root: unbundleContent(xmlUi),
+  };
 
-  return xmlUi.replaceAll(BORDER_REGEX, replacement);
+  result.bundles = unbundleFrom(xmlUi);
+
+  return result;
+};
+
+const unbundleFrom = (xmlBundle: string): Bundles => {
+  let bundles: Bundles = {};
+
+  for (const match of xmlBundle.matchAll(BORDER_REGEX)) {
+    let [_, __, name, content] = match;
+    name = name.replace(".xml", "");
+    bundles = {
+      ...bundles,
+      [name]: { name, content: unbundleContent(content) },
+      ...unbundleFrom(content),
+    };
+  }
+
+  return bundles;
+};
+
+const unbundleContent = (xmlBundle: string): string => {
+  const replacement = '<Include src="$2" />';
+  return xmlBundle.replaceAll(BORDER_REGEX, replacement).trimStart();
 };
 
 const resolve = (xmlUi: string, rootPaths: string[], alreadyResolved: string[], topLevel: boolean) => {
