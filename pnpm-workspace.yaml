@@ -2,3 +2,14 @@ packages:
   - "packages/*"
   - "docs"
   - "!packages/tts-editor" # doesn't support pnpm :-(
+
+catalog:
+  "@typed-tabletop-simulator/declaration": ~2.0.3
+  "@types/node": ~20.17.19
+  luabundle: ~1.7.0
+  rimraf: ~6.0.1
+  tsx: ~4.11.0
+  typescript: 5.7.3
+  vitest: ~3.0.6
+  yargs: ~17.7.2
+  "@types/yargs": ~17.0.32

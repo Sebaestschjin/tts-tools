@@ -23,18 +23,18 @@
     "big.js": "^6.2.1",
     "json-stable-stringify": "^1.1.1",
     "lodash": "^4.17.21",
-    "luabundle": "^1.6.0"
+    "luabundle": "catalog:"
   },
   "devDependencies": {
-    "@typed-tabletop-simulator/declaration": "^2.0.3",
+    "@typed-tabletop-simulator/declaration": "catalog:",
     "@types/big.js": "^6.2.2",
     "@types/json-stable-stringify": "^1.0.36",
     "@types/lodash": "^4.17.4",
-    "@types/node": "^20.12.12",
+    "@types/node": "catalog:",
     "common-path-prefix": "^3.0.0",
-    "rimraf": "^5.0.7",
-    "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "rimraf": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "files": [
     "/dist",

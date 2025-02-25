@@ -21,14 +21,14 @@
   },
   "dependencies": {
     "@tts-tools/savefile": "workspace:^",
-    "yargs": "^17.7.2"
+    "yargs": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^20.12.12",
-    "@types/yargs": "^17.0.32",
-    "rimraf": "^5.0.7",
-    "tsx": "^4.11.0",
-    "typescript": "^5.4.5"
+    "@types/node": "catalog:",
+    "@types/yargs": "catalog:",
+    "rimraf": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   },
   "files": [
     "/dist"
