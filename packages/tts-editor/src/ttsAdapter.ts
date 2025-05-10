@@ -182,16 +182,33 @@ spawnObjectJSON({
 
   public unbundleLibrary = async () => {
     for (const obj of this.plugin.getLoadedObjects()) {
-      const fileName = `${obj.fileName}.lua`;
-      const source = await readOutputFile(fileName, "bundle");
-      if (source && isBundled(source)) {
-        const moduleInfo = unbundleLua(source);
-        for (const [name, module] of Object.entries(moduleInfo.modules)) {
-          if (name !== moduleInfo.metadata.rootModuleName) {
-            const modulePath = module.name.replace(/\./g, "/");
-            writeOutputFile(`${modulePath}.lua`, module.content, "library");
-          }
+      this.unbundleLuaLibrary(obj);
+      this.unbundleXmlLibrary(obj);
+    }
+  };
+
+  private unbundleLuaLibrary = async (obj: LoadedObject) => {
+    const fileName = `${obj.fileName}.lua`;
+    const source = await readOutputFile(fileName, "bundle");
+    if (source && isBundled(source)) {
+      const moduleInfo = unbundleLua(source);
+      for (const [name, module] of Object.entries(moduleInfo.modules)) {
+        if (name !== moduleInfo.metadata.rootModuleName) {
+          const modulePath = module.name.replace(/\./g, "/");
+          writeOutputFile(`${modulePath}.lua`, module.content, "library");
         }
+      }
+    }
+  };
+
+  private unbundleXmlLibrary = async (obj: LoadedObject) => {
+    const fileName = `${obj.fileName}.xml`;
+    const source = await readOutputFile(fileName, "bundle");
+    if (source) {
+      const moduleInfo = unbundleXml(source);
+      for (const [_, module] of Object.entries(moduleInfo.bundles)) {
+        const modulePath = module.name.replace(/\./g, "/");
+        writeOutputFile(`${modulePath}.xml`, module.content, "library");
       }
     }
   };
@@ -306,9 +323,11 @@ spawnObjectJSON({
    * @returns The `Uri` to the bundle file or `undefined` if it can not be found.
    */
   private findBundleFile = async (name: string): Promise<Maybe<Uri>> => {
+    name = name.replace(".", "/");
     for (const path of configuration.luaIncludePaths()) {
       const fileName = path.replace("?", name);
       const fileUri = Uri.file(fileName);
+      this.plugin.debug(`Looking for file ${fileUri}`);
       if (await this.plugin.fileHandler.fileExists(fileUri)) {
         return fileUri;
       }
@@ -386,8 +405,8 @@ spawnObjectJSON({
   };
 
   private clearOutputPath = async () => {
-    const outputPath = getOutputPath();
-    await workspace.fs.delete(outputPath, { recursive: true });
+    await workspace.fs.delete(getOutputPath("script"), { recursive: true });
+    await workspace.fs.delete(getOutputPath("bundle"), { recursive: true });
   };
 
   private getObjectData = async (guid: string): Promise<SaveFileObject | undefined> => {
@@ -420,7 +439,7 @@ return nil
           writeOutputFile(`${fileName}.lua`, object.script, "bundle");
         }
         if (object.ui !== undefined) {
-          writeOutputFile(`${fileName}.xml`, unbundleXml(object.ui));
+          writeOutputFile(`${fileName}.xml`, unbundleXml(object.ui).root);
           writeOutputFile(`${fileName}.xml`, object.ui, "bundle");
         }
 

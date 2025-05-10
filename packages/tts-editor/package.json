@@ -301,7 +301,7 @@
   "dependencies": {
     "@matanlurey/tts-editor": "github:sebaestschjin/tts-editor#dist",
     "@tts-tools/savefile": "^2.4.0",
-    "@tts-tools/xmlbundle": "^1.0.0",
+    "@tts-tools/xmlbundle": "^2.0.0",
     "luabundle": "^1.7.0"
   },
   "devDependencies": {

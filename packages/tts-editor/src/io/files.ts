@@ -96,7 +96,7 @@ export const getOutputPath = (bundled: OutputType = "script"): Uri => {
 
   switch (bundled) {
     case "script":
-      return basePath;
+      return Uri.joinPath(basePath, "/objects");
     case "bundle":
       return Uri.joinPath(basePath, "/bundled");
     case "library":

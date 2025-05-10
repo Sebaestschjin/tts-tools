@@ -1,5 +1,7 @@
 import { Uri, workspace } from "vscode";
 
+import { getOutputPath } from "./io/files";
+
 const configName = {
   name: "ttsEditor",
   includePath: "includePath",
@@ -7,13 +9,15 @@ const configName = {
 };
 
 const includePatterns = () => {
-  return ["?.ttslua", "?.lua"];
+  return ["?.lua", "?.ttslua"];
 };
 
 const includePaths = (): Uri[] => {
   const paths = workspace.workspaceFolders ?? [];
   const relative = getConfig<string>(configName.includePath);
-  return paths.map((w) => Uri.joinPath(w.uri, `/${relative}`));
+  const libraryPath = getOutputPath("library");
+
+  return [...paths.map((w) => Uri.joinPath(w.uri, `/${relative}`)), libraryPath];
 };
 
 const luaIncludePaths = (): string[] => {

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The objects scripts are now written to the subdirectory `objects` inside the `.tts` output folder.
+  You're advised to clean up and delete the remaining files in the `.tts` output once after updating to not confuse them with the actual used files.
+
+### Add
+
+- XML files are also unbundled when using the "Unbundle Library" command.
+- The `libray` path will be included in the lookup path to bundle Lua and XML files.
+
+### Fix
+
+- Fixes "Go To Error" not finding the module if it has a . in its name.
+
 ## [2.0.0] - 2025-02-24
 
 ### Breaking
