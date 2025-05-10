@@ -1,0 +1,3 @@
+<Text text="I'm main" />
+  <Include src="main/nested" />
+<Text text="Base again" />

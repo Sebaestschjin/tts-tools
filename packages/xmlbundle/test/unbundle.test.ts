@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { unbundle } from "../src/xmlbundle";
-import { readInclude, readResolved } from "./util";
+import { BundleInformation, unbundle } from "../src/xmlbundle";
+import { readInclude, readResolved, readUnbundled } from "./util";
 
 describe("unbundle", () => {
   it("should return the same value without an Include", () => {
@@ -80,13 +80,29 @@ describe("unbundle", () => {
 
     const result = unbundle(input);
 
-    expect(result.bundles).toHaveProperty("main");
-    expect(result.bundles).toHaveProperty("main/nested");
-    expect(result.bundles).toHaveProperty("main/nested/more");
-    expect(result.bundles).toHaveProperty("main/other/nested");
-    expect(result.bundles).toHaveProperty("something");
+    expectBundleContent(result, "main", "mainNoIndent");
+    expectBundleContent(result, "main/nested", "mainNestedNoIndent");
+    expectBundleContent(result, "main/nested/more", "mainMore");
+    expectBundleContent(result, "main/other/nested", "mainOtherNested");
+    expectBundleContent(result, "something");
+  });
+
+  it("should remove extra intend on unbundle", () => {
+    const input = readResolved("multiBundleIndent");
+
+    const result = unbundle(input);
+
+    expectBundleContent(result, "main", "main");
+    expectBundleContent(result, "main/nested", "mainNested");
+    expectBundleContent(result, "main/nested/more", "mainMore");
+    expectBundleContent(result, "main/other/nested", "mainOtherNested");
+    expectBundleContent(result, "something", "something");
   });
 });
+
+const expectBundleContent = (bundleInfo: BundleInformation, bundleName: string, fileName: string = bundleName) => {
+  expect(bundleInfo.bundles).toHaveProperty(bundleName, { content: readUnbundled(fileName), name: bundleName });
+};
 
 const unbundleRoot = (input: string) => {
   const result = unbundle(input);

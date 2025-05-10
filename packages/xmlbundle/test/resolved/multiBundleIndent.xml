@@ -1,0 +1,17 @@
+<!-- include main -->
+<Text text="I'm main" />
+  <!-- include main/nested -->
+  <Text text="Going deeper" />
+    <!-- include main/nested/more -->
+    <Text text=" Even deeper now!" />
+    <!-- include main/nested/more -->
+  <Text text="I'm back" />
+  <!-- include main/nested -->
+<Text text="Base again" />
+<!-- include main -->
+  <!-- include main/other/nested -->
+  <Text text="Just another one" />
+  <!-- include main/other/nested -->
+<!-- include something.xml -->
+<Text text="With extension" />
+<!-- include something.xml -->

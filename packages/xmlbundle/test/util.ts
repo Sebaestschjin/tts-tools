@@ -3,6 +3,7 @@ import { readFileSync } from "fs";
 export const includeDir = `${__dirname}/include`;
 export const includeDirTwo = `${__dirname}/includeTwo`;
 const resolvedDir = `${__dirname}/resolved`;
+const unbundleDir = `${__dirname}/unbundle`;
 
 export const readInclude = (name: string) => {
   return readFileSync(`${includeDir}/${name}.xml`, { encoding: "utf-8" });
@@ -14,6 +15,10 @@ export const readIncludeTwo = (name: string) => {
 
 export const readResolved = (name: string) => {
   return readFileSync(`${resolvedDir}/${name}.xml`, { encoding: "utf-8" });
+};
+
+export const readUnbundled = (name: string) => {
+  return readFileSync(`${unbundleDir}/${name}.xml`, { encoding: "utf-8" });
 };
 
 export const bordered = (name: string, content: string) => {

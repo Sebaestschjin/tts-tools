@@ -1,0 +1,3 @@
+<Text text="Going deeper" />
+  <Include src="main/nested/more" />
+<Text text="I'm back" />

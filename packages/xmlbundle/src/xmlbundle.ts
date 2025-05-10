@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "fs";
 
 const INCLUDE_REGEX = /^([\t ]*)<Include src=(["'])(.+)\2\s*\/>/im;
-const BORDER_REGEX = /(<!-- include (.*?) -->)(.*?)\1/gs;
+const BORDER_REGEX = /([ \t]*)<!-- include (.*?) -->\r?\n(.*?)<!-- include \2 -->/gs;
 
 export interface BundleInformation {
   /** All bundles found in an unbundled module mappyed by their name. */
@@ -49,11 +49,11 @@ const unbundleFrom = (xmlBundle: string): Bundles => {
   let bundles: Bundles = {};
 
   for (const match of xmlBundle.matchAll(BORDER_REGEX)) {
-    let [_, __, name, content] = match;
+    let [_, indent, name, content] = match;
     name = name.replace(".xml", "");
     bundles = {
       ...bundles,
-      [name]: { name, content: unbundleContent(content) },
+      [name]: { name, content: unbundleContent(content, indent) },
       ...unbundleFrom(content),
     };
   }
@@ -61,9 +61,14 @@ const unbundleFrom = (xmlBundle: string): Bundles => {
   return bundles;
 };
 
-const unbundleContent = (xmlBundle: string): string => {
-  const replacement = '<Include src="$2" />';
-  return xmlBundle.replaceAll(BORDER_REGEX, replacement).trimStart();
+const unbundleContent = (xmlBundle: string, indent?: string): string => {
+  const replacement = '$1<Include src="$2" />';
+  let base = xmlBundle.replaceAll(BORDER_REGEX, replacement);
+  if (indent) {
+    const regex = new RegExp(`^${indent}`, "gm");
+    base = base.replaceAll(regex, "");
+  }
+  return base;
 };
 
 const resolve = (xmlUi: string, rootPaths: string[], alreadyResolved: string[], topLevel: boolean) => {
