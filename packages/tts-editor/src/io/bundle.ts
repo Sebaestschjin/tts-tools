@@ -69,8 +69,8 @@ export const unbundleXml = (content: string) => {
   return unbundle(content);
 };
 
-export const bundleXml = async (script: string, includePath: string): Promise<string> => {
-  return bundle(script, includePath);
+export const bundleXml = async (script: string, includePaths: string[]): Promise<string> => {
+  return bundle(script, includePaths);
 };
 
 const resolveModule = (name: string, packagePaths: readonly string[]) => {

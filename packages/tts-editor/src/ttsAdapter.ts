@@ -63,11 +63,14 @@ export class TTSAdapter {
     try {
       await saveAllFiles();
 
-      const { scripts, hasErrors } = await this.plugin.progress("Bundling scripts", async () =>
+      const { scripts, errors } = await this.plugin.progress("Bundling scripts", async () =>
         this.createScripts(bundled)
       );
-      if (!hasErrors) {
+
+      if (errors.size === 0) {
         this.plugin.progress("Sending scripts to TTS", async () => this.api.saveAndPlay(scripts));
+      } else {
+        [...errors].forEach((message) => window.showErrorMessage(message));
       }
     } catch (e: any) {
       this.plugin.error(`${e}`);
@@ -150,7 +153,7 @@ export class TTSAdapter {
     }
 
     const bundled = bundleObject(data, {
-      includePath: configuration.xmlIncludePath(),
+      includePath: configuration.xmlIncludePaths(),
     });
 
     let newData = JSON.stringify(bundled);
@@ -181,6 +184,7 @@ spawnObjectJSON({
   };
 
   public unbundleLibrary = async () => {
+    await this.clearLibraryPath();
     for (const obj of this.plugin.getLoadedObjects()) {
       this.unbundleLuaLibrary(obj);
       this.unbundleXmlLibrary(obj);
@@ -409,6 +413,10 @@ spawnObjectJSON({
     await workspace.fs.delete(getOutputPath("bundle"), { recursive: true });
   };
 
+  private clearLibraryPath = async () => {
+    await workspace.fs.delete(getOutputPath("library"), { recursive: true });
+  };
+
   private getObjectData = async (guid: string): Promise<SaveFileObject | undefined> => {
     const command = `
 local obj = getObjectFromGUID("${guid}")
@@ -496,11 +504,11 @@ return nil
     const scripts = new Map<string, OutgoingJsonObject>();
 
     const includePathsLua = configuration.luaIncludePaths();
-    const includePathXml = configuration.xmlIncludePath();
+    const includePathXml = configuration.xmlIncludePaths();
     this.plugin.debug(`Using Lua include paths ${includePathsLua}`);
     this.plugin.debug(`Using XML include path ${includePathXml}`);
 
-    let hasErrors: boolean = false;
+    const errors = new Set<string>();
 
     for (const object of this.plugin.getLoadedObjects()) {
       try {
@@ -523,15 +531,16 @@ return nil
           ui: xml,
         });
       } catch (error: any) {
-        window.showErrorMessage(error.message);
         console.error(error.stack);
-        hasErrors = true;
+        if (error.message) {
+          errors.add(error.message);
+        }
       }
     }
 
     return {
       scripts: Array.from(scripts.values()),
-      hasErrors: hasErrors,
+      errors: errors,
     };
   };
 }

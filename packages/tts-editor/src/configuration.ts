@@ -33,8 +33,8 @@ const luaIncludePaths = (): string[] => {
   return result.map((u) => u.fsPath);
 };
 
-const xmlIncludePath = (): string => {
-  return includePaths().map((u) => u.fsPath)[0];
+const xmlIncludePaths = (): string[] => {
+  return includePaths().map((u) => u.fsPath);
 };
 
 const messagesEnabled = (): boolean => getConfig(configName.useMessages);
@@ -46,6 +46,6 @@ const getConfig = <T>(name: string) => {
 
 export default {
   luaIncludePaths,
-  xmlIncludePath,
+  xmlIncludePaths,
   messagesEnabled,
 };

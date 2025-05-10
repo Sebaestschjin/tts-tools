@@ -15,11 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Add
 
 - XML files are also unbundled when using the "Unbundle Library" command.
+- XML files now also use multiple lookup paths during bundling just like Lua files.
 - The `libray` path will be included in the lookup path to bundle Lua and XML files.
 
 ### Fix
 
-- Fixes "Go To Error" not finding the module if it has a . in its name.
+- Fixes "Go To Error" not finding the module if it has a `.` in its name.
 
 ## [2.0.0] - 2025-02-24
 
