@@ -474,8 +474,8 @@ return nil
     }
 
     const unbundledData = unbundleObject(bundledData);
-    const objectName = bundledData.Nickname.length === 0 ? bundledData.Name : bundledData.Nickname;
-    const baseName = objectName.replace(/([":<>/\\|?*])/g, "");
+    const objectName = bundledData.Nickname?.length > 0 ? bundledData.Nickname : bundledData.Name;
+    const baseName = objectName.replace(/([":<>/\\|?*\r\n])/g, "");
     const fileName = `${baseName}.${guid}`;
 
     writeOutputFile(`${fileName}.data.json`, JSON.stringify(unbundledData, null, 2));

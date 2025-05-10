@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.1] - 2025-05-10
+
+### Fixed
+
+- Fixes loading scripts for objects which contain line breaks in their name.
+
+## [2.1.0] - 2025-05-10
 
 ### Changed
 
@@ -18,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - XML files now also use multiple lookup paths during bundling just like Lua files.
 - The `libray` path will be included in the lookup path to bundle Lua and XML files.
 
-### Fix
+### Fixed
 
 - Fixes "Go To Error" not finding the module if it has a `.` in its name.
 
