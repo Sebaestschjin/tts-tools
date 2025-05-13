@@ -327,7 +327,8 @@ spawnObjectJSON({
    * @returns The `Uri` to the bundle file or `undefined` if it can not be found.
    */
   private findBundleFile = async (name: string): Promise<Maybe<Uri>> => {
-    name = name.replace(".", "/");
+    name = name.replace(/\./g, "/");
+    this.plugin.debug(`Base file name: ${name}`);
     for (const path of configuration.luaIncludePaths()) {
       const fileName = path.replace("?", name);
       const fileUri = Uri.file(fileName);
