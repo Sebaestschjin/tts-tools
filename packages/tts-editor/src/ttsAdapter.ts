@@ -72,7 +72,7 @@ export class TTSAdapter {
       } else {
         [...errors].forEach((message) => window.showErrorMessage(message));
       }
-    } catch (e: any) {
+    } catch (e) {
       this.plugin.error(`${e}`);
     }
   };
@@ -131,7 +131,7 @@ export class TTSAdapter {
   public async updateObject(object: LoadedObject) {
     const readObjectFile = async (extension: string) => {
       try {
-        return await this.plugin.fileHandler.readOutputFile(object, extension);
+        return await this.plugin.fileHandler.readOutputFile(object, extension, "script");
       } catch (_) {
         return undefined;
       }
@@ -143,23 +143,24 @@ export class TTSAdapter {
       return;
     }
 
-    const data = JSON.parse(dataFile) as SaveFileObject;
-    data.LuaScript = await readObjectFile("lua");
-    data.XmlUI = await readObjectFile("xml");
+    try {
+      const data = JSON.parse(dataFile) as SaveFileObject;
+      data.LuaScript = await readObjectFile("lua");
+      data.XmlUI = await readObjectFile("xml");
 
-    const state = await readObjectFile("state.txt");
-    if (state) {
-      data.LuaScriptState = state;
-    }
+      const state = await readObjectFile("state.txt");
+      if (state) {
+        data.LuaScriptState = state;
+      }
 
-    const bundled = bundleObject(data, {
-      includePath: configuration.xmlIncludePaths(),
-    });
+      const bundled = bundleObject(data, {
+        includePath: configuration.xmlIncludePaths(),
+      });
 
-    let newData = JSON.stringify(bundled);
-    newData = newData.replace(/\]\]/g, ']] .. "]]" .. [[');
+      let newData = JSON.stringify(bundled);
+      newData = newData.replace(/\]\]/g, ']] .. "]]" .. [[');
 
-    const script = `
+      const script = `
 local obj = getObjectFromGUID("${object.guid}")
 obj.destruct()
 
@@ -168,9 +169,13 @@ spawnObjectJSON({
 })
 `;
 
-    await this.executeCode(script);
+      await this.executeCode(script);
 
-    await this.readObject(bundled.GUID);
+      await this.readObject(bundled.GUID);
+    } catch (e) {
+      window.showErrorMessage(`Error while updating object ${object.guid}:\n${e}`);
+      return;
+    }
 
     command.refreshView();
   }
@@ -377,19 +382,17 @@ spawnObjectJSON({
   private handleWriteMessage = async (message: WriteContentMessage) => {
     const content = this.formatContent(message.content, message.format);
     if (message.name) {
-      const fileName = message.name;
-      let file;
+      let fileName = message.name;
       if (message.object) {
         const object = this.plugin.getLoadedObject(message.object);
         if (!object) {
           window.showErrorMessage(`Requested to write file for object ${message.object}, but it wasn't loaded.`);
           return;
         }
-        file = await this.plugin.fileHandler.writeOutputFile(`${object.fileName}.${fileName}`, content);
-      } else {
-        file = await this.plugin.fileHandler.writeWorkspaceFile(fileName, content);
+        fileName = `${object.fileName}.${fileName}`;
       }
 
+      const file = await this.plugin.fileHandler.writeOutputFile(fileName, content, "output");
       window.showTextDocument(file);
     } else {
       workspace.openTextDocument({ content: content });
@@ -410,8 +413,9 @@ spawnObjectJSON({
   };
 
   private clearOutputPath = async () => {
-    await workspace.fs.delete(getOutputPath("script"), { recursive: true });
     await workspace.fs.delete(getOutputPath("bundle"), { recursive: true });
+    await workspace.fs.delete(getOutputPath("output"), { recursive: true });
+    await workspace.fs.delete(getOutputPath("script"), { recursive: true });
   };
 
   private clearLibraryPath = async () => {
@@ -497,7 +501,7 @@ return nil
       name: objectName,
       guid: guid,
       fileName: fileName,
-      data: unbundledData as any,
+      data: unbundledData as unknown as ObjectData,
     });
   };
 

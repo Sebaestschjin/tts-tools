@@ -2,45 +2,40 @@ import path, { posix } from "path";
 import { Extension, Uri, window, workspace } from "vscode";
 import { LoadedObject } from "../model/objectData";
 
-export type OutputType = "script" | "bundle" | "library";
+export type OutputType = "script" | "bundle" | "library" | "output";
 
 export class FileHandler {
-  private extension: Extension<any>;
+  private extension: Extension<unknown>;
 
-  constructor(extension: Extension<any>) {
+  constructor(extension: Extension<unknown>) {
     this.extension = extension;
   }
 
+  /**
+   * Reads a file from the bundled files for the extension.
+   */
   readExtensionFile = async (fileName: string) => {
-    return this.readFile(this.extension.extensionUri, fileName);
+    const extensionFile = this.getFileUri(this.extension.extensionUri, fileName);
+    return readFile(extensionFile);
   };
 
-  readWorkspaceFile = async (fileName: string) => {
-    if (!this.isInWorkspace(fileName)) {
-      const errorMessage = `Can not read file outside of workspace while reading file ${fileName}`;
-      window.showErrorMessage(errorMessage);
-      throw new Error(errorMessage);
-    }
-
-    return this.readFile(getWorkspaceRoot(), fileName);
+  /**
+   * Reads a file from the output directory.
+   */
+  readOutputFile = async (object: LoadedObject, extension: string, type: OutputType) => {
+    const fileName = `${object.fileName}.${extension}`;
+    const outputUri = this.getOutputUri(fileName, type);
+    this.checkFile(outputUri);
+    return readFile(outputUri);
   };
 
-  writeWorkspaceFile = async (fileName: string, content: string) => {
-    if (!this.isInWorkspace(fileName)) {
-      const errorMessage = `Can not write file outside of workspace while writing file ${fileName}`;
-      window.showErrorMessage(errorMessage);
-      throw new Error(errorMessage);
-    }
-
-    return this.writeFile(getWorkspaceRoot(), fileName, content);
-  };
-
-  readOutputFile = async (object: LoadedObject, extension: string) => {
-    return this.readWorkspaceFile(`.tts/${object.fileName}.${extension}`);
-  };
-
-  writeOutputFile = async (fileName: string, content: string) => {
-    return this.writeWorkspaceFile(`.tts/${fileName}`, content);
+  /**
+   * Writes a file to the output directory.
+   */
+  writeOutputFile = async (fileName: string, content: string, type: OutputType) => {
+    const outputUri = getOutputPath(type);
+    this.checkFile(outputUri, fileName);
+    return writeFile(outputUri, fileName, content);
   };
 
   fileExists = async (file: Uri) => {
@@ -50,31 +45,38 @@ export class FileHandler {
     );
   };
 
-  private isInWorkspace(fileName: string): boolean {
+  private checkFile(fileUri: Uri, fileName?: string) {
+    const fullUri = fileName ? Uri.joinPath(fileUri, `/${fileName}`) : fileUri;
+    if (!this.isInWorkspace(fullUri)) {
+      const errorMessage = `Can not handle file outside of workspace: ${fullUri}`;
+      window.showErrorMessage(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
+  private isInWorkspace(fileUri: Uri): boolean {
     const root = getWorkspaceRoot();
-    const filePath = Uri.joinPath(root, fileName);
-    const asPath = path.normalize(filePath.fsPath);
+    const asPath = path.normalize(fileUri.fsPath);
     const resolvedFilePath = path.resolve(root.fsPath, asPath);
 
     return resolvedFilePath.startsWith(root.fsPath);
   }
 
-  private async readFile(base: Uri, fileName: string) {
-    const fileUri = Uri.joinPath(base, `/${fileName}`);
-    return workspace.fs
-      .readFile(fileUri)
-      .then(Buffer.from)
-      .then((b) => b.toString("utf-8"));
+  /**
+   * Returns the Uri for the given `fileName` of the given `outputType`
+   */
+  private getOutputUri(fileName: string, outputType: OutputType) {
+    const outputPath = getOutputPath(outputType);
+    return this.getFileUri(outputPath, fileName);
   }
 
-  private async writeFile(base: Uri, fileName: string, content: string) {
-    const fileUri = Uri.joinPath(base, `/${fileName}`);
-    return workspace.fs
-      .createDirectory(base)
-      .then(() => {
-        workspace.fs.writeFile(fileUri, Buffer.from(content, "utf-8"));
-      })
-      .then(() => fileUri);
+  /**
+   * Returns a new Uri for a file with the given `fileName` and the given Uri for the `directory`.
+   */
+  private getFileUri(directory: Uri, fileName: string): Uri {
+    return directory.with({
+      path: posix.join(directory.path, fileName),
+    });
   }
 }
 
@@ -101,6 +103,8 @@ export const getOutputPath = (bundled: OutputType = "script"): Uri => {
       return Uri.joinPath(basePath, "/bundled");
     case "library":
       return Uri.joinPath(basePath, "/library");
+    case "output":
+      return Uri.joinPath(basePath, "/output");
   }
 };
 
